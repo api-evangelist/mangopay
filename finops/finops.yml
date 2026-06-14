@@ -1,0 +1,29 @@
+name: Mangopay FinOps
+description: Financial operations guidance for managing costs when using the Mangopay API platform. Pricing is usage-based with volume discounts. Key cost drivers are pay-in volume, payout volume, FX conversions, and identity verification.
+url: https://mangopay.com/pricing
+cost_drivers:
+  - name: Pay-in Volume
+    description: Transaction fees on card payments, bank transfers, and alternative payment methods. Volume-based tiered discounts reduce per-transaction cost as volume grows.
+  - name: Payout Volume
+    description: Fees per payout to bank accounts or recipients. Rates vary by destination country zone.
+  - name: FX Conversions
+    description: Currency conversion fees on cross-currency wallet transfers. Spot and guaranteed rate options available.
+  - name: Identity Verification (KYC/KYB)
+    description: Custom pricing for hosted identity verification sessions and document checks.
+  - name: Fraud Prevention
+    description: Custom pricing for Mangopay Profiler and fraud detection services.
+optimization:
+  - strategy: Maximize payment volume to unlock lower per-transaction rates through tiered discounts
+  - strategy: Use wallet-to-wallet transfers (unlimited, no fee) for internal platform fund movements before payout
+  - strategy: Batch payouts where business logic allows to minimize per-payout fees
+  - strategy: Leverage webhook events to avoid polling API calls that count toward rate limits and add latency costs
+  - strategy: Use virtual IBANs (no per-IBAN fees) for settlement to reduce external bank transaction costs
+billing:
+  cycle: monthly
+  collection: automatic
+  invoice_timing: Within 5 business days after the start of the month
+  collection_method: Automatic deduction from platform revenue held in Mangopay
+notes: >
+  Mangopay does not publicly publish pricing. Engage with Mangopay sales to negotiate
+  volume-based pricing tiers. Monitor the x-ratelimit response headers to stay within
+  API call thresholds and avoid service interruption.

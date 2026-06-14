@@ -1,0 +1,34 @@
+name: Mangopay Rate Limits
+description: Mangopay API rate limits use a leaky bucket algorithm allowing infrequent bursts while maintaining steady processing. Limits slide continuously rather than resetting at fixed clock intervals.
+url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+algorithm: leaky-bucket
+windows:
+  - period: 15 minutes
+    max_calls: 2300
+  - period: 30 minutes
+    max_calls: 4500
+  - period: 1 hour
+    max_calls: 8800
+  - period: 24 hours
+    max_calls: 105600
+headers:
+  - name: x-ratelimit
+    description: Cumulative API calls made across all four time windows (comma-separated values)
+  - name: x-ratelimit-remaining
+    description: Available calls remaining before hitting each window ceiling (comma-separated values)
+  - name: x-ratelimit-reset
+    description: Unix timestamp indicating when the allowance refreshes for each window
+error:
+  http_status: 429
+  message: "Rate limit exceeded. Please contact support for more assistance"
+  type: rate_limit
+best_practices:
+  - Use x-ratelimit-remaining headers to proactively throttle requests
+  - Avoid polling at fixed intervals; use webhooks and event-driven design instead
+  - Cache GET responses to reduce redundant calls
+  - Do not retry failed requests in tight loops
+  - Stagger requests and pause until reset timestamps when approaching limits
+notes: >
+  Reaching the 15-minute limit requires waiting 15 minutes from the moment the limit
+  was hit, not until the next clock boundary. The SDK provides rate limit header
+  access for programmatic throttling.

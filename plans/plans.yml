@@ -1,0 +1,25 @@
+name: Mangopay Plans
+description: Mangopay offers customizable, usage-based pricing with no fixed tiers. Fees are volume-based with tiered discounts applied as payment volumes increase. Custom quotes are provided through sales consultation.
+url: https://mangopay.com/pricing
+model: usage-based
+plans:
+  - name: Custom Pricing
+    description: Flexible, usage-based pricing that adapts to your business activity. No hidden fees. The higher the payment volumes, the lower the fees. Includes data reporting and enterprise support.
+    url: https://mangopay.com/pricing
+    features:
+      - name: Pay-ins
+        description: Volume-based discounts; supports 30+ payment methods across 15+ currencies; 3DS and recurring payment options
+      - name: Wallets
+        description: Unlimited e-wallets, unlimited virtual IBANs, unlimited wallet-to-wallet transfers, no time limits on balance retention
+      - name: FX Services
+        description: Supports 20+ wallet currencies; guaranteed and spot FX options
+      - name: Payouts
+        description: Coverage in 30+ countries for local settlement; instant settlement available; country-zone-dependent pricing
+      - name: Fraud and Identity
+        description: Custom pricing for fraud prevention and identity verification services (KYC/KYB)
+      - name: Billing
+        description: Invoice generated within 5 business days after the start of each month; automatic collection from platform revenue
+notes: >
+  Mangopay does not publish fixed pricing tiers publicly. All pricing is negotiated
+  through a sales engagement. Volume discounts are applied automatically as transaction
+  volumes increase.

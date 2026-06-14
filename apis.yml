@@ -1,0 +1,105 @@
+name: Mangopay
+description: European payment infrastructure platform providing REST APIs for marketplace payments, digital wallet management, user KYC/KYB verification, fund transfers, currency conversion, and payment card processing. Serves multi-party payment flows across product marketplaces, financial platforms, on-demand services, and SaaS companies.
+image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/apis.yml
+version: "0.19"
+created: "2026-06-13"
+modified: "2026-06-13"
+tags:
+  - Payments
+  - Marketplace Payments
+  - Digital Wallets
+  - KYC
+  - KYB
+  - Fund Transfers
+  - Currency Conversion
+  - Payment Cards
+  - Fintech
+  - European
+apis:
+  - name: Mangopay REST API
+    description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://docs.mangopay.com
+    baseURL: https://api.mangopay.com
+    tags:
+      - Payments
+      - Wallets
+      - KYC
+      - KYB
+      - Payouts
+      - FX
+      - Fraud Prevention
+    properties:
+      - type: Documentation
+        url: https://docs.mangopay.com
+      - type: OpenAPI
+        url: https://docs.mangopay.com/endpoints/v2.01
+      - type: Authentication
+        url: https://docs.mangopay.com/api-reference/overview/authentication
+      - type: RateLimits
+        url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+      - type: Webhooks
+        url: https://docs.mangopay.com/webhooks
+      - type: Errors
+        url: https://docs.mangopay.com/errors
+      - type: Postman
+        url: https://docs.mangopay.com/postman
+      - type: Sandbox
+        url: https://api.sandbox.mangopay.com
+      - type: ChangeLog
+        url: https://docs.mangopay.com/release-notes
+      - type: SDKs
+        url: https://docs.mangopay.com/sdks
+      - type: GitHubOrganization
+        url: https://github.com/Mangopay
+      - type: SDK
+        url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+      - type: SDK
+        url: https://github.com/Mangopay/mangopay4-php-sdk
+      - type: Plans
+        url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+      - type: RateLimits
+        url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+      - type: FinOps
+        url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+    contact:
+      - FN: Mangopay Support
+        url: https://hub.mangopay.com
+        email: ""
+common:
+  - type: Website
+    url: https://mangopay.com
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Pricing
+    url: https://mangopay.com/pricing
+  - type: StatusPage
+    url: https://hub.mangopay.com/service-status
+  - type: Blog
+    url: https://blog.mangopay.com
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Plans
+    url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
