@@ -34,7 +34,7 @@ apis:
       - type: Documentation
         url: https://docs.mangopay.com
       - type: OpenAPI
-        url: https://docs.mangopay.com/endpoints/v2.01
+        url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/openapi/openapi.json
       - type: Authentication
         url: https://docs.mangopay.com/api-reference/overview/authentication
       - type: RateLimits

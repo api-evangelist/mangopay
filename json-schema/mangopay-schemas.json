@@ -1,0 +1,1568 @@
+{
+  "schemas": {
+    "create_a_natural_user_payer": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Natural User (Payer)",
+      "description": "[https://mangopay.com/docs/endpoints/users#create-natural-user](https://mangopay.com/docs/endpoints/users#create-natural-user)",
+      "type": "object",
+      "properties": {
+        "FirstName": {
+          "type": "string"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Address": {
+          "type": "object"
+        },
+        "UserCategory": {
+          "type": "string"
+        },
+        "TermsAndConditionsAccepted": {
+          "type": "boolean"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_natural_user_owner": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Natural User (Owner)",
+      "description": "[https://mangopay.com/docs/endpoints/users#update-natural-user](https://mangopay.com/docs/endpoints/users#update-natural-user)",
+      "type": "object",
+      "properties": {
+        "FirstName": {
+          "type": "string"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Address": {
+          "type": "object"
+        },
+        "Birthday": {
+          "type": "integer"
+        },
+        "CountryOfResidence": {
+          "type": "string"
+        },
+        "Nationality": {
+          "type": "string"
+        },
+        "UserCategory": {
+          "type": "string"
+        },
+        "TermsAndConditionsAccepted": {
+          "type": "boolean"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_wallet": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Wallet",
+      "description": "[https://mangopay.com/docs/endpoints/wallets#create-wallet](https://mangopay.com/docs/endpoints/wallets#create-wallet)",
+      "type": "object",
+      "properties": {
+        "Owners": {
+          "type": "array"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Currency": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_wallet": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Wallet",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_wallet_natural_payer_user": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Wallet (Natural Payer User)",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_wallet_natural_owner_user": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Wallet (Natural Owner User)",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_wallet_legal_owner_user": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Wallet (Legal Owner User)",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_card_registration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Card Registration",
+      "description": "[https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration)",
+      "type": "object",
+      "properties": {
+        "UserId": {
+          "type": "string"
+        },
+        "Currency": {
+          "type": "string"
+        },
+        "CardType": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_card_registration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Card Registration",
+      "description": "[https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration)",
+      "type": "object",
+      "properties": {
+        "RegistrationData": {
+          "type": "string"
+        }
+      }
+    },
+    "deactivate_a_card": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Deactivate a card",
+      "description": "[https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card](https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card)",
+      "type": "object",
+      "properties": {
+        "Active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "create_a_card_validation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Card Validation",
+      "description": "[https://mangopay.com/docs/endpoints/card-validations#create-card-validation](https://mangopay.com/docs/endpoints/card-validations#create-card-validation)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "SecureModeReturnURL": {
+          "type": "string"
+        },
+        "IpAddress": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "BrowserInfo": {
+          "type": "object"
+        }
+      }
+    },
+    "create_a_card_direct_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Card Direct PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin](https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedUserId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "SecureModeReturnURL": {
+          "type": "string"
+        },
+        "CardId": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Billing": {
+          "type": "object"
+        },
+        "Shipping": {
+          "type": "object"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "Culture": {
+          "type": "string"
+        },
+        "IpAddress": {
+          "type": "string"
+        },
+        "BrowserInfo": {
+          "type": "object"
+        }
+      }
+    },
+    "update_a_recurring_payin_registration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Recurring PayIn Registration",
+      "description": "[https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration)",
+      "type": "object",
+      "properties": {
+        "CardId": {
+          "type": "string"
+        },
+        "Status": {
+          "type": "string"
+        },
+        "Billing": {
+          "type": "object"
+        },
+        "Shipping": {
+          "type": "object"
+        }
+      }
+    },
+    "create_a_recurring_payin_cit": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Recurring PayIn CIT",
+      "description": "[https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit](https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit)",
+      "type": "object",
+      "properties": {
+        "RecurringPayinRegistrationId": {
+          "type": "string"
+        },
+        "IpAddress": {
+          "type": "string"
+        },
+        "BrowserInfo": {
+          "type": "object"
+        },
+        "SecureModeReturnURL": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        }
+      }
+    },
+    "create_a_preauthorized_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Preauthorized PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin](https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin)",
+      "type": "object",
+      "properties": {
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "PreauthorizationId": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_deposit_preauthorization": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Deposit Preauthorization",
+      "description": "[https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "CardId": {
+          "type": "string"
+        },
+        "SecureModeReturnURL": {
+          "type": "string"
+        },
+        "Culture": {
+          "type": "string"
+        },
+        "IpAddress": {
+          "type": "string"
+        },
+        "BrowserInfo": {
+          "type": "object"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "cancel_a_deposit_preauthorization": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Cancel a Deposit Preauthorization",
+      "description": "[https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no-show](https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no",
+      "type": "object",
+      "properties": {
+        "PaymentStatus": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_deposit_preauthorized_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Deposit Preauthorized PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-without-complement](https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-w",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "DepositId": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_web_card_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Web Card PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin](https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin)",
+      "type": "object",
+      "properties": {
+        "Tag": {
+          "type": "string"
+        },
+        "AuthorId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "CardType": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "Culture": {
+          "type": "string"
+        }
+      }
+    },
+    "deactivate_a_virtual_account": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Deactivate a Virtual Account",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "create_an_iban_banking_alias": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create an IBAN Banking Alias",
+      "description": "[https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias)",
+      "type": "object",
+      "properties": {
+        "OwnerName": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "deactivate_a_banking_alias": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Deactivate a Banking Alias",
+      "description": "[https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias)",
+      "type": "object",
+      "properties": {
+        "Active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "create_a_direct_bank_wire_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Direct Bank Wire PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin](https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedUserId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DeclaredDebitedFunds": {
+          "type": "object"
+        },
+        "DeclaredFees": {
+          "type": "object"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_direct_debit_payin_legal_payer_user": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Direct Debit PayIn (Legal Payer User)",
+      "description": "[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "MandateId": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_bancontact_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Bancontact PayIn",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "Culture": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "Recurring": {
+          "type": "boolean"
+        }
+      }
+    },
+    "create_a_blik_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a BLIK PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/blik#create-blik-payin](https://mangopay.com/docs/endpoints/blik#create-blik-payin)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        }
+      }
+    },
+    "create_an_ideal_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create an iDEAL PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/ideal#create-ideal-payin](https://mangopay.com/docs/endpoints/ideal#create-ideal-payin)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Bic": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_klarna_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Klarna PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/klarna#create-klarna-payin](https://mangopay.com/docs/endpoints/klarna#create-klarna-payin)",
+      "type": "object",
+      "properties": {
+        "Tag": {
+          "type": "string"
+        },
+        "AuthorId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Billing": {
+          "type": "object"
+        },
+        "Shipping": {
+          "type": "object"
+        },
+        "LineItems": {
+          "type": "array"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "Culture": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "AdditionalData": {
+          "type": "string"
+        },
+        "Reference": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_multibanco_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Multibanco PayIn",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "ReturnURL": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_payconiq_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Payconiq PayIn",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "ReturnURL": {
+          "type": "string"
+        }
+      }
+    },
+    "submit_risk_data_for_paypal_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Submit risk data for PayPal PayIn",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "sender_account_id": {
+          "type": "string"
+        },
+        "sender_first_name": {
+          "type": "string"
+        },
+        "sender_last_name": {
+          "type": "string"
+        },
+        "sender_email": {
+          "type": "string"
+        },
+        "sender_phone": {
+          "type": "string"
+        },
+        "sender_country_code": {
+          "type": "string"
+        },
+        "sender_create_date": {
+          "type": "string"
+        },
+        "sender_signup_ip": {
+          "type": "string"
+        },
+        "sender_popularity_score": {
+          "type": "string"
+        },
+        "receiver_account_id": {
+          "type": "string"
+        },
+        "receiver_create_date": {
+          "type": "string"
+        },
+        "receiver_email": {
+          "type": "string"
+        },
+        "receiver_address_country_code": {
+          "type": "string"
+        },
+        "business_name": {
+          "type": "string"
+        },
+        "recipient_popularity_score": {
+          "type": "string"
+        },
+        "first_interaction_date": {
+          "type": "string"
+        },
+        "txn_count_total": {
+          "type": "string"
+        },
+        "vertical": {
+          "type": "string"
+        },
+        "transaction_is_tangible": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_recurring_paypal_payin_cit": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Recurring PayPal PayIn (CIT)",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "ReturnURL": {
+          "type": "string"
+        },
+        "CancelURL": {
+          "type": "string"
+        },
+        "LineItems": {
+          "type": "array"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "RecurringPayinRegistrationId": {
+          "type": "string"
+        },
+        "ShippingPreference": {
+          "type": "string"
+        },
+        "Reference": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "DataCollectionId": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_paypal_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a PayPal PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/paypal#create-paypal-payin](https://mangopay.com/docs/endpoints/paypal#create-paypal-payin)",
+      "type": "object",
+      "properties": {
+        "Tag": {
+          "type": "string"
+        },
+        "AuthorId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Shipping": {
+          "type": "object"
+        },
+        "LineItems": {
+          "type": "array"
+        },
+        "Culture": {
+          "type": "string"
+        },
+        "ShippingPreference": {
+          "type": "string"
+        },
+        "Reference": {
+          "type": "string"
+        },
+        "DataCollectionId": {
+          "type": "string"
+        }
+      }
+    },
+    "add_tracking_information_to_a_paypal_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Add tracking information to a PayPal PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin](https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin)",
+      "type": "object",
+      "properties": {
+        "TrackingNumber": {
+          "type": "string"
+        },
+        "Carrier": {
+          "type": "string"
+        },
+        "NotifyBuyer": {
+          "type": "boolean"
+        }
+      }
+    },
+    "create_a_satispay_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Satispay PayIn",
+      "description": "[https://mangopay.com/docs/endpoints/satispay#create-satispay-payin](https://mangopay.com/docs/endpoints/satispay#create-satispay-payin)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_swish_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Swish PayIn",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        },
+        "PaymentFlow": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_twint_payin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Twint PayIn",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "ReturnURL": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "StatementDescriptor": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_transfer": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Transfer",
+      "description": "[https://mangopay.com/docs/endpoints/transfers#create-transfer](https://mangopay.com/docs/endpoints/transfers#create-transfer)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "DebitedWalletId": {
+          "type": "string"
+        },
+        "CreditedWalletId": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "validate_the_format_of_user_data": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Validate the format of User Data",
+      "description": "[https://mangopay.com/docs/endpoints/user-data-format#validate-user-data-format](https://mangopay.com/docs/endpoints/user-data-format#validate-user-data-format)",
+      "type": "object",
+      "properties": {
+        "CompanyNumber": {
+          "type": "object"
+        }
+      }
+    },
+    "create_an_idv_session": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create an IDV Session",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Tag": {
+          "type": "string"
+        },
+        "ReturnUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_kyc_document_page": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a KYC Document Page",
+      "description": "[https://mangopay.com/docs/endpoints/kyc-documents#create-kyc-document-page](https://mangopay.com/docs/endpoints/kyc-documents#create-kyc-document-page)",
+      "type": "object",
+      "properties": {
+        "File": {
+          "type": "string"
+        }
+      }
+    },
+    "submit_a_kyc_document": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Submit a KYC Document",
+      "description": "[https://mangopay.com/docs/endpoints/kyc-documents#submit-kyc-document](https://mangopay.com/docs/endpoints/kyc-documents#submit-kyc-document)",
+      "type": "object",
+      "properties": {
+        "Status": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_ubo": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a UBO",
+      "description": "[https://mangopay.com/docs/endpoints/ubo-declarations#update-ubo](https://mangopay.com/docs/endpoints/ubo-declarations#update-ubo)",
+      "type": "object",
+      "properties": {
+        "FirstName": {
+          "type": "string"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "Address": {
+          "type": "object"
+        },
+        "Nationality": {
+          "type": "string"
+        },
+        "Birthday": {
+          "type": "integer"
+        },
+        "Birthplace": {
+          "type": "object"
+        },
+        "isActive": {
+          "type": "boolean"
+        }
+      }
+    },
+    "submit_a_ubo_declaration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Submit a UBO Declaration",
+      "description": "[https://mangopay.com/docs/endpoints/ubo-declarations#submit-ubo-declaration](https://mangopay.com/docs/endpoints/ubo-declarations#submit-ubo-declaration)",
+      "type": "object",
+      "properties": {
+        "Status": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_business_recipient_-_match": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Business Recipient - MATCH",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "DisplayName": {
+          "type": "string"
+        },
+        "PayoutMethodType": {
+          "type": "string"
+        },
+        "RecipientType": {
+          "type": "string"
+        },
+        "Currency": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "RecipientScope": {
+          "type": "string"
+        },
+        "BusinessRecipient": {
+          "type": "object"
+        },
+        "LocalBankTransfer": {
+          "type": "object"
+        }
+      }
+    },
+    "validate_data_for_a_recipient_gbp,_gb,_local,_individual": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Validate data for a Recipient (GBP, GB, local, individual)",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "DisplayName": {
+          "type": "string"
+        },
+        "PayoutMethodType": {
+          "type": "string"
+        },
+        "RecipientType": {
+          "type": "string"
+        },
+        "Currency": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "RecipientScope": {
+          "type": "string"
+        },
+        "IndividualRecipient": {
+          "type": "object"
+        },
+        "LocalBankTransfer": {
+          "type": "object"
+        }
+      }
+    },
+    "deactivate_a_recipient": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Deactivate a Recipient",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Status": {
+          "type": "string"
+        }
+      }
+    },
+    "create_an_iban_bank_account": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create an IBAN Bank Account",
+      "description": "[https://mangopay.com/docs/endpoints/payouts#create-iban-bank-account](https://mangopay.com/docs/endpoints/payouts#create-iban-bank-account)",
+      "type": "object",
+      "properties": {
+        "OwnerName": {
+          "type": "string"
+        },
+        "OwnerAddress": {
+          "type": "object"
+        },
+        "IBAN": {
+          "type": "string"
+        },
+        "BIC": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_us_bank_account": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a US Bank Account",
+      "description": "[https://mangopay.com/docs/endpoints/payouts#create-us-bank-account](https://mangopay.com/docs/endpoints/payouts#create-us-bank-account)",
+      "type": "object",
+      "properties": {
+        "OwnerName": {
+          "type": "string"
+        },
+        "OwnerAddress": {
+          "type": "object"
+        },
+        "AccountNumber": {
+          "type": "string"
+        },
+        "ABA": {
+          "type": "string"
+        },
+        "DepositAccountType": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_ca_bank_account": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a CA Bank Account",
+      "description": "[https://mangopay.com/docs/endpoints/payouts#create-ca-bank-account](https://mangopay.com/docs/endpoints/payouts#create-ca-bank-account)",
+      "type": "object",
+      "properties": {
+        "OwnerName": {
+          "type": "string"
+        },
+        "OwnerAddress": {
+          "type": "object"
+        },
+        "AccountNumber": {
+          "type": "string"
+        },
+        "BranchCode": {
+          "type": "string"
+        },
+        "InstitutionNumber": {
+          "type": "string"
+        },
+        "BankName": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_gb_bank_account": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a GB Bank Account",
+      "description": "[https://mangopay.com/docs/endpoints/payouts#create-gb-bank-account](https://mangopay.com/docs/endpoints/payouts#create-gb-bank-account)",
+      "type": "object",
+      "properties": {
+        "OwnerName": {
+          "type": "string"
+        },
+        "OwnerAddress": {
+          "type": "object"
+        },
+        "SortCode": {
+          "type": "string"
+        },
+        "AccountNumber": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_an_other_bank_account": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create an OTHER Bank Account",
+      "description": "[https://mangopay.com/docs/endpoints/payouts#create-other-bank-account](https://mangopay.com/docs/endpoints/payouts#create-other-bank-account)",
+      "type": "object",
+      "properties": {
+        "OwnerName": {
+          "type": "string"
+        },
+        "OwnerAddress": {
+          "type": "object"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "BIC": {
+          "type": "string"
+        },
+        "AccountNumber": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "deactivate_a_bank_account": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Deactivate a Bank Account",
+      "description": "[https://mangopay.com/docs/endpoints/payouts#deactivate-bank-account](https://mangopay.com/docs/endpoints/payouts#deactivate-bank-account)",
+      "type": "object",
+      "properties": {
+        "Active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "create_a_payout": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Payout",
+      "description": "[https://mangopay.com/docs/endpoints/payouts#create-payout](https://mangopay.com/docs/endpoints/payouts#create-payout)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "BankAccountId": {
+          "type": "string"
+        },
+        "DebitedWalletId": {
+          "type": "string"
+        },
+        "BankWireRef": {
+          "type": "string"
+        }
+      }
+    },
+    "check_instant_payout_eligibility": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Check Instant Payout Eligibility",
+      "description": "[https://mangopay.com/docs/endpoints/payouts#create-payout](https://mangopay.com/docs/endpoints/payouts#create-payout)",
+      "type": "object",
+      "properties": {
+        "PayoutModeRequested": {
+          "type": "string"
+        },
+        "AuthorId": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        },
+        "BankAccountId": {
+          "type": "string"
+        },
+        "DebitedWalletId": {
+          "type": "string"
+        },
+        "BankWireRef": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_dispute": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Dispute",
+      "description": "[https://mangopay.com/docs/endpoints/disputes#update-dispute](https://mangopay.com/docs/endpoints/disputes#update-dispute)",
+      "type": "object",
+      "properties": {
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_dispute_document_page": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Dispute Document Page",
+      "description": "[https://mangopay.com/docs/endpoints/disputes#create-dispute-document-page](https://mangopay.com/docs/endpoints/disputes#create-dispute-document-page)",
+      "type": "object",
+      "properties": {
+        "File": {
+          "type": "string"
+        }
+      }
+    },
+    "submit_a_dispute_document": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Submit a Dispute Document",
+      "description": "[https://mangopay.com/docs/endpoints/disputes#submit-dispute-document](https://mangopay.com/docs/endpoints/disputes#submit-dispute-document)",
+      "type": "object",
+      "properties": {
+        "Status": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_settlement_transfer": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Settlement Transfer",
+      "description": "[https://mangopay.com/docs/endpoints/disputes#create-settlement-transfer](https://mangopay.com/docs/endpoints/disputes#create-settlement-transfer)",
+      "type": "object",
+      "properties": {
+        "AuthorId": {
+          "type": "string"
+        },
+        "DebitedFunds": {
+          "type": "object"
+        },
+        "Fees": {
+          "type": "object"
+        }
+      }
+    },
+    "update_a_client": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Client",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "PrimaryThemeColour": {
+          "type": "string"
+        },
+        "PrimaryButtonColour": {
+          "type": "string"
+        }
+      }
+    },
+    "update_an_intent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update an Intent",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Amount": {
+          "type": "integer"
+        },
+        "LineItems": {
+          "type": "array"
+        }
+      }
+    },
+    "update_the_decision_of_an_intent_dispute": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update the decision of an Intent Dispute",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Decision": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_split_of_an_intent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Split of an Intent",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "Splits": {
+          "type": "array"
+        }
+      }
+    },
+    "update_a_split_of_an_intent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Split of an Intent",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "LineItemId": {
+          "type": "string"
+        },
+        "SplitAmount": {
+          "type": "integer"
+        },
+        "FeesAmount": {
+          "type": "integer"
+        },
+        "TransferDate": {
+          "type": "integer"
+        },
+        "Description": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_settlement_generate_url_for_file_upload": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Settlement (generate URL for file upload)",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "FileName": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_settlement_generate_new_url_for_same_settlementid": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Settlement (generate new URL for same SettlementId)",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "FileName": {
+          "type": "string"
+        }
+      }
+    },
+    "create_a_hook": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Create a Hook",
+      "description": "[https://mangopay.com/docs/endpoints/notifications#create-hook](https://mangopay.com/docs/endpoints/notifications#create-hook)",
+      "type": "object",
+      "properties": {
+        "EventType": {
+          "type": "string"
+        },
+        "Url": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    },
+    "update_a_hook": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Update a Hook",
+      "description": "[https://mangopay.com/docs/endpoints/notifications#update-hook](https://mangopay.com/docs/endpoints/notifications#update-hook)",
+      "type": "object",
+      "properties": {
+        "Url": {
+          "type": "string"
+        },
+        "Status": {
+          "type": "string"
+        },
+        "Tag": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
