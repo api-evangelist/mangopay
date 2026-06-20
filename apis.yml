@@ -1,6 +1,6 @@
 name: Mangopay
 description: European payment infrastructure platform providing REST APIs for marketplace payments, digital wallet management, user KYC/KYB verification, fund transfers, currency conversion, and payment card processing. Serves multi-party payment flows across product marketplaces, financial platforms, on-demand services, and SaaS companies.
-image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/apis.yml
 version: "0.19"
 created: "2026-06-13"
@@ -19,7 +19,7 @@ tags:
 apis:
   - name: Mangopay REST API
     description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     humanURL: https://docs.mangopay.com
     baseURL: https://api.mangopay.com
     tags:
