@@ -41,7 +41,7 @@ apis:
         url: https://docs.mangopay.com/api-reference/overview/rate-limiting
       - type: Webhooks
         url: https://docs.mangopay.com/webhooks
-      - type: Errors
+      - type: ErrorCodes
         url: https://docs.mangopay.com/errors
       - type: Postman
         url: https://docs.mangopay.com/postman
@@ -53,9 +53,9 @@ apis:
         url: https://docs.mangopay.com/sdks
       - type: GitHubOrganization
         url: https://github.com/Mangopay
-      - type: SDK
+      - type: SDKs
         url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
-      - type: SDK
+      - type: SDKs
         url: https://github.com/Mangopay/mangopay4-php-sdk
       - type: Plans
         url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
