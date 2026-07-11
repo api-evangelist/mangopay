@@ -1,0 +1,17 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/openapi.json
+summary:
+  types:
+  - oauth2
+  oauth2_flows:
+  - clientCredentials
+schemes:
+- name: OAuth2
+  type: oauth2
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+    scopes: 0
+  sources:
+  - openapi/openapi.json
