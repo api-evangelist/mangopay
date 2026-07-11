@@ -68,6 +68,8 @@ apis:
         url: https://hub.mangopay.com
         email: ""
 common:
+  - type: OAuthScopes
+    url: scopes/mangopay-scopes.yml
   - type: Website
     url: https://mangopay.com
   - type: Documentation

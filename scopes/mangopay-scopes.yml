@@ -1,0 +1,111 @@
+generated: '2026-07-11'
+method: searched
+source: openapi/openapi.json
+docs: https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+note: Mangopay uses OAuth 2.0 client_credentials, but access is governed by permission
+  scopes assigned to the API key (not requested in the token call); each scope grants
+  READ (GET) and/or WRITE (POST/PUT) access to a fixed group of endpoints
+  (https://docs.mangopay.com/api-reference/overview/api-keys).
+schemes:
+- name: OAuth2
+  source: openapi/openapi.json
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+scopes:
+- scope: Bankaccounts
+  description: Manage recipients and bank accounts (IBAN, US, CA, GB, OTHER) — validate
+    and create recipients and bank accounts, deactivate them, view payout methods
+    and recipient schemas, and list transactions for a bank account.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Client.Details
+  description: Update client information and upload the client logo; view client
+    details.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Client.Developers
+  description: Manage webhooks (create and update hooks) and view hooks, events,
+    and API responses for monitoring.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Client.PayIns
+  description: Create a bank wire pay-in to the repudiation wallet (write only; no
+    read endpoints).
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Client.Reports
+  description: Create transactions and wallets reports; view and list reports.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Client.Wallets
+  description: View and list client wallets (including by funds type) and list transactions
+    for a client wallet (read only; no write endpoints).
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Conversions
+  description: Create quotes and quoted or instant currency conversions between user
+    or client wallets; view indicative conversion rates, quotes, and conversions.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Disputes.General
+  description: Manage the dispute lifecycle — submit, update, and close disputes,
+    create and submit dispute documents and pages; view and list disputes, dispute
+    documents, repudiations, and dispute transactions.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Disputes.Settlement
+  description: Create and view settlement transfers related to disputes.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Payins
+  description: Create and manage pay-ins across all payment methods — card registrations,
+    tokenization, and validations, direct/web card pay-ins, recurring pay-ins, preauthorizations,
+    deposit preauthorizations, bank wires, banking aliases, mandates, direct debits,
+    and local/alternative methods (Apple Pay, Google Pay, PayPal, Klarna, iDEAL,
+    Bancontact, Bizum, BLIK, Giropay, etc.).
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Payouts
+  description: Create payouts and check instant payout eligibility; view payouts.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Refunds.General
+  description: View refund details.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Refunds.Payins
+  description: Create and list refunds for pay-in transactions.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Refunds.Payouts
+  description: List refunds for payout transactions.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Refunds.Repudiations
+  description: List refunds associated with repudiations (disputes).
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Refunds.Transfers
+  description: Create and list refunds for transfer operations.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Transfers
+  description: Create transfers between wallets and view transfer details.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Users.Details
+  description: Create, update, and categorize natural and legal users; view and list
+    users and their details.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Users.Verification
+  description: Conduct identity verification — KYC documents and pages, UBO declarations,
+    and related verification endpoints.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
+- scope: Wallet.Details
+  description: Create and update user wallets; view and list wallets and list transactions
+    for a wallet and a user.
+  sources:
+  - https://docs.mangopay.com/api-reference/overview/api-keys/scopes
