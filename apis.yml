@@ -68,6 +68,8 @@ apis:
         url: https://hub.mangopay.com
         email: ""
 common:
+  - type: AgenticAccess
+    url: agentic-access/mangopay-agentic-access.yml
   - type: DomainSecurity
     url: security/mangopay-domain-security.yml
   - type: Authentication
