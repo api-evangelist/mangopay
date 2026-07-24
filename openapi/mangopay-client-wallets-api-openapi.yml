@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Client Wallets API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Client Wallets
+paths:
+  /clients/wallets:
+    get:
+      tags:
+      - Client Wallets
+      summary: List all Client Wallets
+      operationId: get_clients_wallets
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/wallets#list-client-wallets](https://mangopay.com/docs/endpoints/wallets#list-client-wallets)'
+  /clients/wallets/FEES/{currency}:
+    get:
+      tags:
+      - Client Wallets
+      summary: View a Client Wallet
+      operationId: get_clients_wallets_FEES_currency
+      parameters:
+      - name: currency
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/wallets#view-client-wallet](https://mangopay.com/docs/endpoints/wallets#view-client-wallet)'
+  /clients/wallets/FEES:
+    get:
+      tags:
+      - Client Wallets
+      summary: List Client Wallets by FundsType
+      operationId: get_clients_wallets_FEES
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/wallets#list-client-wallets-fundstype](https://mangopay.com/docs/endpoints/wallets#list-client-wallets-fundstype)'
+  /clients:
+    get:
+      tags:
+      - Client Wallets
+      summary: View a Client
+      operationId: get_clients
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

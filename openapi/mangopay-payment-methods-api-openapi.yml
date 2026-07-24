@@ -1,0 +1,2117 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Payment methods API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Payment methods
+paths:
+  /cardregistrations:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Card Registration
+      operationId: post_cardregistrations
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              UserId: '{{USER_NATURAL_PAYER}}'
+              Currency: '{{CURRENCY}}'
+              CardType: CB_VISA_MASTERCARD
+  '{cardregistrationurl}':
+    post:
+      tags:
+      - Payment methods
+      summary: Tokenize the Card (Challenge Flow Card)
+      operationId: post_cardregistrationurl
+      parameters:
+      - name: cardregistrationurl
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#tokenize-card](https://mangopay.com/docs/endpoints/direct-card-payins#tokenize-card)'
+  /cardregistrations/{cardregistrationid}:
+    put:
+      tags:
+      - Payment methods
+      summary: Update a Card Registration
+      operationId: put_cardregistrations_cardregistrationid
+      parameters:
+      - name: cardregistrationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              RegistrationData: '{{REGISTRATION_DATA_KEY}}'
+    get:
+      tags:
+      - Payment methods
+      summary: View a Card Registration
+      operationId: get_cardregistrations_cardregistrationid
+      parameters:
+      - name: cardregistrationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#view-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#view-card-registration)'
+  /cards/{cardchallengeflowid}:
+    put:
+      tags:
+      - Payment methods
+      summary: Deactivate a card
+      operationId: put_cards_cardchallengeflowid
+      parameters:
+      - name: cardchallengeflowid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card](https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Active: false
+    get:
+      tags:
+      - Payment methods
+      summary: View a Card
+      operationId: get_cards_cardchallengeflowid
+      parameters:
+      - name: cardchallengeflowid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#view-card](https://mangopay.com/docs/endpoints/direct-card-payins#view-card)'
+  /users/{userId}/cards:
+    get:
+      tags:
+      - Payment methods
+      summary: List Cards for a User
+      operationId: get_users_userId_cards
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-user](https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-user)'
+  /cards/fingerprints/{cardfingerprint}:
+    get:
+      tags:
+      - Payment methods
+      summary: List Cards for a Fingerprint
+      operationId: get_cards_fingerprints_cardfingerprint
+      parameters:
+      - name: cardfingerprint
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-fingerprint](https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-fingerprint)'
+  /cards/fingerprints/{cardfingerprint}/transactions:
+    get:
+      tags:
+      - Payment methods
+      summary: List Transactions for a Card Fingerprint
+      operationId: get_cards_fingerprints_cardfingerprint_transactions
+      parameters:
+      - name: cardfingerprint
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#list-transactions-card-fingerprint](https://mangopay.com/docs/endpoints/direct-card-payins#list-transactions-card-fingerprint)'
+  /cards/{cardchallengeflowid}/validation:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Card Validation
+      operationId: post_cards_cardchallengeflowid_validation
+      parameters:
+      - name: cardchallengeflowid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/card-validations#create-card-validation](https://mangopay.com/docs/endpoints/card-validations#create-card-validation)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              SecureModeReturnURL: https://mangopay.com/docs/please-ignore
+              IpAddress: '{{$randomIPV6}}'
+              Tag: Created using the Mangopay API Postman collection
+              BrowserInfo:
+                AcceptHeader: application/json,text/javascript,*/*;q=0.01<
+                JavaEnabled: true
+                Language: fr
+                ColorDepth: 32
+                ScreenHeight: 667
+                ScreenWidth: 375
+                TimeZoneOffset: '-120'
+                UserAgent: Mozilla/5.0 (iPhone; CPU iPhone OS 13_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148
+                JavascriptEnabled: true
+  /cards/{cardchallengeflowid}/validation/{cardvalidationid}:
+    get:
+      tags:
+      - Payment methods
+      summary: View a Card Validation
+      operationId: get_cards_cardchallengeflowid_validation_cardvalidationid
+      parameters:
+      - name: cardchallengeflowid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: cardvalidationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/card-validations#view-card-validation](https://mangopay.com/docs/endpoints/card-validations#view-card-validation)'
+  /payins/card/direct:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Card Direct PayIn
+      operationId: post_payins_card_direct
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin](https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              CreditedUserId: '{{USER_NATURAL_PAYER}}'
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 10
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 0
+              SecureModeReturnURL: https://mangopay.com/docs/please-ignore
+              CardId: '{{CARD_CHALLENGE_FLOW_ID}}'
+              StatementDescriptor: Mangopay
+              Billing:
+                FirstName: '{{$randomFirstName}}'
+                LastName: '{{$randomLastName}}'
+                Address:
+                  AddressLine1: '{{$randomStreetAddress}}'
+                  AddressLine2: '{{$randomStreetName}}'
+                  City: Paris
+                  Region: Ile-de-France
+                  PostalCode: '75001'
+                  Country: FR
+              Shipping:
+                FirstName: '{{$randomFirstName}}'
+                LastName: '{{$randomLastName}}'
+                Address:
+                  AddressLine1: '{{$randomStreetAddress}}'
+                  AddressLine2: '{{$randomStreetName}}'
+                  City: Paris
+                  Region: Ile-de-France
+                  PostalCode: '75001'
+                  Country: FR
+              Tag: Created using Mangopay API Postman Collection
+              Culture: '{{CULTURE}}'
+              IpAddress: '{{$randomIPV6}}'
+              BrowserInfo:
+                AcceptHeader: text/html, application/xhtml+xml, application/xml;q=0.9, /;q=0.8
+                JavaEnabled: true
+                Language: FR-FR
+                ColorDepth: 4
+                ScreenHeight: 1800
+                ScreenWidth: 400
+                TimeZoneOffset: 60
+                UserAgent: Mozilla/5.0 (iPhone; CPU iPhone OS 13_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148
+                JavascriptEnabled: true
+  /payins/{payinId}:
+    get:
+      tags:
+      - Payment methods
+      summary: View a PayIn
+      operationId: get_payins_payinId
+      parameters:
+      - name: payinId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#view-payin](https://mangopay.com/docs/endpoints/direct-card-payins#view-payin)'
+  /recurringpayinregistrations:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Recurring PayIn Registration
+      operationId: post_recurringpayinregistrations
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-registration)'
+  /recurringpayinregistrations/{recurringpayinregistrationid}:
+    put:
+      tags:
+      - Payment methods
+      summary: Update a Recurring PayIn Registration
+      operationId: put_recurringpayinregistrations_recurringpayinregistrationid
+      parameters:
+      - name: recurringpayinregistrationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              CardId: '{{CARD_CHALLENGE_FLOW_ID}}'
+              Status: ENDED
+              Billing:
+                FirstName: '{{$randomFirstName}}'
+                LastName: '{{$randomLastName}}'
+                Address:
+                  AddressLine1: '{{$randomStreetAddress}}'
+                  AddressLine2: '{{$randomStreetName}}'
+                  City: Paris
+                  Region: Ile-de-France
+                  PostalCode: '75001'
+                  Country: FR
+              Shipping:
+                FirstName: '{{$randomFirstName}}'
+                LastName: '{{$randomLastName}}'
+                Address:
+                  AddressLine1: '{{$randomStreetAddress}}'
+                  AddressLine2: '{{$randomStreetName}}'
+                  City: Paris
+                  Region: Ile-de-France
+                  PostalCode: '75001'
+                  Country: FR
+    get:
+      tags:
+      - Payment methods
+      summary: View a Recurring PayIn Registration
+      operationId: get_recurringpayinregistrations_recurringpayinregistrationid
+      parameters:
+      - name: recurringpayinregistrationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/recurring-card-payins#view-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#view-recurring-payin-registration)'
+  /payins/recurring/card/direct:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Recurring PayIn CIT
+      operationId: post_payins_recurring_card_direct
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit](https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              RecurringPayinRegistrationId: '{{RECURRING_PAYIN_REGISTRATION_ID}}'
+              IpAddress: '{{$randomIPV6}}'
+              BrowserInfo:
+                AcceptHeader: text/html, application/xhtml+xml, application/xml;q=0.9, /;q=0.8
+                JavaEnabled: true
+                Language: FR-FR
+                ColorDepth: 4
+                ScreenHeight: 1800
+                ScreenWidth: 400
+                TimeZoneOffset: 60
+                UserAgent: Mozilla/5.0 (iPhone; CPU iPhone OS 13_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148
+                JavascriptEnabled: true
+              SecureModeReturnURL: https://mangopay.com/docs/please-ignore
+              StatementDescriptor: POSTMAN
+              Tag: Created using Mangopay API Postman Collection
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 10000
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 1000
+  /preauthorizations/card/direct:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Preauthorization
+      operationId: post_preauthorizations_card_direct
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorization)'
+  /preauthorizations/{preauthorizationid}:
+    put:
+      tags:
+      - Payment methods
+      summary: Cancel or validate a Preauthorization
+      operationId: put_preauthorizations_preauthorizationid
+      parameters:
+      - name: preauthorizationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#cancel-validate-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#cancel-validate-preauthorization)'
+    get:
+      tags:
+      - Payment methods
+      summary: View a Preauthorization
+      operationId: get_preauthorizations_preauthorizationid
+      parameters:
+      - name: preauthorizationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#view-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#view-preauthorization)'
+  /cards/{cardchallengeflowid}/preauthorizations:
+    get:
+      tags:
+      - Payment methods
+      summary: List Preauthorizations for a Card
+      operationId: get_cards_cardchallengeflowid_preauthorizations
+      parameters:
+      - name: cardchallengeflowid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-card](https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-card)'
+  /users/{userId}/preauthorizations:
+    get:
+      tags:
+      - Payment methods
+      summary: List Preauthorizations for a User
+      operationId: get_users_userId_preauthorizations
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-user](https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-user)'
+  /payins/preauthorized/direct:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Preauthorized PayIn
+      operationId: post_payins_preauthorized_direct
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin](https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 10000
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 1000
+              PreauthorizationId: '{{PREAUTHORIZATION_ID}}'
+  /deposit-preauthorizations/card/direct:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Deposit Preauthorization
+      operationId: post_deposit_preauthorizations_card_direct
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 20000
+              CardId: '{{CARD_CHALLENGE_FLOW_ID}}'
+              SecureModeReturnURL: https://mangopay.com/docs/please-ignore
+              Culture: '{{CULTURE}}'
+              IpAddress: '{{$randomIPV6}}'
+              BrowserInfo:
+                AcceptHeader: text/html, application/xhtml+xml, application/xml;q=0.9, /;q=0.8
+                JavaEnabled: true
+                Language: FR-FR
+                ColorDepth: 4
+                ScreenHeight: 1800
+                ScreenWidth: 400
+                TimeZoneOffset: 60
+                UserAgent: Mozilla/5.0 (iPhone; CPU iPhone OS 13_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148
+                JavascriptEnabled: true
+              Tag: Created using the Mangopay API Postman collection
+  /deposit-preauthorizations/{depositid}:
+    put:
+      tags:
+      - Payment methods
+      summary: Cancel a Deposit Preauthorization
+      operationId: put_deposit_preauthorizations_depositid
+      parameters:
+      - name: depositid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no-show](https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no-show)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              PaymentStatus: CANCELED
+    get:
+      tags:
+      - Payment methods
+      summary: View a Deposit Preauthorization
+      operationId: get_deposit_preauthorizations_depositid
+      parameters:
+      - name: depositid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#view-deposit-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#view-deposit-preauthorization)'
+  /cards/{cardchallengeflowid}/deposit-preauthorizations:
+    get:
+      tags:
+      - Payment methods
+      summary: List Deposit Preauthorizations for a Card
+      operationId: get_cards_cardchallengeflowid_deposit_preauthorizations
+      parameters:
+      - name: cardchallengeflowid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-card](https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-card)'
+  /users/{userId}/deposit-preauthorizations:
+    get:
+      tags:
+      - Payment methods
+      summary: List Deposit Preauthorizations for a User
+      operationId: get_users_userId_deposit_preauthorizations
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-user](https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-user)'
+  /payins/deposit-preauthorized/direct/full-capture:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Deposit Preauthorized PayIn
+      operationId: post_payins_deposit_preauthorized_direct_full_capture
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-without-complement](https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-without-complement)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 10000
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 1000
+              DepositId: '{{DEPOSIT_ID}}'
+              Tag: Created using Mangopay API Postman Collection
+  /payins/card/web:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Web Card PayIn
+      operationId: post_payins_card_web
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin](https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Tag: Created using Mangopay API Postman Collection
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 12000
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 1000
+              ReturnURL: https://mangopay.com/docs/please-ignore
+              CardType: CB_VISA_MASTERCARD
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              Culture: '{{CULTURE}}'
+  /payins/card/web/{webpayinid}/extended:
+    get:
+      tags:
+      - Payment methods
+      summary: View card details for a Web Card PayIn
+      operationId: get_payins_card_web_webpayinid_extended
+      parameters:
+      - name: webpayinid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/web-card-payins#view-card-details-web-card-payin](https://mangopay.com/docs/endpoints/web-card-payins#view-card-details-web-card-payin)'
+  /payment-methods/metadata:
+    post:
+      tags:
+      - Payment methods
+      summary: Look up metadata for a payment method
+      operationId: post_payment_methods_metadata
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/payment-method-metadata#lookup-payment-method-metadata](https://mangopay.com/docs/endpoints/payment-method-metadata#lookup-payment-method-metadata)'
+  /virtual-accounts/availability:
+    get:
+      tags:
+      - Payment methods
+      summary: View Virtual Account availabilities
+      operationId: get_virtual_accounts_availability
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /wallets/{walletId}/virtual-accounts:
+    post:
+      tags:
+      - Payment methods
+      summary: Create Virtual Account
+      operationId: post_wallets_walletId_virtual_accounts
+      parameters:
+      - name: walletId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /wallets/{usernaturalpayerwalletid}/virtual-accounts/{virtualaccountid}:
+    put:
+      tags:
+      - Payment methods
+      summary: Deactivate a Virtual Account
+      operationId: put_wallets_usernaturalpayerwalletid_virtual_accounts_virtualaccountid
+      parameters:
+      - name: usernaturalpayerwalletid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: virtualaccountid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Active: false
+  /wallets/{walletId}/virtual-accounts/{virtualaccountid}:
+    get:
+      tags:
+      - Payment methods
+      summary: View a Virtual Account
+      operationId: get_wallets_walletId_virtual_accounts_virtualaccountid
+      parameters:
+      - name: walletId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: virtualaccountid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /wallets/{usernaturalpayerwalletid}/virtual-accounts:
+    get:
+      tags:
+      - Payment methods
+      summary: List Virtual Accounts for a Wallet
+      operationId: get_wallets_usernaturalpayerwalletid_virtual_accounts
+      parameters:
+      - name: usernaturalpayerwalletid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /wallets/{userlegalownerwalletid}/bankingaliases/iban:
+    post:
+      tags:
+      - Payment methods
+      summary: Create an IBAN Banking Alias
+      operationId: post_wallets_userlegalownerwalletid_bankingaliases_iban
+      parameters:
+      - name: userlegalownerwalletid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              OwnerName: Alex Smith
+              Country: LU
+              Tag: Created using Mangopay API Postman Collection
+  /bankingaliases/{bankingaliasid}:
+    put:
+      tags:
+      - Payment methods
+      summary: Deactivate a Banking Alias
+      operationId: put_bankingaliases_bankingaliasid
+      parameters:
+      - name: bankingaliasid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Active: false
+    get:
+      tags:
+      - Payment methods
+      summary: View a Banking Alias
+      operationId: get_bankingaliases_bankingaliasid
+      parameters:
+      - name: bankingaliasid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias)'
+  /wallets/{userlegalownerwalletid}/bankingaliases:
+    get:
+      tags:
+      - Payment methods
+      summary: View a Banking Alias for a Wallet
+      operationId: get_wallets_userlegalownerwalletid_bankingaliases
+      parameters:
+      - name: userlegalownerwalletid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias-wallet](https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias-wallet)'
+  /payins/bankwire/direct:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Direct Bank Wire PayIn
+      operationId: post_payins_bankwire_direct
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin](https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_LEGAL_OWNER}}'
+              CreditedUserId: '{{USER_LEGAL_OWNER}}'
+              CreditedWalletId: '{{USER_LEGAL_OWNER_WALLET_ID}}'
+              DeclaredDebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 1200
+              DeclaredFees:
+                Currency: '{{CURRENCY}}'
+                Amount: 12
+              Tag: Created using Mangopay API Postman Collection
+  /payment-methods/openbanking/metadata/supported-banks:
+    get:
+      tags:
+      - Payment methods
+      summary: View supported banks for Pay by Bank
+      operationId: get_payment_methods_openbanking_metadata_supported_banks
+      parameters:
+      - name: CountryCodes
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /payins/payment-methods/openbanking:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Pay by Bank PayIn
+      operationId: post_payins_payment_methods_openbanking
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /mandates/directdebit/web:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Mandate
+      operationId: post_mandates_directdebit_web
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-mandate)'
+  /mandates/{mandateId}:
+    get:
+      tags:
+      - Payment methods
+      summary: View a Mandate
+      operationId: get_mandates_mandateId
+      parameters:
+      - name: mandateId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#view-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#view-mandate)'
+  /mandates/{mandateId}/cancel:
+    put:
+      tags:
+      - Payment methods
+      summary: Cancel a Mandate
+      operationId: put_mandates_mandateId_cancel
+      parameters:
+      - name: mandateId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#cancel-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#cancel-mandate)'
+  /mandates:
+    get:
+      tags:
+      - Payment methods
+      summary: List all Mandates
+      operationId: get_mandates
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates)'
+  /users/{legaluserbankaccountid}/mandates:
+    get:
+      tags:
+      - Payment methods
+      summary: List Mandates for a Bank Account
+      operationId: get_users_legaluserbankaccountid_mandates
+      parameters:
+      - name: legaluserbankaccountid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-bank-account](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-bank-account)'
+  /users/{userId}/mandates:
+    get:
+      tags:
+      - Payment methods
+      summary: List Mandates for a User
+      operationId: get_users_userId_mandates
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-user](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-user)'
+  /payins/directdebit/direct:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Direct Debit PayIn (Legal Payer User)
+      operationId: post_payins_directdebit_direct
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_LEGAL_PAYER}}'
+              CreditedWalletId: '{{USER_LEGAL_PAYER_WALLET_ID}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 1000
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 0
+              Tag: Created using Mangopay API Postman Collection
+              MandateId: '{{MANDATE_ID}}'
+              StatementDescriptor: PlatformName
+  /payins/payment-methods/bancontact:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Bancontact PayIn
+      operationId: post_payins_payment_methods_bancontact
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              DebitedFunds:
+                Currency: EUR
+                Amount: 1627
+              Fees:
+                Currency: EUR
+                Amount: 163
+              ReturnURL: https://www.mangopay.com/docs/please-ignore
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              Culture: EN
+              StatementDescriptor: Example123
+              Tag: Created using the Mangopay API Postman collection
+              Recurring: false
+  /payins/payment-methods/bizum:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Bizum PayIn
+      operationId: post_payins_payment_methods_bizum
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /payins/payment-methods/blik:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a BLIK PayIn
+      operationId: post_payins_payment_methods_blik
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/blik#create-blik-payin](https://mangopay.com/docs/endpoints/blik#create-blik-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID_PLN}}'
+              DebitedFunds:
+                Currency: PLN
+                Amount: 1000
+              Fees:
+                Currency: PLN
+                Amount: 0
+              ReturnURL: https://www.mangopay.com/docs/please-ignore
+              Tag: Created using the Mangopay API Postman collection
+              StatementDescriptor: Mangopay
+  /payins/payment-methods/ideal:
+    post:
+      tags:
+      - Payment methods
+      summary: Create an iDEAL PayIn
+      operationId: post_payins_payment_methods_ideal
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/ideal#create-ideal-payin](https://mangopay.com/docs/endpoints/ideal#create-ideal-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 2000
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 0
+              ReturnURL: http://www.mangopay.com/docs/please-ignore
+              Tag: Created using the Mangopay API Postman collection
+              StatementDescriptor: Mangopay
+              Bic: INGBNL2A
+  /payins/payment-methods/klarna:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Klarna PayIn
+      operationId: post_payins_payment_methods_klarna
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/klarna#create-klarna-payin](https://mangopay.com/docs/endpoints/klarna#create-klarna-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Tag: Created using the Mangopay API Postman collection
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              DebitedFunds:
+                Currency: EUR
+                Amount: 1500
+              Fees:
+                Currency: EUR
+                Amount: 300
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              ReturnURL: http://www.mangopay.com/docs/please-ignore
+              StatementDescriptor: Mangopay
+              Billing:
+                FirstName: '{{$randomFirstName}}'
+                LastName: '{{$randomLastName}}'
+                Address:
+                  AddressLine1: 6 rue de la Cité
+                  AddressLine2: Appartement 3
+                  City: Paris
+                  Region: île-de-france
+                  PostalCode: '75003'
+                  Country: FR
+              Shipping:
+                FirstName: '{{$randomFirstName}}'
+                LastName: '{{$randomLastName}}'
+                Address:
+                  AddressLine1: Rue de la Fourche 26
+                  AddressLine2: Appartement 3
+                  City: Bruxelles
+                  Region: Bruxelles-Capitale
+                  PostalCode: '75003'
+                  Country: BE
+              LineItems:
+              - Name: Running shoes
+                Quantity: 2
+                UnitAmount: 400
+                TaxAmount: 100
+                Description: ID of Seller 1
+              - Name: Walking shoes
+                Quantity: 1
+                UnitAmount: 400
+                TaxAmount: 100
+                Description: ID of Seller 2
+              Country: FR
+              Culture: FR
+              Email: alex.smith@example.com
+              Phone: '[+33][689854321]'
+              AdditionalData: '{"customer_account_info": [{"unique_account_identifier": "382f5a69-c51c-45af-9707-6991eb08f7bf","app_id": "81363501-3540-494a-8627-33bc6112035d","loyalty_level": "high","customer_email": "customer@email.com","customer_phone": "0611223344","customer_ranking": 2,"customer_reviews": 5,"last_login_time": "2023-10-21T19:11:34Z","account_security": {"last_verification_method": "2FA TOTP","last_verification_time": "2023-10-21T19:11:34Z","device_id": "772af5a5-2d55-4a5e-bb79-85969f683810","fraud_behavior": false,"devices_linked": 2,"phone_verified": true,"email_verified": true,"failed_transactions_attempts": 0},"account_registration_date": "2020-06-10T12:02:21Z","account_last_modified": "2022-12-22T18:45:44Z"}],"marketplace_seller_info": [{"sub_merchant_id": "615a0e87-4941-45dc-978d-e6efcbd90ba0","sub_merchant_name": "Marketbrick Ltd.","sub_merchant_postal_code": "75010","product_category": "Computers","product_name": "Asus Zenbook 14","account_registration_date": "2020-06-10T12:02:21Z","account_last_modified": {"password": "2020-06-10T12:02:21Z","email": "2020-06-10T12:02:21Z","listing": "2020-06-10T12:02:21Z","login": "2020-06-10T12:02:21Z","address": "2020-06-10T12:02:21Z"},"digital_download": false,"seller_rating": 4.5,"number_of_trades": 34,"volume_of_trades": 4500}],"payment_history_full": [{"unique_account_identifier": "382f5a69-c51c-45af-9707-6991eb08f7bf","number_paid_purchases": 10,"payment_option": "card","total_amount_paid_purchases": 1000.10,"date_of_first_paid_purchase": "2020-06-10T12:12:34Z","date_of_last_paid_purchase": "2023-10-26T18:52:38Z"},{"unique_account_identifier": "382f5a69-c51c-45af-9707-6991eb08f7bf","number_paid_purchases": 14,"payment_option": "non klarna credit","total_amount_paid_purchases": 2322.10,"date_of_first_paid_purchase": "2021-10-11T20:31:15Z","date_of_last_paid_purchase": "2023-09-22T14:59:22Z"}],"marketplace_winner_info": [{"account_registration_date": "2020-06-10T12:02:21Z","account_last_modified": {"password": "2022-12-22T18:45:44Z","email": "2020-06-10T12:02:21Z","listing": "2023-08-14T08:23:34Z","login": "2020-06-10T12:02:21Z","address": "2020-06-10T12:02:21Z"},"number_of_trades": 24,"volume_of_trades": 3322}],"other_delivery_address": [{"shipping_method": "pick-up point","shipping_type": "express","first_name": "Test","last_name": "Person","street_address": "Rue La Fayette","street_number": "33","postal_code": "75009","city": "Paris","country": "FR"}]}'
+              Reference: Example1234
+  /payins/payment-methods/mbway:
+    post:
+      tags:
+      - Payment methods
+      summary: Create an MB WAY PayIn
+      operationId: post_payins_payment_methods_mbway
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /payins/payment-methods/multibanco:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Multibanco PayIn
+      operationId: post_payins_payment_methods_multibanco
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              DebitedFunds:
+                Currency: EUR
+                Amount: 1000
+              Fees:
+                Currency: EUR
+                Amount: 0
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              StatementDescriptor: Mangopay
+              Tag: Created using the Mangopay API Postman collection
+              ReturnURL: http://www.mangopay.com/docs/please-ignore
+  /payins/payment-methods/payconiq:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Payconiq PayIn
+      operationId: post_payins_payment_methods_payconiq
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              DebitedFunds:
+                Currency: EUR
+                Amount: 1000
+              Fees:
+                Currency: EUR
+                Amount: 0
+              Country: BE
+              StatementDescriptor: Example123
+              Tag: Created using the Mangopay API Postman collection
+              ReturnURL: https://mangopay.com/docs/please-ignore
+  /payins/payment-methods/paypal/data-collection:
+    post:
+      tags:
+      - Payment methods
+      summary: Submit risk data for PayPal PayIn
+      operationId: post_payins_payment_methods_paypal_data_collection
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              sender_account_id: A12345N343
+              sender_first_name: Jane
+              sender_last_name: Doe
+              sender_email: jane.doe@example.com
+              sender_phone: (0033) 678123456
+              sender_country_code: FR
+              sender_create_date: '2012-12-09T19:14:55.277-0:00'
+              sender_signup_ip: 10.220.90.20
+              sender_popularity_score: high
+              receiver_account_id: A12345N344
+              receiver_create_date: '2012-12-09T19:14:55.277-0:00'
+              receiver_email: jane@example.com
+              receiver_address_country_code: FR
+              business_name: Jane Ltd
+              recipient_popularity_score: high
+              first_interaction_date: '2012-12-09T19:14:55.277-0:00'
+              txn_count_total: '34'
+              vertical: Household goods
+              transaction_is_tangible: '0'
+  /payins/payment-methods/paypal/data-collection/{datacollectionid}:
+    get:
+      tags:
+      - Payment methods
+      summary: View risk data for PayPal PayIn
+      operationId: get_payins_payment_methods_paypal_data_collection_datacollectionid
+      parameters:
+      - name: datacollectionid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /payins/payment-methods/paypal/recurring:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Recurring PayPal PayIn (CIT)
+      operationId: post_payins_payment_methods_paypal_recurring
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              ReturnURL: http://docs.mangopay.com/please-ignore
+              CancelURL: http://example.com
+              LineItems:
+              - Name: Product A subscription package
+                Quantity: 1
+                UnitAmount: 5000
+                TaxAmount: 0
+                Description: Seller 1 ID
+                Category: PHYSICAL_GOODS
+              - Name: Product B subscription package
+                Quantity: 1
+                UnitAmount: 5000
+                TaxAmount: 0
+                Description: Seller 2 ID
+                Category: PHYSICAL_GOODS
+              Tag: Created using the Mangopay API Postman collection
+              RecurringPayinRegistrationId: '{{RECURRING_PAYIN_REGISTRATION_ID}}'
+              ShippingPreference: SET_PROVIDED_ADDRESS
+              Reference: '{{$guid}}'
+              StatementDescriptor: Example123
+              DataCollectionId: '{{DATA_COLLECTION_ID}}'
+  /payins/payment-methods/paypal:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a PayPal PayIn
+      operationId: post_payins_payment_methods_paypal
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/paypal#create-paypal-payin](https://mangopay.com/docs/endpoints/paypal#create-paypal-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Tag: Created using the Mangopay API Postman collection
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              DebitedFunds:
+                Currency: EUR
+                Amount: 1500
+              Fees:
+                Currency: EUR
+                Amount: 300
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              ReturnURL: http://docs.mangopay.com/please-ignore
+              StatementDescriptor: Mangopay
+              Shipping:
+                FirstName: '{{$randomFirstName}}'
+                LastName: '{{$randomLastName}}'
+                Address:
+                  AddressLine1: '{{$randomStreetAddress}}'
+                  AddressLine2: '{{$randomStreetName}}'
+                  City: Paris
+                  Region: île-de-france
+                  PostalCode: '75003'
+                  Country: FR
+              LineItems:
+              - Name: Running shoes
+                Quantity: 2
+                UnitAmount: 400
+                TaxAmount: 100
+                Description: ID of Seller 1
+                Category: PHYSICAL_GOODS
+              - Name: Walking shoes
+                Quantity: 1
+                UnitAmount: 400
+                TaxAmount: 100
+                Description: ID of Seller 2
+                Category: PHYSICAL_GOODS
+              Culture: '{{CULTURE}}'
+              ShippingPreference: SET_PROVIDED_ADDRESS
+              Reference: '{{$guid}}'
+              DataCollectionId: '{{DATA_COLLECTION_ID}}'
+  /payins/{paypalpayinid}/trackings:
+    put:
+      tags:
+      - Payment methods
+      summary: Add tracking information to a PayPal PayIn
+      operationId: put_payins_paypalpayinid_trackings
+      parameters:
+      - name: paypalpayinid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin](https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              TrackingNumber: '123456789'
+              Carrier: DHL
+              NotifyBuyer: true
+  /payins/payment-methods/satispay:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Satispay PayIn
+      operationId: post_payins_payment_methods_satispay
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/satispay#create-satispay-payin](https://mangopay.com/docs/endpoints/satispay#create-satispay-payin)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 1000
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 0
+              ReturnURL: https://www.mangopay.com/docs/please-ignore
+              Tag: Created using the Mangopay API Postman collection
+              StatementDescriptor: Mangopay
+              Country: FR
+  '{envurl}/v2.1/{clientId}/payins/payment-methods/swish':
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Swish PayIn
+      operationId: post_envurl_v2_1_clientId_payins_payment_methods_swish
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID_SEK}}'
+              DebitedFunds:
+                Currency: SEK
+                Amount: 1728
+              Fees:
+                Currency: SEK
+                Amount: 173
+              ReturnURL: http://docs.mangopay.com/please-ignore
+              Tag: Created using the Mangopay API Postman collection
+              StatementDescriptor: Example123
+              PaymentFlow: WEB
+  /payins/payment-methods/twint:
+    post:
+      tags:
+      - Payment methods
+      summary: Create a Twint PayIn
+      operationId: post_payins_payment_methods_twint
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              CreditedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID_CHF}}'
+              DebitedFunds:
+                Currency: CHF
+                Amount: 1267
+              Fees:
+                Currency: CHF
+                Amount: 372
+              ReturnURL: http://docs.mangopay.com/please-ignore
+              Tag: Created using the Mangopay API Postman collection
+              StatementDescriptor: Example123
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

@@ -1,0 +1,779 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Echo API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Echo
+paths:
+  '{envurl}/v3.0/{clientId}/payins/intents':
+    post:
+      tags:
+      - Echo
+      summary: Create an Intent (2 LineItems)
+      operationId: post_envurl_v3_0_clientId_payins_intents
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}':
+    put:
+      tags:
+      - Echo
+      summary: Update an Intent
+      operationId: put_envurl_v3_0_clientId_payins_intents_intentid
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Amount: 22000
+              LineItems:
+              - Id: '{{INTENT_LINE_ITEM_ID_1}}'
+                Sku: example-item-123
+                Quantity: 2
+                UnitAmount: 6000
+                DiscountAmount: 0
+    get:
+      tags:
+      - Echo
+      summary: View an Intent
+      operationId: get_envurl_v3_0_clientId_payins_intents_intentid
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/cancel':
+    post:
+      tags:
+      - Echo
+      summary: Cancel an Intent (full)
+      operationId: post_envurl_v3_0_clientId_payins_intents_intentid_cancel
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/captures':
+    post:
+      tags:
+      - Echo
+      summary: Create a Capture of an Intent (full, simultaneous)
+      operationId: post_envurl_v3_0_clientId_payins_intents_intentid_captures
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/refunds':
+    post:
+      tags:
+      - Echo
+      summary: Create a Refund of an Intent (full)
+      operationId: post_envurl_v3_0_clientId_payins_intents_intentid_refunds
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/refunds/{intentrefundid}/reverse':
+    post:
+      tags:
+      - Echo
+      summary: Reverse an Intent Refund (full)
+      operationId: post_envurl_v3_0_clientId_payins_intents_intentid_refunds_intentrefundid_reverse
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentrefundid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/captures/{intentcaptureid}/disputes':
+    post:
+      tags:
+      - Echo
+      summary: Create a Dispute of an Intent (full)
+      operationId: post_envurl_v3_0_clientId_payins_intents_intentid_captures_intentcaptureid_disputes
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentcaptureid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/captures/{intentcaptureid}/disputes/{intentdisputeid}/decision':
+    put:
+      tags:
+      - Echo
+      summary: Update the decision of an Intent Dispute
+      operationId: put_envurl_v3_0_clientId_payins_intents_intentid_captures_intentcaptureid_disputes_intentdisputeid_decision
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentcaptureid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentdisputeid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Decision: DEFENDED
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/splits':
+    post:
+      tags:
+      - Echo
+      summary: Create a Split of an Intent
+      operationId: post_envurl_v3_0_clientId_payins_intents_intentid_splits
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Splits:
+              - LineItemId: '{{INTENT_LINE_ITEM_ID_1}}'
+                SplitAmount: 10000
+                FeesAmount: 100
+                TransferDate: 1752439988
+                Description: Custom description of the Split
+              - LineItemId: '{{INTENT_LINE_ITEM_ID_2}}'
+                SplitAmount: 10000
+                FeesAmount: 100
+                TransferDate: 1752439988
+                Description: Custom description of the Split
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/splits/{SPLIT_ID_1}':
+    put:
+      tags:
+      - Echo
+      summary: Update a Split of an Intent
+      operationId: put_envurl_v3_0_clientId_payins_intents_intentid_splits_SPLIT_ID_1
+      parameters:
+      - name: SPLIT_ID_1
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              LineItemId: '{{INTENT_LINE_ITEM_ID_1}}'
+              SplitAmount: 6000
+              FeesAmount: 60
+              TransferDate: 1752439988
+              Description: Custom description
+    get:
+      tags:
+      - Echo
+      summary: View a Split of an Intent
+      operationId: get_envurl_v3_0_clientId_payins_intents_intentid_splits_SPLIT_ID_1
+      parameters:
+      - name: SPLIT_ID_1
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/splits/{SPLIT_ID_1}/execute':
+    post:
+      tags:
+      - Echo
+      summary: Execute a Split of an Intent
+      operationId: post_envurl_v3_0_clientId_payins_intents_intentid_splits_SPLIT_ID_1_execute
+      parameters:
+      - name: SPLIT_ID_1
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/{intentid}/splits/{SPLIT_ID_1}/reverse':
+    post:
+      tags:
+      - Echo
+      summary: Reverse a Split of an Intent
+      operationId: post_envurl_v3_0_clientId_payins_intents_intentid_splits_SPLIT_ID_1_reverse
+      parameters:
+      - name: SPLIT_ID_1
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: intentid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/settlements':
+    post:
+      tags:
+      - Echo
+      summary: Create a Settlement (generate URL for file upload)
+      operationId: post_envurl_v3_0_clientId_payins_intents_settlements
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              FileName: Example_Mangopay_Settlement_File.csv
+  '{settlementuploadurl}':
+    put:
+      tags:
+      - Echo
+      summary: Upload settlement file
+      operationId: put_settlementuploadurl
+      parameters:
+      - name: settlementuploadurl
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/settlements/{settlementid}':
+    put:
+      tags:
+      - Echo
+      summary: Update a Settlement (generate new URL for same SettlementId)
+      operationId: put_envurl_v3_0_clientId_payins_intents_settlements_settlementid
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: settlementid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              FileName: Example_Mangopay_Settlement_File.csv
+    get:
+      tags:
+      - Echo
+      summary: View a Settlement
+      operationId: get_envurl_v3_0_clientId_payins_intents_settlements_settlementid
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: settlementid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/settlements/{settlementid}/cancel':
+    post:
+      tags:
+      - Echo
+      summary: Cancel a Settlement
+      operationId: post_envurl_v3_0_clientId_payins_intents_settlements_settlementid_cancel
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: settlementid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  '{envurl}/v3.0/{clientId}/payins/intents/settlements/{settlementid}/validations':
+    get:
+      tags:
+      - Echo
+      summary: View a Settlement validation errors
+      operationId: get_envurl_v3_0_clientId_payins_intents_settlements_settlementid_validations
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: settlementid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

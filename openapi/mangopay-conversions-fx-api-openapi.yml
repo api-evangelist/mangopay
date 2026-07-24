@@ -1,0 +1,167 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Conversions (FX) API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Conversions (FX)
+paths:
+  /conversions/rate/{debitedcurrency}/{creditedcurrency}:
+    get:
+      tags:
+      - Conversions (FX)
+      summary: View an indicative Conversion Rate
+      operationId: get_conversions_rate_debitedcurrency__creditedcurrency
+      parameters:
+      - name: debitedcurrency
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: creditedcurrency
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /conversions/quote:
+    post:
+      tags:
+      - Conversions (FX)
+      summary: Create a Quote
+      operationId: post_conversions_quote
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/conversions#create-quote](https://mangopay.com/docs/endpoints/conversions#create-quote)'
+  /conversions/quote/{quoteid}:
+    get:
+      tags:
+      - Conversions (FX)
+      summary: View a Quote
+      operationId: get_conversions_quote_quoteid
+      parameters:
+      - name: quoteid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/conversions#view-quote](https://mangopay.com/docs/endpoints/conversions#view-quote)'
+  /conversions/quoted-conversion:
+    post:
+      tags:
+      - Conversions (FX)
+      summary: Create a Quoted Conversion
+      operationId: post_conversions_quoted_conversion
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/conversions#create-quoted-conversion](https://mangopay.com/docs/endpoints/conversions#create-quoted-conversion)'
+  /conversions/instant-conversion:
+    post:
+      tags:
+      - Conversions (FX)
+      summary: Create an Instant Conversion
+      operationId: post_conversions_instant_conversion
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/conversions#create-instant-conversion](https://mangopay.com/docs/endpoints/conversions#create-instant-conversion)'
+  /conversions/{conversionId}:
+    get:
+      tags:
+      - Conversions (FX)
+      summary: View a Conversion
+      operationId: get_conversions_conversionId
+      parameters:
+      - name: conversionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/conversions#view-instant-conversion](https://mangopay.com/docs/endpoints/conversions#view-instant-conversion)'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

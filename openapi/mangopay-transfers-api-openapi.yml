@@ -1,0 +1,94 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Transfers API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Transfers
+paths:
+  /transfers:
+    post:
+      tags:
+      - Transfers
+      summary: Create a Transfer
+      operationId: post_transfers
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/transfers#create-transfer](https://mangopay.com/docs/endpoints/transfers#create-transfer)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              AuthorId: '{{USER_NATURAL_PAYER}}'
+              DebitedFunds:
+                Currency: '{{CURRENCY}}'
+                Amount: 500
+              Fees:
+                Currency: '{{CURRENCY}}'
+                Amount: 10
+              DebitedWalletId: '{{USER_NATURAL_PAYER_WALLET_ID}}'
+              CreditedWalletId: '{{USER_NATURAL_OWNER_WALLET_ID}}'
+              Tag: Created using Mangopay API Postman Collection
+  /transfers/{transferId}:
+    get:
+      tags:
+      - Transfers
+      summary: View a Transfer
+      operationId: get_transfers_transferId
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/transfers#view-transfer](https://mangopay.com/docs/endpoints/transfers#view-transfer)'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

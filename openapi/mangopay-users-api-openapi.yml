@@ -1,0 +1,482 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Users API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Users
+paths:
+  /sca/users/natural:
+    post:
+      tags:
+      - Users
+      summary: Create a Natural Payer User (SCA)
+      operationId: post_sca_users_natural
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/natural/{userId}/category:
+    put:
+      tags:
+      - Users
+      summary: Categorize a Natural User (SCA)
+      operationId: put_sca_users_natural_userId_category
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/natural/{userId}:
+    put:
+      tags:
+      - Users
+      summary: Update a Natural User (SCA)
+      operationId: put_sca_users_natural_userId
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/legal:
+    post:
+      tags:
+      - Users
+      summary: Create a Legal Payer User (SCA)
+      operationId: post_sca_users_legal
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/legal/{userId}/category:
+    put:
+      tags:
+      - Users
+      summary: Categorize a Legal User (SCA)
+      operationId: put_sca_users_legal_userId_category
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/legal/{userId}:
+    put:
+      tags:
+      - Users
+      summary: Update a Legal User (SCA)
+      operationId: put_sca_users_legal_userId
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/{userId}/enrollment:
+    post:
+      tags:
+      - Users
+      summary: Enroll a User in SCA
+      operationId: post_sca_users_userId_enrollment
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/{userId}/consent:
+    post:
+      tags:
+      - Users
+      summary: Manage proxy consent for a User
+      operationId: post_sca_users_userId_consent
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/{userId}/sca-status:
+    get:
+      tags:
+      - Users
+      summary: View the SCA status of a User
+      operationId: get_sca_users_userId_sca_status
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /sca/users/{userId}:
+    get:
+      tags:
+      - Users
+      summary: View a User (SCA)
+      operationId: get_sca_users_userId
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /users/natural:
+    post:
+      tags:
+      - Users
+      summary: Create a Natural User (Payer)
+      operationId: post_users_natural
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/users#create-natural-user](https://mangopay.com/docs/endpoints/users#create-natural-user)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              FirstName: '{{$randomFirstName}}'
+              LastName: '{{$randomLastName}}'
+              Email: '{{$randomEmail}}'
+              Address:
+                AddressLine1: '{{$randomStreetAddress}}'
+                AddressLine2: '{{$randomStreetName}}'
+                City: Paris
+                Region: Ile-de-France
+                PostalCode: '75001'
+                Country: FR
+              UserCategory: PAYER
+              TermsAndConditionsAccepted: false
+              Tag: Created using Mangopay API Postman Collection
+  /users/natural/{userId}:
+    put:
+      tags:
+      - Users
+      summary: Update a Natural User (Owner)
+      operationId: put_users_natural_userId
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/users#update-natural-user](https://mangopay.com/docs/endpoints/users#update-natural-user)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              FirstName: '{{$randomFirstName}}'
+              LastName: '{{$randomLastName}}'
+              Email: '{{$randomEmail}}'
+              Address:
+                AddressLine1: '{{$randomStreetAddress}}'
+                AddressLine2: '{{$randomStreetName}}'
+                City: Paris
+                Region: Ile-de-France
+                PostalCode: '75001'
+                Country: FR
+              Birthday: 652117514
+              CountryOfResidence: FR
+              Nationality: FR
+              UserCategory: OWNER
+              TermsAndConditionsAccepted: true
+              Tag: Created using Mangopay API Postman Collection
+    delete:
+      tags:
+      - Users
+      summary: Close a Natural User
+      operationId: delete_users_natural_userId
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /users/legal:
+    post:
+      tags:
+      - Users
+      summary: Create a Legal User (Payer)
+      operationId: post_users_legal
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/users#create-legal-user](https://mangopay.com/docs/endpoints/users#create-legal-user)'
+  /users/legal/{userId}:
+    put:
+      tags:
+      - Users
+      summary: Update a Legal User
+      operationId: put_users_legal_userId
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/users#update-legal-user](https://mangopay.com/docs/endpoints/users#update-legal-user)'
+    delete:
+      tags:
+      - Users
+      summary: Close a Legal User
+      operationId: delete_users_legal_userId
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /users/{userId}:
+    get:
+      tags:
+      - Users
+      summary: View a User
+      operationId: get_users_userId
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/users#view-user](https://mangopay.com/docs/endpoints/users#view-user)'
+  /users:
+    get:
+      tags:
+      - Users
+      summary: List all Users
+      operationId: get_users
+      parameters:
+      - name: Sort
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/users#list-users](https://mangopay.com/docs/endpoints/users#list-users)'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

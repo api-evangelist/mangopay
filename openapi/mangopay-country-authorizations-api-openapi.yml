@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Country authorizations API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Country authorizations
+paths:
+  '{envurl}/v2.01/countries/{{$randomCountryCode}}/authorizations':
+    get:
+      tags:
+      - Country authorizations
+      summary: View Authorizations for a country
+      operationId: get_envurl_v2_01_countries__randomCountryCode__authorizations
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/country-authorizations#view-authorizations-country](https://mangopay.com/docs/endpoints/country-authorizations#view-authorizations-country)'
+  '{envurl}/v2.01/countries/authorizations':
+    get:
+      tags:
+      - Country authorizations
+      summary: List Authorizations for all countries
+      operationId: get_envurl_v2_01_countries_authorizations
+      parameters:
+      - name: envurl
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/country-authorizations#list-authorizations-countries](https://mangopay.com/docs/endpoints/country-authorizations#list-authorizations-countries)'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

@@ -1,0 +1,173 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Reporting API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Reporting
+paths:
+  /reporting/reports:
+    post:
+      tags:
+      - Reporting
+      summary: Create a Report (User Wallet Transactions)
+      operationId: post_reporting_reports
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    get:
+      tags:
+      - Reporting
+      summary: List all Reports
+      operationId: get_reporting_reports
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /reporting/reports/{reportingid}:
+    get:
+      tags:
+      - Reporting
+      summary: View a Report
+      operationId: get_reporting_reports_reportingid
+      parameters:
+      - name: reportingid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /reports/transactions:
+    post:
+      tags:
+      - Reporting
+      summary: Create a Transactions Report
+      operationId: post_reports_transactions
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/reporting#create-transactions-report](https://mangopay.com/docs/endpoints/reporting#create-transactions-report)'
+  /reports/wallets:
+    post:
+      tags:
+      - Reporting
+      summary: Create a Wallets Report
+      operationId: post_reports_wallets
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/reporting#create-wallets-report](https://mangopay.com/docs/endpoints/reporting#create-wallets-report)'
+  /reports/{reportId}:
+    get:
+      tags:
+      - Reporting
+      summary: View a Report
+      operationId: get_reports_reportId
+      parameters:
+      - name: reportId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/reporting#view-report](https://mangopay.com/docs/endpoints/reporting#view-report)'
+  /reports:
+    get:
+      tags:
+      - Reporting
+      summary: List all Reports
+      operationId: get_reports
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/reporting#list-reports](https://mangopay.com/docs/endpoints/reporting#list-reports)'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

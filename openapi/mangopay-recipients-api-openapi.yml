@@ -1,0 +1,279 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Recipients API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Recipients
+paths:
+  /users/{userId}/recipients:
+    post:
+      tags:
+      - Recipients
+      summary: Create a Business Recipient - MATCH
+      operationId: post_users_userId_recipients
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              DisplayName: EuroCorp EUR FR account
+              PayoutMethodType: LocalBankTransfer
+              RecipientType: Business
+              Currency: EUR
+              Country: FR
+              Tag: Created using the Mangopay API Postman collection
+              RecipientScope: PAYOUT
+              BusinessRecipient:
+                BusinessName: EuroCorp
+                Address:
+                  AddressLine1: 6 rue de la Cité
+                  AddressLine2: Appartement 3
+                  City: Paris
+                  Region: île-de-France
+                  PostalCode: '75003'
+                  Country: FR
+              LocalBankTransfer:
+                EUR:
+                  IBAN: FR7630001007941234567890185
+    get:
+      tags:
+      - Recipients
+      summary: List Recipients for a User
+      operationId: get_users_userId_recipients
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /recipients/payout-methods:
+    get:
+      tags:
+      - Recipients
+      summary: View payout methods
+      operationId: get_recipients_payout_methods
+      parameters:
+      - name: Currency
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      - name: Country
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /recipients/schema:
+    get:
+      tags:
+      - Recipients
+      summary: View the schema for a Recipient
+      operationId: get_recipients_schema
+      parameters:
+      - name: Currency
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      - name: Country
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      - name: PayoutMethodType
+        in: query
+        required: false
+        schema:
+          type: string
+        description: LocalBankTransfer | InternationalBankTransfer
+      - name: RecipientType
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Individual | Business
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /users/{userId}/recipients/validate:
+    post:
+      tags:
+      - Recipients
+      summary: Validate data for a Recipient (GBP, GB, local, individual)
+      operationId: post_users_userId_recipients_validate
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              DisplayName: Alex Smith GBP account
+              PayoutMethodType: LocalBankTransfer
+              RecipientType: Individual
+              Currency: GBP
+              Country: GB
+              Tag: Created using the Mangopay API Postman collection
+              RecipientScope: PAYOUT
+              IndividualRecipient:
+                FirstName: Alex
+                LastName: Smith
+                Address:
+                  AddressLine1: 10 Kingsway
+                  City: London
+                  PostalCode: WC2B 6LH
+                  Country: GB
+              LocalBankTransfer:
+                GBP:
+                  SortCode: '200000'
+                  AccountNumber: '55779911'
+  /recipients/{recipientId}:
+    get:
+      tags:
+      - Recipients
+      summary: View a Recipient
+      operationId: get_recipients_recipientId
+      parameters:
+      - name: recipientId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      tags:
+      - Recipients
+      summary: Deactivate a Recipient
+      operationId: put_recipients_recipientId
+      parameters:
+      - name: recipientId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Status: DEACTIVATED
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

@@ -1,0 +1,198 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Refunds API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Refunds
+paths:
+  /payins/{payinId}/refunds:
+    post:
+      tags:
+      - Refunds
+      summary: Create a full Refund for a PayIn
+      operationId: post_payins_payinId_refunds
+      parameters:
+      - name: payinId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    get:
+      tags:
+      - Refunds
+      summary: List Refunds for a PayIn
+      operationId: get_payins_payinId_refunds
+      parameters:
+      - name: payinId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/refunds#list-refunds-payin](https://mangopay.com/docs/endpoints/refunds#list-refunds-payin)'
+  /transfers/{transferId}/refunds:
+    post:
+      tags:
+      - Refunds
+      summary: Create a full Refund for a Transfer
+      operationId: post_transfers_transferId_refunds
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/refunds#create-refund-transfer](https://mangopay.com/docs/endpoints/refunds#create-refund-transfer)'
+    get:
+      tags:
+      - Refunds
+      summary: List Refunds for a Transfer
+      operationId: get_transfers_transferId_refunds
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/refunds#list-refunds-transfer](https://mangopay.com/docs/endpoints/refunds#list-refunds-transfer)'
+  /refunds/{refundId}:
+    get:
+      tags:
+      - Refunds
+      summary: View a Refund
+      operationId: get_refunds_refundId
+      parameters:
+      - name: refundId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/refunds#view-refund](https://mangopay.com/docs/endpoints/refunds#view-refund)'
+  /payouts/{payoutId}/refunds:
+    get:
+      tags:
+      - Refunds
+      summary: List Refunds for a Payout
+      operationId: get_payouts_payoutId_refunds
+      parameters:
+      - name: payoutId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /repudiations/{repudiationid}/refunds:
+    get:
+      tags:
+      - Refunds
+      summary: List Refunds for a Repudiation
+      operationId: get_repudiations_repudiationid_refunds
+      parameters:
+      - name: repudiationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/refunds#list-refunds-repudiation](https://mangopay.com/docs/endpoints/refunds#list-refunds-repudiation)'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

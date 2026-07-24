@@ -1,0 +1,184 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Transactions API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Transactions
+paths:
+  /users/{userId}/transactions:
+    get:
+      tags:
+      - Transactions
+      summary: List Transactions for a User with SCA (Natural Owner User)
+      operationId: get_users_userId_transactions
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ScaContext
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-user](https://mangopay.com/docs/endpoints/transactions#list-transactions-user)'
+  /disputes/{disputeId}/transactions:
+    get:
+      tags:
+      - Transactions
+      summary: List Transactions for a Dispute
+      operationId: get_disputes_disputeId_transactions
+      parameters:
+      - name: disputeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-dispute](https://mangopay.com/docs/endpoints/transactions#list-transactions-dispute)'
+  /mandates/{mandateId}/transactions:
+    get:
+      tags:
+      - Transactions
+      summary: List Transactions for a Mandate
+      operationId: get_mandates_mandateId_transactions
+      parameters:
+      - name: mandateId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-mandate](https://mangopay.com/docs/endpoints/transactions#list-transactions-mandate)'
+  /preauthorizations/{preauthorizationid}/transactions:
+    get:
+      tags:
+      - Transactions
+      summary: List Transactions for a Preauthorization
+      operationId: get_preauthorizations_preauthorizationid_transactions
+      parameters:
+      - name: preauthorizationid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-preauthorization](https://mangopay.com/docs/endpoints/transactions#list-transactions-preauthorization)'
+  /bankaccounts/{legaluserbankaccountid}/transactions:
+    get:
+      tags:
+      - Transactions
+      summary: List Transactions for a Bank Account
+      operationId: get_bankaccounts_legaluserbankaccountid_transactions
+      parameters:
+      - name: legaluserbankaccountid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-bank-account](https://mangopay.com/docs/endpoints/transactions#list-transactions-bank-account)'
+  /cards/{cardchallengeflowid}/transactions:
+    get:
+      tags:
+      - Transactions
+      summary: List Transactions for a Card
+      operationId: get_cards_cardchallengeflowid_transactions
+      parameters:
+      - name: cardchallengeflowid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-card](https://mangopay.com/docs/endpoints/transactions#list-transactions-card)'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}

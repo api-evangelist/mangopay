@@ -1,0 +1,181 @@
+openapi: 3.0.3
+info:
+  title: Mangopay REST Bank Accounts Notifications API
+  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
+  version: '2.01'
+  contact:
+    name: Mangopay Support
+    url: https://hub.mangopay.com
+servers:
+- url: https://api.mangopay.com/v2.01/{clientId}
+  description: Production
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+  description: Sandbox
+  variables:
+    clientId:
+      default: your-client-id
+      description: Your Mangopay Client ID
+security:
+- OAuth2: []
+tags:
+- name: Notifications
+paths:
+  /hooks:
+    post:
+      tags:
+      - Notifications
+      summary: Create a Hook
+      operationId: post_hooks
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/notifications#create-hook](https://mangopay.com/docs/endpoints/notifications#create-hook)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              EventType: USER_INFLOWS_UNBLOCKED
+              Url: https://mangopay.com/docs/please-ignore
+              Tag: Created using the Mangopay Postman Collection
+    get:
+      tags:
+      - Notifications
+      summary: List all Hooks
+      operationId: get_hooks
+      parameters:
+      - name: Sort
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/notifications#list-hooks](https://mangopay.com/docs/endpoints/notifications#list-hooks)'
+  /hooks/{hookId}:
+    put:
+      tags:
+      - Notifications
+      summary: Update a Hook
+      operationId: put_hooks_hookId
+      parameters:
+      - name: hookId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/notifications#update-hook](https://mangopay.com/docs/endpoints/notifications#update-hook)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              Url: https://mangopay.com/docs/please-ignore
+              Status: DISABLED
+              Tag: Created using the Mangopay Postman Collection
+    get:
+      tags:
+      - Notifications
+      summary: View a Hook
+      operationId: get_hooks_hookId
+      parameters:
+      - name: hookId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/notifications#view-hook](https://mangopay.com/docs/endpoints/notifications#view-hook)'
+  /events:
+    get:
+      tags:
+      - Notifications
+      summary: List all Events
+      operationId: get_events
+      parameters:
+      - name: Sort
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: string
+        description: ''
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: '[https://mangopay.com/docs/endpoints/notifications#list-events](https://mangopay.com/docs/endpoints/notifications#list-events)'
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
+          scopes: {}
