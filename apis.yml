@@ -1,6 +1,19 @@
 name: Mangopay
 description: European payment infrastructure platform providing REST APIs for marketplace payments, digital wallet management, user KYC/KYB verification, fund transfers, currency conversion, and payment card processing. Serves multi-party payment flows across product marketplaces, financial platforms, on-demand services, and SaaS companies.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: enterprise
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Enterprise · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/mangopay.png
 url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/apis.yml
 version: "0.19"
 created: "2026-06-13"
@@ -17,56 +30,1041 @@ tags:
   - Fintech
   - European
 apis:
-  - name: Mangopay REST API
-    description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://docs.mangopay.com
-    baseURL: https://api.mangopay.com
-    tags:
-      - Payments
-      - Wallets
-      - KYC
-      - KYB
-      - Payouts
-      - FX
-      - Fraud Prevention
-    properties:
-      - type: Documentation
-        url: https://docs.mangopay.com
-      - type: OpenAPI
-        url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/openapi/openapi.json
-      - type: Authentication
-        url: https://docs.mangopay.com/api-reference/overview/authentication
-      - type: RateLimits
-        url: https://docs.mangopay.com/api-reference/overview/rate-limiting
-      - type: Webhooks
-        url: https://docs.mangopay.com/webhooks
-      - type: ErrorCodes
-        url: https://docs.mangopay.com/errors
-      - type: Postman
-        url: https://docs.mangopay.com/postman
-      - type: Sandbox
-        url: https://api.sandbox.mangopay.com
-      - type: ChangeLog
-        url: https://docs.mangopay.com/release-notes
-      - type: SDKs
-        url: https://docs.mangopay.com/sdks
-      - type: GitHubOrganization
-        url: https://github.com/Mangopay
-      - type: SDKs
-        url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
-      - type: SDKs
-        url: https://github.com/Mangopay/mangopay4-php-sdk
-      - type: Plans
-        url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
-      - type: RateLimits
-        url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
-      - type: FinOps
-        url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
-    contact:
-      - FN: Mangopay Support
-        url: https://hub.mangopay.com
-        email: ""
+- aid: mangopay:mangopay-bank-accounts-api
+  name: Mangopay Bank Accounts API
+  description: The Bank Accounts API from Mangopay — 7 operation(s) for bank accounts.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Bank Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-bank-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-client-platform-api
+  name: Mangopay Client (Platform) API
+  description: The Client (Platform) API from Mangopay — 2 operation(s) for client (platform).
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Client (Platform)
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-client-platform-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-client-wallets-api
+  name: Mangopay Client Wallets API
+  description: The Client Wallets API from Mangopay — 4 operation(s) for client wallets.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Client Wallets
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-client-wallets-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-conversions-fx-api
+  name: Mangopay Conversions (FX) API
+  description: The Conversions (FX) API from Mangopay — 6 operation(s) for conversions (fx).
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Conversions (FX)
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-conversions-fx-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-country-authorizations-api
+  name: Mangopay Country authorizations API
+  description: >-
+    The Country authorizations API from Mangopay — 2 operation(s) for country authorizations.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Country authorizations
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-country-authorizations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-disputes-api
+  name: Mangopay Disputes API
+  description: The Disputes API from Mangopay — 16 operation(s) for disputes.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Disputes
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-disputes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-echo-api
+  name: Mangopay Echo API
+  description: The Echo API from Mangopay — 17 operation(s) for echo.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Echo
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-echo-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-idv-sessions-hosted-kyc-api
+  name: Mangopay IDV Sessions (hosted KYC API
+  description: >-
+    The IDV Sessions (hosted KYC API from Mangopay — 2 operation(s) for idv sessions (hosted kyc.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - IDV Sessions (hosted KYC
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-idv-sessions-hosted-kyc-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-kyc-documents-api
+  name: Mangopay KYC Documents API
+  description: The KYC Documents API from Mangopay — 5 operation(s) for kyc documents.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - KYC Documents
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-kyc-documents-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-notifications-api
+  name: Mangopay Notifications API
+  description: The Notifications API from Mangopay — 3 operation(s) for notifications.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-notifications-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-payment-methods-api
+  name: Mangopay Payment methods API
+  description: The Payment methods API from Mangopay — 61 operation(s) for payment methods.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Payment methods
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-payment-methods-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-payouts-api
+  name: Mangopay Payouts API
+  description: The Payouts API from Mangopay — 4 operation(s) for payouts.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Payouts
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-payouts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-recipients-api
+  name: Mangopay Recipients API
+  description: The Recipients API from Mangopay — 5 operation(s) for recipients.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Recipients
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-recipients-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-refunds-api
+  name: Mangopay Refunds API
+  description: The Refunds API from Mangopay — 5 operation(s) for refunds.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Refunds
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-refunds-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-reporting-api
+  name: Mangopay Reporting API
+  description: The Reporting API from Mangopay — 6 operation(s) for reporting.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Reporting
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-reporting-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-transactions-api
+  name: Mangopay Transactions API
+  description: The Transactions API from Mangopay — 6 operation(s) for transactions.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-transactions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-transfers-api
+  name: Mangopay Transfers API
+  description: The Transfers API from Mangopay — 2 operation(s) for transfers.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-ubo-declarations-api
+  name: Mangopay UBO Declarations API
+  description: The UBO Declarations API from Mangopay — 5 operation(s) for ubo declarations.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - UBO Declarations
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-ubo-declarations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-user-data-format-api
+  name: Mangopay User Data Format API
+  description: The User Data Format API from Mangopay — 1 operation(s) for user data format.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - User Data Format
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-user-data-format-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-user-emoney-api
+  name: Mangopay User EMoney API
+  description: The User EMoney API from Mangopay — 1 operation(s) for user emoney.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - User EMoney
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-user-emoney-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-user-regulatory-status-api
+  name: Mangopay User Regulatory Status API
+  description: >-
+    The User Regulatory Status API from Mangopay — 1 operation(s) for user regulatory status.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - User Regulatory Status
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-user-regulatory-status-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-users-api
+  name: Mangopay Users API
+  description: The Users API from Mangopay — 16 operation(s) for users.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-users-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-view-an-api-response-api
+  name: Mangopay View an API Response API
+  description: The View an API Response API from Mangopay — 1 operation(s) for view an api response.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - View an API Response
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-view-an-api-response-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
+- aid: mangopay:mangopay-wallets-api
+  name: Mangopay Wallets API
+  description: The Wallets API from Mangopay — 9 operation(s) for wallets.
+  humanURL: https://docs.mangopay.com
+  baseURL: https://api.mangopay.com
+  tags:
+  - Wallets
+  properties:
+  - type: OpenAPI
+    url: openapi/mangopay-wallets-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mangopay.com
+  - type: Authentication
+    url: https://docs.mangopay.com/api-reference/overview/authentication
+  - type: RateLimits
+    url: https://docs.mangopay.com/api-reference/overview/rate-limiting
+  - type: Webhooks
+    url: https://docs.mangopay.com/webhooks
+  - type: ErrorCodes
+    url: https://docs.mangopay.com/errors
+  - type: Postman
+    url: https://docs.mangopay.com/postman
+  - type: Sandbox
+    url: https://api.sandbox.mangopay.com
+  - type: ChangeLog
+    url: https://docs.mangopay.com/release-notes
+  - type: SDKs
+    url: https://docs.mangopay.com/sdks
+  - type: GitHubOrganization
+    url: https://github.com/Mangopay
+  - type: SDKs
+    url: https://www.npmjs.com/package/mangopay4-nodejs-sdk
+  - type: SDKs
+    url: https://github.com/Mangopay/mangopay4-php-sdk
+  - type: Plans
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/plans/plans.yml
+  - type: RateLimits
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/rate-limits/rate-limits.yml
+  - type: FinOps
+    url: >-
+      https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
 common:
   - type: AgenticAccess
     url: agentic-access/mangopay-agentic-access.yml
