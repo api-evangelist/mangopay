@@ -1,0 +1,189 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Recipients API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Recipients",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Recipients for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/recipients",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List Recipients for a User"
+        },
+        {
+          "info": {
+            "name": "Create a Business Recipient - MATCH",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/recipients",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Business Recipient - MATCH"
+        },
+        {
+          "info": {
+            "name": "View payout methods",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/recipients/payout-methods",
+            "params": [
+              {
+                "name": "Currency",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "Country",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "View payout methods"
+        },
+        {
+          "info": {
+            "name": "View the schema for a Recipient",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/recipients/schema",
+            "params": [
+              {
+                "name": "Currency",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "Country",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "PayoutMethodType",
+                "value": "",
+                "type": "query",
+                "description": "LocalBankTransfer | InternationalBankTransfer"
+              },
+              {
+                "name": "RecipientType",
+                "value": "",
+                "type": "query",
+                "description": "Individual | Business"
+              }
+            ]
+          },
+          "docs": "View the schema for a Recipient"
+        },
+        {
+          "info": {
+            "name": "Validate data for a Recipient (GBP, GB, local, individual)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/recipients/validate",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Validate data for a Recipient (GBP, GB, local, individual)"
+        },
+        {
+          "info": {
+            "name": "View a Recipient",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/recipients/:recipientId",
+            "params": [
+              {
+                "name": "recipientId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Recipient"
+        },
+        {
+          "info": {
+            "name": "Deactivate a Recipient",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/recipients/:recipientId",
+            "params": [
+              {
+                "name": "recipientId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deactivate a Recipient"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

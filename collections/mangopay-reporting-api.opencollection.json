@@ -1,0 +1,120 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Reporting API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Reporting",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Reports",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/reporting/reports"
+          },
+          "docs": "List all Reports"
+        },
+        {
+          "info": {
+            "name": "Create a Report (User Wallet Transactions)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/reporting/reports"
+          },
+          "docs": "Create a Report (User Wallet Transactions)"
+        },
+        {
+          "info": {
+            "name": "View a Report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/reporting/reports/:reportingid",
+            "params": [
+              {
+                "name": "reportingid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Report"
+        },
+        {
+          "info": {
+            "name": "Create a Transactions Report",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/reports/transactions"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/reporting#create-transactions-report](https://mangopay.com/docs/endpoints/reporting#create-transactions-report)"
+        },
+        {
+          "info": {
+            "name": "Create a Wallets Report",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/reports/wallets"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/reporting#create-wallets-report](https://mangopay.com/docs/endpoints/reporting#create-wallets-report)"
+        },
+        {
+          "info": {
+            "name": "View a Report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/reports/:reportId",
+            "params": [
+              {
+                "name": "reportId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/reporting#view-report](https://mangopay.com/docs/endpoints/reporting#view-report)"
+        },
+        {
+          "info": {
+            "name": "List all Reports",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/reports"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/reporting#list-reports](https://mangopay.com/docs/endpoints/reporting#list-reports)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

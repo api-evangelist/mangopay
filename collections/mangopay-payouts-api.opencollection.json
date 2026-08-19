@@ -1,0 +1,95 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Payouts API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Payouts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payouts/bankwire",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#create-payout](https://mangopay.com/docs/endpoints/payouts#create-payout)"
+        },
+        {
+          "info": {
+            "name": "Check Instant Payout Eligibility",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payouts/reachability",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#create-payout](https://mangopay.com/docs/endpoints/payouts#create-payout)"
+        },
+        {
+          "info": {
+            "name": "View a Payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payouts/:payoutId",
+            "params": [
+              {
+                "name": "payoutId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#view-payout](https://mangopay.com/docs/endpoints/payouts#view-payout)"
+        },
+        {
+          "info": {
+            "name": "View a Payout and check mode applied",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payouts/bankwire/:payoutId",
+            "params": [
+              {
+                "name": "payoutId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#view-payout-check-mode-applied](https://mangopay.com/docs/endpoints/payouts#view-payout-check-mode-applied)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

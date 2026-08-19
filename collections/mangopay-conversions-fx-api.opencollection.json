@@ -1,0 +1,121 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Conversions (FX) API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Conversions (FX)",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "View an indicative Conversion Rate",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/conversions/rate/:debitedcurrency/:creditedcurrency",
+            "params": [
+              {
+                "name": "debitedcurrency",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "creditedcurrency",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View an indicative Conversion Rate"
+        },
+        {
+          "info": {
+            "name": "Create a Quote",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/conversions/quote"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/conversions#create-quote](https://mangopay.com/docs/endpoints/conversions#create-quote)"
+        },
+        {
+          "info": {
+            "name": "View a Quote",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/conversions/quote/:quoteid",
+            "params": [
+              {
+                "name": "quoteid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/conversions#view-quote](https://mangopay.com/docs/endpoints/conversions#view-quote)"
+        },
+        {
+          "info": {
+            "name": "Create a Quoted Conversion",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/conversions/quoted-conversion"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/conversions#create-quoted-conversion](https://mangopay.com/docs/endpoints/conversions#create-quoted-conversion)"
+        },
+        {
+          "info": {
+            "name": "Create an Instant Conversion",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/conversions/instant-conversion"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/conversions#create-instant-conversion](https://mangopay.com/docs/endpoints/conversions#create-instant-conversion)"
+        },
+        {
+          "info": {
+            "name": "View a Conversion",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/conversions/:conversionId",
+            "params": [
+              {
+                "name": "conversionId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/conversions#view-instant-conversion](https://mangopay.com/docs/endpoints/conversions#view-instant-conversion)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,155 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Refunds API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Refunds",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Refunds for a PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/:payinId/refunds",
+            "params": [
+              {
+                "name": "payinId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/refunds#list-refunds-payin](https://mangopay.com/docs/endpoints/refunds#list-refunds-payin)"
+        },
+        {
+          "info": {
+            "name": "Create a full Refund for a PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/:payinId/refunds",
+            "params": [
+              {
+                "name": "payinId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Create a full Refund for a PayIn"
+        },
+        {
+          "info": {
+            "name": "List Refunds for a Transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/transfers/:transferId/refunds",
+            "params": [
+              {
+                "name": "transferId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/refunds#list-refunds-transfer](https://mangopay.com/docs/endpoints/refunds#list-refunds-transfer)"
+        },
+        {
+          "info": {
+            "name": "Create a full Refund for a Transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/transfers/:transferId/refunds",
+            "params": [
+              {
+                "name": "transferId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/refunds#create-refund-transfer](https://mangopay.com/docs/endpoints/refunds#create-refund-transfer)"
+        },
+        {
+          "info": {
+            "name": "View a Refund",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/refunds/:refundId",
+            "params": [
+              {
+                "name": "refundId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/refunds#view-refund](https://mangopay.com/docs/endpoints/refunds#view-refund)"
+        },
+        {
+          "info": {
+            "name": "List Refunds for a Payout",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payouts/:payoutId/refunds",
+            "params": [
+              {
+                "name": "payoutId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List Refunds for a Payout"
+        },
+        {
+          "info": {
+            "name": "List Refunds for a Repudiation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/repudiations/:repudiationid/refunds",
+            "params": [
+              {
+                "name": "repudiationid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/refunds#list-refunds-repudiation](https://mangopay.com/docs/endpoints/refunds#list-refunds-repudiation)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

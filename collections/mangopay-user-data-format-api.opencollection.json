@@ -1,0 +1,44 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts User Data Format API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "User Data Format",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Validate the format of User Data",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/data-formats/validation",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/user-data-format#validate-user-data-format](https://mangopay.com/docs/endpoints/user-data-format#validate-user-data-format)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,87 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts IDV Sessions (hosted KYC API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "IDV Sessions (hosted KYC",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List IDV Sessions for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/identity-verifications",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List IDV Sessions for a User"
+        },
+        {
+          "info": {
+            "name": "Create an IDV Session",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/identity-verifications",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an IDV Session"
+        },
+        {
+          "info": {
+            "name": "View an IDV Session",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/identity-verifications/:idvSessionId",
+            "params": [
+              {
+                "name": "idvSessionId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View an IDV Session"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

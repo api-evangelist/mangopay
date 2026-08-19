@@ -1,0 +1,633 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Echo API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Echo",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create an Intent (2 LineItems)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Create an Intent (2 LineItems)"
+        },
+        {
+          "info": {
+            "name": "View an Intent",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View an Intent"
+        },
+        {
+          "info": {
+            "name": "Update an Intent",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an Intent"
+        },
+        {
+          "info": {
+            "name": "Cancel an Intent (full)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/cancel",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Cancel an Intent (full)"
+        },
+        {
+          "info": {
+            "name": "Create a Capture of an Intent (full, simultaneous)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/captures",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Create a Capture of an Intent (full, simultaneous)"
+        },
+        {
+          "info": {
+            "name": "Create a Refund of an Intent (full)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/refunds",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Create a Refund of an Intent (full)"
+        },
+        {
+          "info": {
+            "name": "Reverse an Intent Refund (full)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/refunds/:intentrefundid/reverse",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentrefundid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Reverse an Intent Refund (full)"
+        },
+        {
+          "info": {
+            "name": "Create a Dispute of an Intent (full)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/captures/:intentcaptureid/disputes",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentcaptureid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Create a Dispute of an Intent (full)"
+        },
+        {
+          "info": {
+            "name": "Update the decision of an Intent Dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/captures/:intentcaptureid/disputes/:intentdisputeid/decision",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentcaptureid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentdisputeid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the decision of an Intent Dispute"
+        },
+        {
+          "info": {
+            "name": "Create a Split of an Intent",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/splits",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Split of an Intent"
+        },
+        {
+          "info": {
+            "name": "View a Split of an Intent",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/splits/:SPLIT_ID_1",
+            "params": [
+              {
+                "name": "SPLIT_ID_1",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Split of an Intent"
+        },
+        {
+          "info": {
+            "name": "Update a Split of an Intent",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/splits/:SPLIT_ID_1",
+            "params": [
+              {
+                "name": "SPLIT_ID_1",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Split of an Intent"
+        },
+        {
+          "info": {
+            "name": "Execute a Split of an Intent",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/splits/:SPLIT_ID_1/execute",
+            "params": [
+              {
+                "name": "SPLIT_ID_1",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Execute a Split of an Intent"
+        },
+        {
+          "info": {
+            "name": "Reverse a Split of an Intent",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/:intentid/splits/:SPLIT_ID_1/reverse",
+            "params": [
+              {
+                "name": "SPLIT_ID_1",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "intentid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Reverse a Split of an Intent"
+        },
+        {
+          "info": {
+            "name": "Create a Settlement (generate URL for file upload)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/settlements",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Settlement (generate URL for file upload)"
+        },
+        {
+          "info": {
+            "name": "Upload settlement file",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:settlementuploadurl",
+            "params": [
+              {
+                "name": "settlementuploadurl",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Upload settlement file"
+        },
+        {
+          "info": {
+            "name": "View a Settlement",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/settlements/:settlementid",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "settlementid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Settlement"
+        },
+        {
+          "info": {
+            "name": "Update a Settlement (generate new URL for same SettlementId)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/settlements/:settlementid",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "settlementid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Settlement (generate new URL for same SettlementId)"
+        },
+        {
+          "info": {
+            "name": "Cancel a Settlement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/settlements/:settlementid/cancel",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "settlementid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Cancel a Settlement"
+        },
+        {
+          "info": {
+            "name": "View a Settlement validation errors",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v3.0/:clientId/payins/intents/settlements/:settlementid/validations",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "settlementid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Settlement validation errors"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

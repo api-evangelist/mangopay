@@ -1,0 +1,338 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Users API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Natural Payer User (SCA)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/natural"
+          },
+          "docs": "Create a Natural Payer User (SCA)"
+        },
+        {
+          "info": {
+            "name": "Categorize a Natural User (SCA)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/natural/:userId/category",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Categorize a Natural User (SCA)"
+        },
+        {
+          "info": {
+            "name": "Update a Natural User (SCA)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/natural/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Update a Natural User (SCA)"
+        },
+        {
+          "info": {
+            "name": "Create a Legal Payer User (SCA)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/legal"
+          },
+          "docs": "Create a Legal Payer User (SCA)"
+        },
+        {
+          "info": {
+            "name": "Categorize a Legal User (SCA)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/legal/:userId/category",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Categorize a Legal User (SCA)"
+        },
+        {
+          "info": {
+            "name": "Update a Legal User (SCA)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/legal/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Update a Legal User (SCA)"
+        },
+        {
+          "info": {
+            "name": "Enroll a User in SCA",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/:userId/enrollment",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Enroll a User in SCA"
+        },
+        {
+          "info": {
+            "name": "Manage proxy consent for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/:userId/consent",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Manage proxy consent for a User"
+        },
+        {
+          "info": {
+            "name": "View the SCA status of a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/:userId/sca-status",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View the SCA status of a User"
+        },
+        {
+          "info": {
+            "name": "View a User (SCA)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/sca/users/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a User (SCA)"
+        },
+        {
+          "info": {
+            "name": "Create a Natural User (Payer)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/natural",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/users#create-natural-user](https://mangopay.com/docs/endpoints/users#create-natural-user)"
+        },
+        {
+          "info": {
+            "name": "Update a Natural User (Owner)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/natural/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/users#update-natural-user](https://mangopay.com/docs/endpoints/users#update-natural-user)"
+        },
+        {
+          "info": {
+            "name": "Close a Natural User",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/natural/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Close a Natural User"
+        },
+        {
+          "info": {
+            "name": "Create a Legal User (Payer)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/legal"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/users#create-legal-user](https://mangopay.com/docs/endpoints/users#create-legal-user)"
+        },
+        {
+          "info": {
+            "name": "Update a Legal User",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/legal/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/users#update-legal-user](https://mangopay.com/docs/endpoints/users#update-legal-user)"
+        },
+        {
+          "info": {
+            "name": "Close a Legal User",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/legal/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Close a Legal User"
+        },
+        {
+          "info": {
+            "name": "View a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/users#view-user](https://mangopay.com/docs/endpoints/users#view-user)"
+        },
+        {
+          "info": {
+            "name": "List all Users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users",
+            "params": [
+              {
+                "name": "Sort",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/users#list-users](https://mangopay.com/docs/endpoints/users#list-users)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

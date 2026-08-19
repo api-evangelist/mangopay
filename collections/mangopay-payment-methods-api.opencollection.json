@@ -1,0 +1,1177 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Payment methods API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Payment methods",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Card Registration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cardregistrations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration)"
+        },
+        {
+          "info": {
+            "name": "Tokenize the Card (Challenge Flow Card)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:cardregistrationurl",
+            "params": [
+              {
+                "name": "cardregistrationurl",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#tokenize-card](https://mangopay.com/docs/endpoints/direct-card-payins#tokenize-card)"
+        },
+        {
+          "info": {
+            "name": "View a Card Registration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cardregistrations/:cardregistrationid",
+            "params": [
+              {
+                "name": "cardregistrationid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#view-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#view-card-registration)"
+        },
+        {
+          "info": {
+            "name": "Update a Card Registration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cardregistrations/:cardregistrationid",
+            "params": [
+              {
+                "name": "cardregistrationid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration)"
+        },
+        {
+          "info": {
+            "name": "View a Card",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/:cardchallengeflowid",
+            "params": [
+              {
+                "name": "cardchallengeflowid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#view-card](https://mangopay.com/docs/endpoints/direct-card-payins#view-card)"
+        },
+        {
+          "info": {
+            "name": "Deactivate a card",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/:cardchallengeflowid",
+            "params": [
+              {
+                "name": "cardchallengeflowid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card](https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card)"
+        },
+        {
+          "info": {
+            "name": "List Cards for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/cards",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-user](https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-user)"
+        },
+        {
+          "info": {
+            "name": "List Cards for a Fingerprint",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/fingerprints/:cardfingerprint",
+            "params": [
+              {
+                "name": "cardfingerprint",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-fingerprint](https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-fingerprint)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Card Fingerprint",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/fingerprints/:cardfingerprint/transactions",
+            "params": [
+              {
+                "name": "cardfingerprint",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#list-transactions-card-fingerprint](https://mangopay.com/docs/endpoints/direct-card-payins#list-transactions-card-fingerprint)"
+        },
+        {
+          "info": {
+            "name": "Create a Card Validation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/:cardchallengeflowid/validation",
+            "params": [
+              {
+                "name": "cardchallengeflowid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/card-validations#create-card-validation](https://mangopay.com/docs/endpoints/card-validations#create-card-validation)"
+        },
+        {
+          "info": {
+            "name": "View a Card Validation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/:cardchallengeflowid/validation/:cardvalidationid",
+            "params": [
+              {
+                "name": "cardchallengeflowid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "cardvalidationid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/card-validations#view-card-validation](https://mangopay.com/docs/endpoints/card-validations#view-card-validation)"
+        },
+        {
+          "info": {
+            "name": "Create a Card Direct PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/card/direct",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin](https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin)"
+        },
+        {
+          "info": {
+            "name": "View a PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/:payinId",
+            "params": [
+              {
+                "name": "payinId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-card-payins#view-payin](https://mangopay.com/docs/endpoints/direct-card-payins#view-payin)"
+        },
+        {
+          "info": {
+            "name": "Create a Recurring PayIn Registration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/recurringpayinregistrations"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-registration)"
+        },
+        {
+          "info": {
+            "name": "View a Recurring PayIn Registration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/recurringpayinregistrations/:recurringpayinregistrationid",
+            "params": [
+              {
+                "name": "recurringpayinregistrationid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/recurring-card-payins#view-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#view-recurring-payin-registration)"
+        },
+        {
+          "info": {
+            "name": "Update a Recurring PayIn Registration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/recurringpayinregistrations/:recurringpayinregistrationid",
+            "params": [
+              {
+                "name": "recurringpayinregistrationid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration)"
+        },
+        {
+          "info": {
+            "name": "Create a Recurring PayIn CIT",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/recurring/card/direct",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit](https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit)"
+        },
+        {
+          "info": {
+            "name": "Create a Preauthorization",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/preauthorizations/card/direct"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorization)"
+        },
+        {
+          "info": {
+            "name": "View a Preauthorization",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/preauthorizations/:preauthorizationid",
+            "params": [
+              {
+                "name": "preauthorizationid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#view-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#view-preauthorization)"
+        },
+        {
+          "info": {
+            "name": "Cancel or validate a Preauthorization",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/preauthorizations/:preauthorizationid",
+            "params": [
+              {
+                "name": "preauthorizationid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#cancel-validate-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#cancel-validate-preauthorization)"
+        },
+        {
+          "info": {
+            "name": "List Preauthorizations for a Card",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/:cardchallengeflowid/preauthorizations",
+            "params": [
+              {
+                "name": "cardchallengeflowid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-card](https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-card)"
+        },
+        {
+          "info": {
+            "name": "List Preauthorizations for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/preauthorizations",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-user](https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-user)"
+        },
+        {
+          "info": {
+            "name": "Create a Preauthorized PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/preauthorized/direct",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin](https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin)"
+        },
+        {
+          "info": {
+            "name": "Create a Deposit Preauthorization",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/deposit-preauthorizations/card/direct",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization)"
+        },
+        {
+          "info": {
+            "name": "View a Deposit Preauthorization",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/deposit-preauthorizations/:depositid",
+            "params": [
+              {
+                "name": "depositid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#view-deposit-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#view-deposit-preauthorization)"
+        },
+        {
+          "info": {
+            "name": "Cancel a Deposit Preauthorization",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/deposit-preauthorizations/:depositid",
+            "params": [
+              {
+                "name": "depositid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no-show](https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no-show)"
+        },
+        {
+          "info": {
+            "name": "List Deposit Preauthorizations for a Card",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/:cardchallengeflowid/deposit-preauthorizations",
+            "params": [
+              {
+                "name": "cardchallengeflowid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-card](https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-card)"
+        },
+        {
+          "info": {
+            "name": "List Deposit Preauthorizations for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/deposit-preauthorizations",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-user](https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-user)"
+        },
+        {
+          "info": {
+            "name": "Create a Deposit Preauthorized PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/deposit-preauthorized/direct/full-capture",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-without-complement](https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-without-complement)"
+        },
+        {
+          "info": {
+            "name": "Create a Web Card PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/card/web",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin](https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin)"
+        },
+        {
+          "info": {
+            "name": "View card details for a Web Card PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/card/web/:webpayinid/extended",
+            "params": [
+              {
+                "name": "webpayinid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/web-card-payins#view-card-details-web-card-payin](https://mangopay.com/docs/endpoints/web-card-payins#view-card-details-web-card-payin)"
+        },
+        {
+          "info": {
+            "name": "Look up metadata for a payment method",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payment-methods/metadata"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payment-method-metadata#lookup-payment-method-metadata](https://mangopay.com/docs/endpoints/payment-method-metadata#lookup-payment-method-metadata)"
+        },
+        {
+          "info": {
+            "name": "View Virtual Account availabilities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/virtual-accounts/availability"
+          },
+          "docs": "View Virtual Account availabilities"
+        },
+        {
+          "info": {
+            "name": "Create Virtual Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:walletId/virtual-accounts",
+            "params": [
+              {
+                "name": "walletId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Create Virtual Account"
+        },
+        {
+          "info": {
+            "name": "Deactivate a Virtual Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalpayerwalletid/virtual-accounts/:virtualaccountid",
+            "params": [
+              {
+                "name": "usernaturalpayerwalletid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "virtualaccountid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deactivate a Virtual Account"
+        },
+        {
+          "info": {
+            "name": "View a Virtual Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:walletId/virtual-accounts/:virtualaccountid",
+            "params": [
+              {
+                "name": "walletId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "virtualaccountid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Virtual Account"
+        },
+        {
+          "info": {
+            "name": "List Virtual Accounts for a Wallet",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalpayerwalletid/virtual-accounts",
+            "params": [
+              {
+                "name": "usernaturalpayerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List Virtual Accounts for a Wallet"
+        },
+        {
+          "info": {
+            "name": "Create an IBAN Banking Alias",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:userlegalownerwalletid/bankingaliases/iban",
+            "params": [
+              {
+                "name": "userlegalownerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias)"
+        },
+        {
+          "info": {
+            "name": "View a Banking Alias",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/bankingaliases/:bankingaliasid",
+            "params": [
+              {
+                "name": "bankingaliasid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias)"
+        },
+        {
+          "info": {
+            "name": "Deactivate a Banking Alias",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/bankingaliases/:bankingaliasid",
+            "params": [
+              {
+                "name": "bankingaliasid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias)"
+        },
+        {
+          "info": {
+            "name": "View a Banking Alias for a Wallet",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:userlegalownerwalletid/bankingaliases",
+            "params": [
+              {
+                "name": "userlegalownerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias-wallet](https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias-wallet)"
+        },
+        {
+          "info": {
+            "name": "Create a Direct Bank Wire PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/bankwire/direct",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin](https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin)"
+        },
+        {
+          "info": {
+            "name": "View supported banks for Pay by Bank",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payment-methods/openbanking/metadata/supported-banks",
+            "params": [
+              {
+                "name": "CountryCodes",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "View supported banks for Pay by Bank"
+        },
+        {
+          "info": {
+            "name": "Create a Pay by Bank PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/openbanking"
+          },
+          "docs": "Create a Pay by Bank PayIn"
+        },
+        {
+          "info": {
+            "name": "Create a Mandate",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/mandates/directdebit/web"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-mandate)"
+        },
+        {
+          "info": {
+            "name": "View a Mandate",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/mandates/:mandateId",
+            "params": [
+              {
+                "name": "mandateId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#view-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#view-mandate)"
+        },
+        {
+          "info": {
+            "name": "Cancel a Mandate",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/mandates/:mandateId/cancel",
+            "params": [
+              {
+                "name": "mandateId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#cancel-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#cancel-mandate)"
+        },
+        {
+          "info": {
+            "name": "List all Mandates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/mandates"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates)"
+        },
+        {
+          "info": {
+            "name": "List Mandates for a Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:legaluserbankaccountid/mandates",
+            "params": [
+              {
+                "name": "legaluserbankaccountid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-bank-account](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-bank-account)"
+        },
+        {
+          "info": {
+            "name": "List Mandates for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/mandates",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-user](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-user)"
+        },
+        {
+          "info": {
+            "name": "Create a Direct Debit PayIn (Legal Payer User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/directdebit/direct",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin)"
+        },
+        {
+          "info": {
+            "name": "Create a Bancontact PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/bancontact",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Bancontact PayIn"
+        },
+        {
+          "info": {
+            "name": "Create a Bizum PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/bizum"
+          },
+          "docs": "Create a Bizum PayIn"
+        },
+        {
+          "info": {
+            "name": "Create a BLIK PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/blik",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/blik#create-blik-payin](https://mangopay.com/docs/endpoints/blik#create-blik-payin)"
+        },
+        {
+          "info": {
+            "name": "Create an iDEAL PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/ideal",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/ideal#create-ideal-payin](https://mangopay.com/docs/endpoints/ideal#create-ideal-payin)"
+        },
+        {
+          "info": {
+            "name": "Create a Klarna PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/klarna",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/klarna#create-klarna-payin](https://mangopay.com/docs/endpoints/klarna#create-klarna-payin)"
+        },
+        {
+          "info": {
+            "name": "Create an MB WAY PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/mbway"
+          },
+          "docs": "Create an MB WAY PayIn"
+        },
+        {
+          "info": {
+            "name": "Create a Multibanco PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/multibanco",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Multibanco PayIn"
+        },
+        {
+          "info": {
+            "name": "Create a Payconiq PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/payconiq",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Payconiq PayIn"
+        },
+        {
+          "info": {
+            "name": "Submit risk data for PayPal PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/paypal/data-collection",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Submit risk data for PayPal PayIn"
+        },
+        {
+          "info": {
+            "name": "View risk data for PayPal PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/paypal/data-collection/:datacollectionid",
+            "params": [
+              {
+                "name": "datacollectionid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View risk data for PayPal PayIn"
+        },
+        {
+          "info": {
+            "name": "Create a Recurring PayPal PayIn (CIT)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/paypal/recurring",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Recurring PayPal PayIn (CIT)"
+        },
+        {
+          "info": {
+            "name": "Create a PayPal PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/paypal",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/paypal#create-paypal-payin](https://mangopay.com/docs/endpoints/paypal#create-paypal-payin)"
+        },
+        {
+          "info": {
+            "name": "Add tracking information to a PayPal PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/:paypalpayinid/trackings",
+            "params": [
+              {
+                "name": "paypalpayinid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin](https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin)"
+        },
+        {
+          "info": {
+            "name": "Create a Satispay PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/satispay",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/satispay#create-satispay-payin](https://mangopay.com/docs/endpoints/satispay#create-satispay-payin)"
+        },
+        {
+          "info": {
+            "name": "Create a Swish PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}:envurl/v2.1/:clientId/payins/payment-methods/swish",
+            "params": [
+              {
+                "name": "envurl",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Swish PayIn"
+        },
+        {
+          "info": {
+            "name": "Create a Twint PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/payment-methods/twint",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a Twint PayIn"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

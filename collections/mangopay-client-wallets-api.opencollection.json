@@ -1,0 +1,80 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Client Wallets API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Client Wallets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Client Wallets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/clients/wallets"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/wallets#list-client-wallets](https://mangopay.com/docs/endpoints/wallets#list-client-wallets)"
+        },
+        {
+          "info": {
+            "name": "View a Client Wallet",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/clients/wallets/FEES/:currency",
+            "params": [
+              {
+                "name": "currency",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/wallets#view-client-wallet](https://mangopay.com/docs/endpoints/wallets#view-client-wallet)"
+        },
+        {
+          "info": {
+            "name": "List Client Wallets by FundsType",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/clients/wallets/FEES"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/wallets#list-client-wallets-fundstype](https://mangopay.com/docs/endpoints/wallets#list-client-wallets-fundstype)"
+        },
+        {
+          "info": {
+            "name": "View a Client",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/clients"
+          },
+          "docs": "View a Client"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

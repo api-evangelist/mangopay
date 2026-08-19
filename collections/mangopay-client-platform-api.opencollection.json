@@ -1,0 +1,55 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Client (Platform) API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Client (Platform)",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Update a Client",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/clients",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Client"
+        },
+        {
+          "info": {
+            "name": "Upload a Client Logo",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/clients/logo"
+          },
+          "docs": "Upload a Client Logo"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

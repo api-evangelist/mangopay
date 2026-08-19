@@ -1,0 +1,142 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Transactions API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Transactions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Transactions for a User with SCA (Natural Owner User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/transactions",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "ScaContext",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/transactions#list-transactions-user](https://mangopay.com/docs/endpoints/transactions#list-transactions-user)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/:disputeId/transactions",
+            "params": [
+              {
+                "name": "disputeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/transactions#list-transactions-dispute](https://mangopay.com/docs/endpoints/transactions#list-transactions-dispute)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Mandate",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/mandates/:mandateId/transactions",
+            "params": [
+              {
+                "name": "mandateId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/transactions#list-transactions-mandate](https://mangopay.com/docs/endpoints/transactions#list-transactions-mandate)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Preauthorization",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/preauthorizations/:preauthorizationid/transactions",
+            "params": [
+              {
+                "name": "preauthorizationid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/transactions#list-transactions-preauthorization](https://mangopay.com/docs/endpoints/transactions#list-transactions-preauthorization)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/bankaccounts/:legaluserbankaccountid/transactions",
+            "params": [
+              {
+                "name": "legaluserbankaccountid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/transactions#list-transactions-bank-account](https://mangopay.com/docs/endpoints/transactions#list-transactions-bank-account)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Card",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/cards/:cardchallengeflowid/transactions",
+            "params": [
+              {
+                "name": "cardchallengeflowid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/transactions#list-transactions-card](https://mangopay.com/docs/endpoints/transactions#list-transactions-card)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

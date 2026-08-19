@@ -1,0 +1,340 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Disputes API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Disputes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Disputes for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/disputes",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List Disputes for a User"
+        },
+        {
+          "info": {
+            "name": "View a Dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/:disputeId",
+            "params": [
+              {
+                "name": "disputeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#view-dispute](https://mangopay.com/docs/endpoints/disputes#view-dispute)"
+        },
+        {
+          "info": {
+            "name": "Update a Dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/:disputeId",
+            "params": [
+              {
+                "name": "disputeId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#update-dispute](https://mangopay.com/docs/endpoints/disputes#update-dispute)"
+        },
+        {
+          "info": {
+            "name": "Create a Dispute Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/:disputeId/documents",
+            "params": [
+              {
+                "name": "disputeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#create-dispute-document](https://mangopay.com/docs/endpoints/disputes#create-dispute-document)"
+        },
+        {
+          "info": {
+            "name": "Create a Dispute Document Page",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/:disputeId/documents/:disputedocumentid/pages",
+            "params": [
+              {
+                "name": "disputeId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "disputedocumentid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#create-dispute-document-page](https://mangopay.com/docs/endpoints/disputes#create-dispute-document-page)"
+        },
+        {
+          "info": {
+            "name": "Submit a Dispute Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/:disputeId/documents/:disputedocumentid",
+            "params": [
+              {
+                "name": "disputeId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "disputedocumentid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#submit-dispute-document](https://mangopay.com/docs/endpoints/disputes#submit-dispute-document)"
+        },
+        {
+          "info": {
+            "name": "View a Dispute Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/dispute-documents/:disputedocumentid",
+            "params": [
+              {
+                "name": "disputedocumentid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#view-dispute-document](https://mangopay.com/docs/endpoints/disputes#view-dispute-document)"
+        },
+        {
+          "info": {
+            "name": "Submit a Dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/:disputeId/submit",
+            "params": [
+              {
+                "name": "disputeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#submit-dispute](https://mangopay.com/docs/endpoints/disputes#submit-dispute)"
+        },
+        {
+          "info": {
+            "name": "Close a Dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/:disputeId/close",
+            "params": [
+              {
+                "name": "disputeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#close-dispute](https://mangopay.com/docs/endpoints/disputes#close-dispute)"
+        },
+        {
+          "info": {
+            "name": "View a Repudiation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/repudiations/:repudiationid",
+            "params": [
+              {
+                "name": "repudiationid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#view-repudiation](https://mangopay.com/docs/endpoints/disputes#view-repudiation)"
+        },
+        {
+          "info": {
+            "name": "Create a Settlement Transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/repudiations/:repudiationid/settlementtransfer",
+            "params": [
+              {
+                "name": "repudiationid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#create-settlement-transfer](https://mangopay.com/docs/endpoints/disputes#create-settlement-transfer)"
+        },
+        {
+          "info": {
+            "name": "View a Settlement Transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/settlements/:settlementid",
+            "params": [
+              {
+                "name": "settlementid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#view-settlement-transfer](https://mangopay.com/docs/endpoints/disputes#view-settlement-transfer)"
+        },
+        {
+          "info": {
+            "name": "List all Dispute Documents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/dispute-documents"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#list-dispute-documents](https://mangopay.com/docs/endpoints/disputes#list-dispute-documents)"
+        },
+        {
+          "info": {
+            "name": "List Disputes pending settlement",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes/pendingsettlement"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#list-disputes-settlement](https://mangopay.com/docs/endpoints/disputes#list-disputes-settlement)"
+        },
+        {
+          "info": {
+            "name": "List Disputes for a PayIn",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/payins/:payinId/disputes",
+            "params": [
+              {
+                "name": "payinId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#list-disputes-payin](https://mangopay.com/docs/endpoints/disputes#list-disputes-payin)"
+        },
+        {
+          "info": {
+            "name": "List Disputes for a Wallet",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalpayerwalletid/disputes",
+            "params": [
+              {
+                "name": "usernaturalpayerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#list-disputes-wallet](https://mangopay.com/docs/endpoints/disputes#list-disputes-wallet)"
+        },
+        {
+          "info": {
+            "name": "List all Disputes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/disputes"
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/disputes#list-disputes](https://mangopay.com/docs/endpoints/disputes#list-disputes)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

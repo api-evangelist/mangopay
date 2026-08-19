@@ -1,0 +1,193 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts UBO Declarations API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "UBO Declarations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List UBO Declarations for a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/kyc/ubodeclarations",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/ubo-declarations#list-ubo-declarations-user](https://mangopay.com/docs/endpoints/ubo-declarations#list-ubo-declarations-user)"
+        },
+        {
+          "info": {
+            "name": "Create a UBO Declaration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/kyc/ubodeclarations",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo-declaration](https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo-declaration)"
+        },
+        {
+          "info": {
+            "name": "Create a UBO",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/kyc/ubodeclarations/:uboDeclarationId/ubos",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "uboDeclarationId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo](https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo)"
+        },
+        {
+          "info": {
+            "name": "View a UBO Declaration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/kyc/ubodeclarations/:uboDeclarationId",
+            "params": [
+              {
+                "name": "uboDeclarationId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo-declaration](https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo-declaration)"
+        },
+        {
+          "info": {
+            "name": "View a UBO",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/kyc/ubodeclarations/:uboDeclarationId/ubos/:uboId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "uboDeclarationId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "uboId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo](https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo)"
+        },
+        {
+          "info": {
+            "name": "Update a UBO",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/kyc/ubodeclarations/:uboDeclarationId/ubos/:uboId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "uboDeclarationId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "uboId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/ubo-declarations#update-ubo](https://mangopay.com/docs/endpoints/ubo-declarations#update-ubo)"
+        },
+        {
+          "info": {
+            "name": "Submit a UBO Declaration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/kyc/ubodeclarations/:uboDeclarationId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "uboDeclarationId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/ubo-declarations#submit-ubo-declaration](https://mangopay.com/docs/endpoints/ubo-declarations#submit-ubo-declaration)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

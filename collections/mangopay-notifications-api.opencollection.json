@@ -1,0 +1,130 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Notifications API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Notifications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all Hooks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/hooks",
+            "params": [
+              {
+                "name": "Sort",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/notifications#list-hooks](https://mangopay.com/docs/endpoints/notifications#list-hooks)"
+        },
+        {
+          "info": {
+            "name": "Create a Hook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/hooks",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/notifications#create-hook](https://mangopay.com/docs/endpoints/notifications#create-hook)"
+        },
+        {
+          "info": {
+            "name": "View a Hook",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/hooks/:hookId",
+            "params": [
+              {
+                "name": "hookId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/notifications#view-hook](https://mangopay.com/docs/endpoints/notifications#view-hook)"
+        },
+        {
+          "info": {
+            "name": "Update a Hook",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/hooks/:hookId",
+            "params": [
+              {
+                "name": "hookId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/notifications#update-hook](https://mangopay.com/docs/endpoints/notifications#update-hook)"
+        },
+        {
+          "info": {
+            "name": "List all Events",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/events",
+            "params": [
+              {
+                "name": "Sort",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/notifications#list-events](https://mangopay.com/docs/endpoints/notifications#list-events)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

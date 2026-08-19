@@ -1,0 +1,207 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Bank Accounts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create an IBAN Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/bankaccounts/iban",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#create-iban-bank-account](https://mangopay.com/docs/endpoints/payouts#create-iban-bank-account)"
+        },
+        {
+          "info": {
+            "name": "Create a US Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/bankaccounts/us",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#create-us-bank-account](https://mangopay.com/docs/endpoints/payouts#create-us-bank-account)"
+        },
+        {
+          "info": {
+            "name": "Create a CA Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/bankaccounts/ca",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#create-ca-bank-account](https://mangopay.com/docs/endpoints/payouts#create-ca-bank-account)"
+        },
+        {
+          "info": {
+            "name": "Create a GB Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/bankaccounts/gb",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#create-gb-bank-account](https://mangopay.com/docs/endpoints/payouts#create-gb-bank-account)"
+        },
+        {
+          "info": {
+            "name": "Create an OTHER Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/bankaccounts/other",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#create-other-bank-account](https://mangopay.com/docs/endpoints/payouts#create-other-bank-account)"
+        },
+        {
+          "info": {
+            "name": "View a Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/bankaccounts/:legaluserbankaccountid",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "legaluserbankaccountid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#view-bank-account](https://mangopay.com/docs/endpoints/payouts#view-bank-account)"
+        },
+        {
+          "info": {
+            "name": "Deactivate a Bank Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/bankaccounts/:legaluserbankaccountid",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "legaluserbankaccountid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#deactivate-bank-account](https://mangopay.com/docs/endpoints/payouts#deactivate-bank-account)"
+        },
+        {
+          "info": {
+            "name": "List Bank Accounts for a User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/bankaccounts",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/payouts#list-bank-accounts-for-user](https://mangopay.com/docs/endpoints/payouts#list-bank-accounts-for-user)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

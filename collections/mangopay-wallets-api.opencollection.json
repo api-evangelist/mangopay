@@ -1,0 +1,296 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mangopay REST Bank Accounts Wallets API",
+    "version": "2.01"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "client_credentials",
+      "accessTokenUrl": "https://api.mangopay.com/v2.01/{clientId}/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Wallets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Wallet",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "[https://mangopay.com/docs/endpoints/wallets#create-wallet](https://mangopay.com/docs/endpoints/wallets#create-wallet)"
+        },
+        {
+          "info": {
+            "name": "View a Wallet",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:walletId",
+            "params": [
+              {
+                "name": "walletId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Wallet"
+        },
+        {
+          "info": {
+            "name": "Update a Wallet",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:walletId",
+            "params": [
+              {
+                "name": "walletId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Wallet"
+        },
+        {
+          "info": {
+            "name": "View a Wallet (Natural Payer User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalpayerwalletid",
+            "params": [
+              {
+                "name": "usernaturalpayerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Wallet (Natural Payer User)"
+        },
+        {
+          "info": {
+            "name": "Update a Wallet (Natural Payer User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalpayerwalletid",
+            "params": [
+              {
+                "name": "usernaturalpayerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Wallet (Natural Payer User)"
+        },
+        {
+          "info": {
+            "name": "View a Wallet (Natural Owner User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalownerwalletid",
+            "params": [
+              {
+                "name": "usernaturalownerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "View a Wallet (Natural Owner User)"
+        },
+        {
+          "info": {
+            "name": "Update a Wallet (Natural Owner User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalownerwalletid",
+            "params": [
+              {
+                "name": "usernaturalownerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Wallet (Natural Owner User)"
+        },
+        {
+          "info": {
+            "name": "View a Wallet with SCA (Legal Owner User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:userlegalownerwalletid",
+            "params": [
+              {
+                "name": "userlegalownerwalletid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "ScaContext",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "View a Wallet with SCA (Legal Owner User)"
+        },
+        {
+          "info": {
+            "name": "Update a Wallet (Legal Owner User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:userlegalownerwalletid",
+            "params": [
+              {
+                "name": "userlegalownerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Wallet (Legal Owner User)"
+        },
+        {
+          "info": {
+            "name": "List Wallets for a User with SCA (Natural Owner User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/users/:userId/wallets",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "ScaContext",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List Wallets for a User with SCA (Natural Owner User)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Wallet (Natural Payer User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalpayerwalletid/transactions",
+            "params": [
+              {
+                "name": "usernaturalpayerwalletid",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List Transactions for a Wallet (Natural Payer User)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Wallet with SCA (Natural Owner User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:usernaturalownerwalletid/transactions",
+            "params": [
+              {
+                "name": "usernaturalownerwalletid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "ScaContext",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List Transactions for a Wallet with SCA (Natural Owner User)"
+        },
+        {
+          "info": {
+            "name": "List Transactions for a Wallet with SCA (Legal Owner User)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.mangopay.com/v2.01/{clientId}/wallets/:userlegalownerwalletid/transactions",
+            "params": [
+              {
+                "name": "userlegalownerwalletid",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "ScaContext",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List Transactions for a Wallet with SCA (Legal Owner User)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
