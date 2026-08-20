@@ -22,6 +22,17 @@ modified: "2026-06-13"
 tags:
   - Payments
   - Marketplace Payments
+  - Digital Wallet
+  - KYC
+  - KYB
+  - Fund Transfers
+  - Currency Conversion
+  - Payment Cards
+  - Fintech
+  - European
+tags_raw:
+  - Payments
+  - Marketplace Payments
   - Digital Wallets
   - KYC
   - KYB
@@ -426,6 +437,8 @@ apis:
   humanURL: https://docs.mangopay.com
   baseURL: https://api.mangopay.com
   tags:
+  - Notification
+  tags_raw:
   - Notifications
   properties:
   - type: OpenAPI
@@ -469,6 +482,8 @@ apis:
   humanURL: https://docs.mangopay.com
   baseURL: https://api.mangopay.com
   tags:
+  - Payment Methods
+  tags_raw:
   - Payment methods
   properties:
   - type: OpenAPI
@@ -684,6 +699,8 @@ apis:
   humanURL: https://docs.mangopay.com
   baseURL: https://api.mangopay.com
   tags:
+  - Transaction
+  tags_raw:
   - Transactions
   properties:
   - type: OpenAPI
@@ -943,6 +960,8 @@ apis:
   humanURL: https://docs.mangopay.com
   baseURL: https://api.mangopay.com
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
