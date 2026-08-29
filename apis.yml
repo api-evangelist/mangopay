@@ -1,5 +1,17 @@
 name: Mangopay
 description: European payment infrastructure platform providing REST APIs for marketplace payments, digital wallet management, user KYC/KYB verification, fund transfers, currency conversion, and payment card processing. Serves multi-party payment flows across product marketplaces, financial platforms, on-demand services, and SaaS companies.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 specificationVersion: '0.23'
 accessModel:
   pricing: enterprise
