@@ -494,7 +494,7 @@ apis:
   humanURL: https://docs.mangopay.com
   baseURL: https://api.mangopay.com
   tags:
-  - Payment methods
+  - Payment Methods
   tags_raw:
   - Payment methods
   properties:
