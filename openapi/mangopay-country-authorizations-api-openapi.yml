@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Country authorizations API
+  title: Mangopay REST Country authorizations API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -47,7 +47,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/country-authorizations#view-authorizations-country](https://mangopay.com/docs/endpoints/country-authorizations#view-authorizations-country)'
+      description: https://mangopay.com/docs/endpoints/country-authorizations#view-authorizations-country
   '{envurl}/v2.01/countries/authorizations':
     get:
       tags:
@@ -71,7 +71,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/country-authorizations#list-authorizations-countries](https://mangopay.com/docs/endpoints/country-authorizations#list-authorizations-countries)'
+      description: https://mangopay.com/docs/endpoints/country-authorizations#list-authorizations-countries
 components:
   securitySchemes:
     OAuth2:

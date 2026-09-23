@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Transfers API
+  title: Mangopay REST Transfers API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -42,7 +42,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/transfers#create-transfer](https://mangopay.com/docs/endpoints/transfers#create-transfer)'
+      description: https://mangopay.com/docs/endpoints/transfers#create-transfer
       requestBody:
         required: true
         content:
@@ -83,7 +83,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/transfers#view-transfer](https://mangopay.com/docs/endpoints/transfers#view-transfer)'
+      description: https://mangopay.com/docs/endpoints/transfers#view-transfer
 components:
   securitySchemes:
     OAuth2:

@@ -1,30 +1,7 @@
 {
   "provider": "mangopay",
   "sources": [
-    "mangopay-bank-accounts-api-openapi.yml",
-    "mangopay-client-platform-api-openapi.yml",
-    "mangopay-client-wallets-api-openapi.yml",
-    "mangopay-conversions-fx-api-openapi.yml",
-    "mangopay-country-authorizations-api-openapi.yml",
-    "mangopay-disputes-api-openapi.yml",
-    "mangopay-echo-api-openapi.yml",
-    "mangopay-idv-sessions-hosted-kyc-api-openapi.yml",
-    "mangopay-kyc-documents-api-openapi.yml",
-    "mangopay-notifications-api-openapi.yml",
-    "mangopay-payment-methods-api-openapi.yml",
-    "mangopay-payouts-api-openapi.yml",
-    "mangopay-recipients-api-openapi.yml",
-    "mangopay-refunds-api-openapi.yml",
-    "mangopay-reporting-api-openapi.yml",
-    "mangopay-transactions-api-openapi.yml",
-    "mangopay-transfers-api-openapi.yml",
-    "mangopay-ubo-declarations-api-openapi.yml",
-    "mangopay-user-data-format-api-openapi.yml",
-    "mangopay-user-emoney-api-openapi.yml",
-    "mangopay-user-regulatory-status-api-openapi.yml",
-    "mangopay-users-api-openapi.yml",
-    "mangopay-view-an-api-response-api-openapi.yml",
-    "mangopay-wallets-api-openapi.yml"
+    "_original/openapi.json"
   ],
   "outputs": [
     "mangopay-bank-accounts-api-openapi.yml",
@@ -55,6 +32,35 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "openapi.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "mangopay-bank-accounts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-client-platform-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-client-wallets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-conversions-fx-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-country-authorizations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-disputes-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-echo-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-idv-sessions-hosted-kyc-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-kyc-documents-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-notifications-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-payment-methods-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-payouts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-recipients-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-refunds-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-reporting-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-transactions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-transfers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-ubo-declarations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-user-data-format-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-user-emoney-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-user-regulatory-status-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-users-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-view-an-api-response-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "mangopay-wallets-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

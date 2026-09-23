@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts View an API Response API
+  title: Mangopay REST View an API Response API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -47,7 +47,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/api-responses#view-api-response](https://mangopay.com/docs/endpoints/api-responses#view-api-response)'
+      description: https://mangopay.com/docs/endpoints/api-responses#view-api-response
 components:
   securitySchemes:
     OAuth2:

@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Transactions API
+  title: Mangopay REST Transactions API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -53,7 +53,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-user](https://mangopay.com/docs/endpoints/transactions#list-transactions-user)'
+      description: https://mangopay.com/docs/endpoints/transactions#list-transactions-user
   /disputes/{disputeId}/transactions:
     get:
       tags:
@@ -77,7 +77,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-dispute](https://mangopay.com/docs/endpoints/transactions#list-transactions-dispute)'
+      description: https://mangopay.com/docs/endpoints/transactions#list-transactions-dispute
   /mandates/{mandateId}/transactions:
     get:
       tags:
@@ -101,7 +101,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-mandate](https://mangopay.com/docs/endpoints/transactions#list-transactions-mandate)'
+      description: https://mangopay.com/docs/endpoints/transactions#list-transactions-mandate
   /preauthorizations/{preauthorizationid}/transactions:
     get:
       tags:
@@ -125,7 +125,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-preauthorization](https://mangopay.com/docs/endpoints/transactions#list-transactions-preauthorization)'
+      description: https://mangopay.com/docs/endpoints/transactions#list-transactions-preauthorization
   /bankaccounts/{legaluserbankaccountid}/transactions:
     get:
       tags:
@@ -149,7 +149,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-bank-account](https://mangopay.com/docs/endpoints/transactions#list-transactions-bank-account)'
+      description: https://mangopay.com/docs/endpoints/transactions#list-transactions-bank-account
   /cards/{cardchallengeflowid}/transactions:
     get:
       tags:
@@ -173,7 +173,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/transactions#list-transactions-card](https://mangopay.com/docs/endpoints/transactions#list-transactions-card)'
+      description: https://mangopay.com/docs/endpoints/transactions#list-transactions-card
 components:
   securitySchemes:
     OAuth2:

@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Disputes API
+  title: Mangopay REST Disputes API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -70,7 +70,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#view-dispute](https://mangopay.com/docs/endpoints/disputes#view-dispute)'
+      description: https://mangopay.com/docs/endpoints/disputes#view-dispute
     put:
       tags:
       - Disputes
@@ -93,7 +93,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#update-dispute](https://mangopay.com/docs/endpoints/disputes#update-dispute)'
+      description: https://mangopay.com/docs/endpoints/disputes#update-dispute
       requestBody:
         required: true
         content:
@@ -125,7 +125,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#create-dispute-document](https://mangopay.com/docs/endpoints/disputes#create-dispute-document)'
+      description: https://mangopay.com/docs/endpoints/disputes#create-dispute-document
   /disputes/{disputeId}/documents/{disputedocumentid}/pages:
     post:
       tags:
@@ -154,7 +154,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#create-dispute-document-page](https://mangopay.com/docs/endpoints/disputes#create-dispute-document-page)'
+      description: https://mangopay.com/docs/endpoints/disputes#create-dispute-document-page
       requestBody:
         required: true
         content:
@@ -191,7 +191,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#submit-dispute-document](https://mangopay.com/docs/endpoints/disputes#submit-dispute-document)'
+      description: https://mangopay.com/docs/endpoints/disputes#submit-dispute-document
       requestBody:
         required: true
         content:
@@ -223,7 +223,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#view-dispute-document](https://mangopay.com/docs/endpoints/disputes#view-dispute-document)'
+      description: https://mangopay.com/docs/endpoints/disputes#view-dispute-document
   /disputes/{disputeId}/submit:
     put:
       tags:
@@ -247,7 +247,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#submit-dispute](https://mangopay.com/docs/endpoints/disputes#submit-dispute)'
+      description: https://mangopay.com/docs/endpoints/disputes#submit-dispute
   /disputes/{disputeId}/close:
     put:
       tags:
@@ -271,7 +271,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#close-dispute](https://mangopay.com/docs/endpoints/disputes#close-dispute)'
+      description: https://mangopay.com/docs/endpoints/disputes#close-dispute
   /repudiations/{repudiationid}:
     get:
       tags:
@@ -295,7 +295,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#view-repudiation](https://mangopay.com/docs/endpoints/disputes#view-repudiation)'
+      description: https://mangopay.com/docs/endpoints/disputes#view-repudiation
   /repudiations/{repudiationid}/settlementtransfer:
     post:
       tags:
@@ -319,7 +319,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#create-settlement-transfer](https://mangopay.com/docs/endpoints/disputes#create-settlement-transfer)'
+      description: https://mangopay.com/docs/endpoints/disputes#create-settlement-transfer
       requestBody:
         required: true
         content:
@@ -357,7 +357,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#view-settlement-transfer](https://mangopay.com/docs/endpoints/disputes#view-settlement-transfer)'
+      description: https://mangopay.com/docs/endpoints/disputes#view-settlement-transfer
   /dispute-documents:
     get:
       tags:
@@ -376,7 +376,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#list-dispute-documents](https://mangopay.com/docs/endpoints/disputes#list-dispute-documents)'
+      description: https://mangopay.com/docs/endpoints/disputes#list-dispute-documents
   /disputes/pendingsettlement:
     get:
       tags:
@@ -395,7 +395,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#list-disputes-settlement](https://mangopay.com/docs/endpoints/disputes#list-disputes-settlement)'
+      description: https://mangopay.com/docs/endpoints/disputes#list-disputes-settlement
   /payins/{payinId}/disputes:
     get:
       tags:
@@ -419,7 +419,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#list-disputes-payin](https://mangopay.com/docs/endpoints/disputes#list-disputes-payin)'
+      description: https://mangopay.com/docs/endpoints/disputes#list-disputes-payin
   /wallets/{usernaturalpayerwalletid}/disputes:
     get:
       tags:
@@ -443,7 +443,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#list-disputes-wallet](https://mangopay.com/docs/endpoints/disputes#list-disputes-wallet)'
+      description: https://mangopay.com/docs/endpoints/disputes#list-disputes-wallet
   /disputes:
     get:
       tags:
@@ -462,7 +462,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/disputes#list-disputes](https://mangopay.com/docs/endpoints/disputes#list-disputes)'
+      description: https://mangopay.com/docs/endpoints/disputes#list-disputes
 components:
   securitySchemes:
     OAuth2:

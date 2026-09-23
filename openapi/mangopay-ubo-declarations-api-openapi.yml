@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts UBO Declarations API
+  title: Mangopay REST UBO Declarations API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -47,7 +47,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo-declaration](https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo-declaration)'
+      description: https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo-declaration
     get:
       tags:
       - UBO Declarations
@@ -70,7 +70,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/ubo-declarations#list-ubo-declarations-user](https://mangopay.com/docs/endpoints/ubo-declarations#list-ubo-declarations-user)'
+      description: https://mangopay.com/docs/endpoints/ubo-declarations#list-ubo-declarations-user
   /users/{userId}/kyc/ubodeclarations/{uboDeclarationId}/ubos:
     post:
       tags:
@@ -99,7 +99,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo](https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo)'
+      description: https://mangopay.com/docs/endpoints/ubo-declarations#create-ubo
   /kyc/ubodeclarations/{uboDeclarationId}:
     get:
       tags:
@@ -123,7 +123,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo-declaration](https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo-declaration)'
+      description: https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo-declaration
   /users/{userId}/kyc/ubodeclarations/{uboDeclarationId}/ubos/{uboId}:
     get:
       tags:
@@ -157,7 +157,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo](https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo)'
+      description: https://mangopay.com/docs/endpoints/ubo-declarations#view-ubo
     put:
       tags:
       - UBO Declarations
@@ -190,7 +190,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/ubo-declarations#update-ubo](https://mangopay.com/docs/endpoints/ubo-declarations#update-ubo)'
+      description: https://mangopay.com/docs/endpoints/ubo-declarations#update-ubo
       requestBody:
         required: true
         content:
@@ -241,7 +241,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/ubo-declarations#submit-ubo-declaration](https://mangopay.com/docs/endpoints/ubo-declarations#submit-ubo-declaration)'
+      description: https://mangopay.com/docs/endpoints/ubo-declarations#submit-ubo-declaration
       requestBody:
         required: true
         content:

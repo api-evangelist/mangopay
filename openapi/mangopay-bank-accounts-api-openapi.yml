@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
   title: Mangopay REST Bank Accounts API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
@@ -47,7 +47,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#create-iban-bank-account](https://mangopay.com/docs/endpoints/payouts#create-iban-bank-account)'
+      description: https://mangopay.com/docs/endpoints/payouts#create-iban-bank-account
       requestBody:
         required: true
         content:
@@ -89,7 +89,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#create-us-bank-account](https://mangopay.com/docs/endpoints/payouts#create-us-bank-account)'
+      description: https://mangopay.com/docs/endpoints/payouts#create-us-bank-account
       requestBody:
         required: true
         content:
@@ -132,7 +132,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#create-ca-bank-account](https://mangopay.com/docs/endpoints/payouts#create-ca-bank-account)'
+      description: https://mangopay.com/docs/endpoints/payouts#create-ca-bank-account
       requestBody:
         required: true
         content:
@@ -176,7 +176,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#create-gb-bank-account](https://mangopay.com/docs/endpoints/payouts#create-gb-bank-account)'
+      description: https://mangopay.com/docs/endpoints/payouts#create-gb-bank-account
       requestBody:
         required: true
         content:
@@ -218,7 +218,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#create-other-bank-account](https://mangopay.com/docs/endpoints/payouts#create-other-bank-account)'
+      description: https://mangopay.com/docs/endpoints/payouts#create-other-bank-account
       requestBody:
         required: true
         content:
@@ -266,7 +266,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#view-bank-account](https://mangopay.com/docs/endpoints/payouts#view-bank-account)'
+      description: https://mangopay.com/docs/endpoints/payouts#view-bank-account
     put:
       tags:
       - Bank Accounts
@@ -294,7 +294,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#deactivate-bank-account](https://mangopay.com/docs/endpoints/payouts#deactivate-bank-account)'
+      description: https://mangopay.com/docs/endpoints/payouts#deactivate-bank-account
       requestBody:
         required: true
         content:
@@ -326,7 +326,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#list-bank-accounts-for-user](https://mangopay.com/docs/endpoints/payouts#list-bank-accounts-for-user)'
+      description: https://mangopay.com/docs/endpoints/payouts#list-bank-accounts-for-user
 components:
   securitySchemes:
     OAuth2:

@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts User EMoney API
+  title: Mangopay REST User EMoney API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -47,7 +47,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/user-emoney#view-user-emoney](https://mangopay.com/docs/endpoints/user-emoney#view-user-emoney)'
+      description: https://mangopay.com/docs/endpoints/user-emoney#view-user-emoney
 components:
   securitySchemes:
     OAuth2:

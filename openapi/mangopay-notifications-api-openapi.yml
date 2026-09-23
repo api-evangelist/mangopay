@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Notifications API
+  title: Mangopay REST Notifications API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -42,7 +42,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/notifications#create-hook](https://mangopay.com/docs/endpoints/notifications#create-hook)'
+      description: https://mangopay.com/docs/endpoints/notifications#create-hook
       requestBody:
         required: true
         content:
@@ -82,7 +82,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/notifications#list-hooks](https://mangopay.com/docs/endpoints/notifications#list-hooks)'
+      description: https://mangopay.com/docs/endpoints/notifications#list-hooks
   /hooks/{hookId}:
     put:
       tags:
@@ -106,7 +106,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/notifications#update-hook](https://mangopay.com/docs/endpoints/notifications#update-hook)'
+      description: https://mangopay.com/docs/endpoints/notifications#update-hook
       requestBody:
         required: true
         content:
@@ -139,7 +139,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/notifications#view-hook](https://mangopay.com/docs/endpoints/notifications#view-hook)'
+      description: https://mangopay.com/docs/endpoints/notifications#view-hook
   /events:
     get:
       tags:
@@ -170,7 +170,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/notifications#list-events](https://mangopay.com/docs/endpoints/notifications#list-events)'
+      description: https://mangopay.com/docs/endpoints/notifications#list-events
 components:
   securitySchemes:
     OAuth2:

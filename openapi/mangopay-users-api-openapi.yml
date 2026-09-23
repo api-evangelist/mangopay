@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Users API
+  title: Mangopay REST Users API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -262,7 +262,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/users#create-natural-user](https://mangopay.com/docs/endpoints/users#create-natural-user)'
+      description: https://mangopay.com/docs/endpoints/users#create-natural-user
       requestBody:
         required: true
         content:
@@ -306,7 +306,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/users#update-natural-user](https://mangopay.com/docs/endpoints/users#update-natural-user)'
+      description: https://mangopay.com/docs/endpoints/users#update-natural-user
       requestBody:
         required: true
         content:
@@ -370,7 +370,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/users#create-legal-user](https://mangopay.com/docs/endpoints/users#create-legal-user)'
+      description: https://mangopay.com/docs/endpoints/users#create-legal-user
   /users/legal/{userId}:
     put:
       tags:
@@ -394,7 +394,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/users#update-legal-user](https://mangopay.com/docs/endpoints/users#update-legal-user)'
+      description: https://mangopay.com/docs/endpoints/users#update-legal-user
     delete:
       tags:
       - Users
@@ -440,7 +440,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/users#view-user](https://mangopay.com/docs/endpoints/users#view-user)'
+      description: https://mangopay.com/docs/endpoints/users#view-user
   /users:
     get:
       tags:
@@ -471,7 +471,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/users#list-users](https://mangopay.com/docs/endpoints/users#list-users)'
+      description: https://mangopay.com/docs/endpoints/users#list-users
 components:
   securitySchemes:
     OAuth2:

@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Conversions (FX) API
+  title: Mangopay REST Conversions (FX) API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -70,7 +70,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/conversions#create-quote](https://mangopay.com/docs/endpoints/conversions#create-quote)'
+      description: https://mangopay.com/docs/endpoints/conversions#create-quote
   /conversions/quote/{quoteid}:
     get:
       tags:
@@ -94,7 +94,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/conversions#view-quote](https://mangopay.com/docs/endpoints/conversions#view-quote)'
+      description: https://mangopay.com/docs/endpoints/conversions#view-quote
   /conversions/quoted-conversion:
     post:
       tags:
@@ -113,7 +113,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/conversions#create-quoted-conversion](https://mangopay.com/docs/endpoints/conversions#create-quoted-conversion)'
+      description: https://mangopay.com/docs/endpoints/conversions#create-quoted-conversion
   /conversions/instant-conversion:
     post:
       tags:
@@ -132,7 +132,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/conversions#create-instant-conversion](https://mangopay.com/docs/endpoints/conversions#create-instant-conversion)'
+      description: https://mangopay.com/docs/endpoints/conversions#create-instant-conversion
   /conversions/{conversionId}:
     get:
       tags:
@@ -156,7 +156,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/conversions#view-instant-conversion](https://mangopay.com/docs/endpoints/conversions#view-instant-conversion)'
+      description: https://mangopay.com/docs/endpoints/conversions#view-instant-conversion
 components:
   securitySchemes:
     OAuth2:

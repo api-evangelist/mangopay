@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts KYC Documents API
+  title: Mangopay REST KYC Documents API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -47,7 +47,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/kyc-documents#create-kyc-document-page](https://mangopay.com/docs/endpoints/kyc-documents#create-kyc-document-page)'
+      description: https://mangopay.com/docs/endpoints/kyc-documents#create-kyc-document-page
     get:
       tags:
       - KYC Documents
@@ -70,7 +70,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/kyc-documents#list-kyc-documents-user](https://mangopay.com/docs/endpoints/kyc-documents#list-kyc-documents-user)'
+      description: https://mangopay.com/docs/endpoints/kyc-documents#list-kyc-documents-user
   /users/{userId}/kyc/documents/{kycdocumentid}/pages:
     post:
       tags:
@@ -99,7 +99,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/kyc-documents#create-kyc-document-page](https://mangopay.com/docs/endpoints/kyc-documents#create-kyc-document-page)'
+      description: https://mangopay.com/docs/endpoints/kyc-documents#create-kyc-document-page
       requestBody:
         required: true
         content:
@@ -136,7 +136,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/kyc-documents#submit-kyc-document](https://mangopay.com/docs/endpoints/kyc-documents#submit-kyc-document)'
+      description: https://mangopay.com/docs/endpoints/kyc-documents#submit-kyc-document
       requestBody:
         required: true
         content:
@@ -168,7 +168,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/kyc-documents#view-kyc-document](https://mangopay.com/docs/endpoints/kyc-documents#view-kyc-document)'
+      description: https://mangopay.com/docs/endpoints/kyc-documents#view-kyc-document
   /kyc/documents:
     get:
       tags:
@@ -187,7 +187,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/kyc-documents#list-kyc-documents](https://mangopay.com/docs/endpoints/kyc-documents#list-kyc-documents)'
+      description: https://mangopay.com/docs/endpoints/kyc-documents#list-kyc-documents
 components:
   securitySchemes:
     OAuth2:

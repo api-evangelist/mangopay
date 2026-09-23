@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Payouts API
+  title: Mangopay REST Payouts API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -42,7 +42,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#create-payout](https://mangopay.com/docs/endpoints/payouts#create-payout)'
+      description: https://mangopay.com/docs/endpoints/payouts#create-payout
       requestBody:
         required: true
         content:
@@ -79,7 +79,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#create-payout](https://mangopay.com/docs/endpoints/payouts#create-payout)'
+      description: https://mangopay.com/docs/endpoints/payouts#create-payout
       requestBody:
         required: true
         content:
@@ -122,7 +122,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#view-payout](https://mangopay.com/docs/endpoints/payouts#view-payout)'
+      description: https://mangopay.com/docs/endpoints/payouts#view-payout
   /payouts/bankwire/{payoutId}:
     get:
       tags:
@@ -146,7 +146,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payouts#view-payout-check-mode-applied](https://mangopay.com/docs/endpoints/payouts#view-payout-check-mode-applied)'
+      description: https://mangopay.com/docs/endpoints/payouts#view-payout-check-mode-applied
 components:
   securitySchemes:
     OAuth2:

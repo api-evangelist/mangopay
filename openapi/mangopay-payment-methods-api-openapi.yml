@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Payment methods API
+  title: Mangopay REST Payment methods API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -22,12 +22,12 @@ servers:
 security:
 - OAuth2: []
 tags:
-- name: Payment methods
+- name: Payment Methods
 paths:
   /cardregistrations:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Card Registration
       operationId: post_cardregistrations
       parameters: []
@@ -42,7 +42,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#create-card-registration
       requestBody:
         required: true
         content:
@@ -56,7 +56,7 @@ paths:
   '{cardregistrationurl}':
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Tokenize the Card (Challenge Flow Card)
       operationId: post_cardregistrationurl
       parameters:
@@ -76,11 +76,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#tokenize-card](https://mangopay.com/docs/endpoints/direct-card-payins#tokenize-card)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#tokenize-card
   /cardregistrations/{cardregistrationid}:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Update a Card Registration
       operationId: put_cardregistrations_cardregistrationid
       parameters:
@@ -100,7 +100,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#update-card-registration
       requestBody:
         required: true
         content:
@@ -111,7 +111,7 @@ paths:
               RegistrationData: '{{REGISTRATION_DATA_KEY}}'
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Card Registration
       operationId: get_cardregistrations_cardregistrationid
       parameters:
@@ -131,11 +131,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#view-card-registration](https://mangopay.com/docs/endpoints/direct-card-payins#view-card-registration)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#view-card-registration
   /cards/{cardchallengeflowid}:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Deactivate a card
       operationId: put_cards_cardchallengeflowid
       parameters:
@@ -155,7 +155,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card](https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#deactivate-card
       requestBody:
         required: true
         content:
@@ -166,7 +166,7 @@ paths:
               Active: false
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Card
       operationId: get_cards_cardchallengeflowid
       parameters:
@@ -186,11 +186,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#view-card](https://mangopay.com/docs/endpoints/direct-card-payins#view-card)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#view-card
   /users/{userId}/cards:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Cards for a User
       operationId: get_users_userId_cards
       parameters:
@@ -210,11 +210,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-user](https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-user)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-user
   /cards/fingerprints/{cardfingerprint}:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Cards for a Fingerprint
       operationId: get_cards_fingerprints_cardfingerprint
       parameters:
@@ -234,11 +234,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-fingerprint](https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-fingerprint)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#list-cards-fingerprint
   /cards/fingerprints/{cardfingerprint}/transactions:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Transactions for a Card Fingerprint
       operationId: get_cards_fingerprints_cardfingerprint_transactions
       parameters:
@@ -258,11 +258,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#list-transactions-card-fingerprint](https://mangopay.com/docs/endpoints/direct-card-payins#list-transactions-card-fingerprint)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#list-transactions-card-fingerprint
   /cards/{cardchallengeflowid}/validation:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Card Validation
       operationId: post_cards_cardchallengeflowid_validation
       parameters:
@@ -282,7 +282,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/card-validations#create-card-validation](https://mangopay.com/docs/endpoints/card-validations#create-card-validation)'
+      description: https://mangopay.com/docs/endpoints/card-validations#create-card-validation
       requestBody:
         required: true
         content:
@@ -307,7 +307,7 @@ paths:
   /cards/{cardchallengeflowid}/validation/{cardvalidationid}:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Card Validation
       operationId: get_cards_cardchallengeflowid_validation_cardvalidationid
       parameters:
@@ -332,11 +332,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/card-validations#view-card-validation](https://mangopay.com/docs/endpoints/card-validations#view-card-validation)'
+      description: https://mangopay.com/docs/endpoints/card-validations#view-card-validation
   /payins/card/direct:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Card Direct PayIn
       operationId: post_payins_card_direct
       parameters: []
@@ -351,7 +351,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin](https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#create-direct-card-payin
       requestBody:
         required: true
         content:
@@ -407,7 +407,7 @@ paths:
   /payins/{payinId}:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a PayIn
       operationId: get_payins_payinId
       parameters:
@@ -427,11 +427,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-card-payins#view-payin](https://mangopay.com/docs/endpoints/direct-card-payins#view-payin)'
+      description: https://mangopay.com/docs/endpoints/direct-card-payins#view-payin
   /recurringpayinregistrations:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Recurring PayIn Registration
       operationId: post_recurringpayinregistrations
       parameters: []
@@ -446,11 +446,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-registration)'
+      description: https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-registration
   /recurringpayinregistrations/{recurringpayinregistrationid}:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Update a Recurring PayIn Registration
       operationId: put_recurringpayinregistrations_recurringpayinregistrationid
       parameters:
@@ -470,7 +470,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration)'
+      description: https://mangopay.com/docs/endpoints/recurring-card-payins#update-recurring-payin-registration
       requestBody:
         required: true
         content:
@@ -502,7 +502,7 @@ paths:
                   Country: FR
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Recurring PayIn Registration
       operationId: get_recurringpayinregistrations_recurringpayinregistrationid
       parameters:
@@ -522,11 +522,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/recurring-card-payins#view-recurring-payin-registration](https://mangopay.com/docs/endpoints/recurring-card-payins#view-recurring-payin-registration)'
+      description: https://mangopay.com/docs/endpoints/recurring-card-payins#view-recurring-payin-registration
   /payins/recurring/card/direct:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Recurring PayIn CIT
       operationId: post_payins_recurring_card_direct
       parameters: []
@@ -541,7 +541,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit](https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit)'
+      description: https://mangopay.com/docs/endpoints/recurring-card-payins#create-recurring-payin-cit
       requestBody:
         required: true
         content:
@@ -573,7 +573,7 @@ paths:
   /preauthorizations/card/direct:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Preauthorization
       operationId: post_preauthorizations_card_direct
       parameters: []
@@ -588,11 +588,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorization)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorization
   /preauthorizations/{preauthorizationid}:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Cancel or validate a Preauthorization
       operationId: put_preauthorizations_preauthorizationid
       parameters:
@@ -612,10 +612,10 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#cancel-validate-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#cancel-validate-preauthorization)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#cancel-validate-preauthorization
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Preauthorization
       operationId: get_preauthorizations_preauthorizationid
       parameters:
@@ -635,11 +635,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#view-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#view-preauthorization)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#view-preauthorization
   /cards/{cardchallengeflowid}/preauthorizations:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Preauthorizations for a Card
       operationId: get_cards_cardchallengeflowid_preauthorizations
       parameters:
@@ -659,11 +659,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-card](https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-card)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-card
   /users/{userId}/preauthorizations:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Preauthorizations for a User
       operationId: get_users_userId_preauthorizations
       parameters:
@@ -683,11 +683,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-user](https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-user)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#list-preauthorizations-user
   /payins/preauthorized/direct:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Preauthorized PayIn
       operationId: post_payins_preauthorized_direct
       parameters: []
@@ -702,7 +702,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin](https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#create-preauthorized-payin
       requestBody:
         required: true
         content:
@@ -721,7 +721,7 @@ paths:
   /deposit-preauthorizations/card/direct:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Deposit Preauthorization
       operationId: post_deposit_preauthorizations_card_direct
       parameters: []
@@ -736,7 +736,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorization
       requestBody:
         required: true
         content:
@@ -766,7 +766,7 @@ paths:
   /deposit-preauthorizations/{depositid}:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Cancel a Deposit Preauthorization
       operationId: put_deposit_preauthorizations_depositid
       parameters:
@@ -786,7 +786,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no-show](https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no-show)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#cancel-deposit-preauthorization-request-no-show
       requestBody:
         required: true
         content:
@@ -797,7 +797,7 @@ paths:
               PaymentStatus: CANCELED
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Deposit Preauthorization
       operationId: get_deposit_preauthorizations_depositid
       parameters:
@@ -817,11 +817,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#view-deposit-preauthorization](https://mangopay.com/docs/endpoints/preauthorizations#view-deposit-preauthorization)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#view-deposit-preauthorization
   /cards/{cardchallengeflowid}/deposit-preauthorizations:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Deposit Preauthorizations for a Card
       operationId: get_cards_cardchallengeflowid_deposit_preauthorizations
       parameters:
@@ -841,11 +841,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-card](https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-card)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-card
   /users/{userId}/deposit-preauthorizations:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Deposit Preauthorizations for a User
       operationId: get_users_userId_deposit_preauthorizations
       parameters:
@@ -865,11 +865,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-user](https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-user)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#list-deposit-preathorization-user
   /payins/deposit-preauthorized/direct/full-capture:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Deposit Preauthorized PayIn
       operationId: post_payins_deposit_preauthorized_direct_full_capture
       parameters: []
@@ -884,7 +884,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-without-complement](https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-without-complement)'
+      description: https://mangopay.com/docs/endpoints/preauthorizations#create-deposit-preauthorized-payin-without-complement
       requestBody:
         required: true
         content:
@@ -905,7 +905,7 @@ paths:
   /payins/card/web:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Web Card PayIn
       operationId: post_payins_card_web
       parameters: []
@@ -920,7 +920,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin](https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin)'
+      description: https://mangopay.com/docs/endpoints/web-card-payins#create-web-card-payin
       requestBody:
         required: true
         content:
@@ -943,7 +943,7 @@ paths:
   /payins/card/web/{webpayinid}/extended:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View card details for a Web Card PayIn
       operationId: get_payins_card_web_webpayinid_extended
       parameters:
@@ -963,11 +963,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/web-card-payins#view-card-details-web-card-payin](https://mangopay.com/docs/endpoints/web-card-payins#view-card-details-web-card-payin)'
+      description: https://mangopay.com/docs/endpoints/web-card-payins#view-card-details-web-card-payin
   /payment-methods/metadata:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Look up metadata for a payment method
       operationId: post_payment_methods_metadata
       parameters: []
@@ -982,11 +982,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/payment-method-metadata#lookup-payment-method-metadata](https://mangopay.com/docs/endpoints/payment-method-metadata#lookup-payment-method-metadata)'
+      description: https://mangopay.com/docs/endpoints/payment-method-metadata#lookup-payment-method-metadata
   /virtual-accounts/availability:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View Virtual Account availabilities
       operationId: get_virtual_accounts_availability
       parameters: []
@@ -1004,7 +1004,7 @@ paths:
   /wallets/{walletId}/virtual-accounts:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create Virtual Account
       operationId: post_wallets_walletId_virtual_accounts
       parameters:
@@ -1027,7 +1027,7 @@ paths:
   /wallets/{usernaturalpayerwalletid}/virtual-accounts/{virtualaccountid}:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Deactivate a Virtual Account
       operationId: put_wallets_usernaturalpayerwalletid_virtual_accounts_virtualaccountid
       parameters:
@@ -1063,7 +1063,7 @@ paths:
   /wallets/{walletId}/virtual-accounts/{virtualaccountid}:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Virtual Account
       operationId: get_wallets_walletId_virtual_accounts_virtualaccountid
       parameters:
@@ -1091,7 +1091,7 @@ paths:
   /wallets/{usernaturalpayerwalletid}/virtual-accounts:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Virtual Accounts for a Wallet
       operationId: get_wallets_usernaturalpayerwalletid_virtual_accounts
       parameters:
@@ -1114,7 +1114,7 @@ paths:
   /wallets/{userlegalownerwalletid}/bankingaliases/iban:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create an IBAN Banking Alias
       operationId: post_wallets_userlegalownerwalletid_bankingaliases_iban
       parameters:
@@ -1134,7 +1134,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias)'
+      description: https://mangopay.com/docs/endpoints/banking-aliases#create-iban-banking-alias
       requestBody:
         required: true
         content:
@@ -1148,7 +1148,7 @@ paths:
   /bankingaliases/{bankingaliasid}:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Deactivate a Banking Alias
       operationId: put_bankingaliases_bankingaliasid
       parameters:
@@ -1168,7 +1168,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias)'
+      description: https://mangopay.com/docs/endpoints/banking-aliases#deactivate-banking-alias
       requestBody:
         required: true
         content:
@@ -1179,7 +1179,7 @@ paths:
               Active: false
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Banking Alias
       operationId: get_bankingaliases_bankingaliasid
       parameters:
@@ -1199,11 +1199,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias](https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias)'
+      description: https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias
   /wallets/{userlegalownerwalletid}/bankingaliases:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Banking Alias for a Wallet
       operationId: get_wallets_userlegalownerwalletid_bankingaliases
       parameters:
@@ -1223,11 +1223,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias-wallet](https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias-wallet)'
+      description: https://mangopay.com/docs/endpoints/banking-aliases#view-banking-alias-wallet
   /payins/bankwire/direct:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Direct Bank Wire PayIn
       operationId: post_payins_bankwire_direct
       parameters: []
@@ -1242,7 +1242,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin](https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin)'
+      description: https://mangopay.com/docs/endpoints/direct-bank-wires#create-direct-bank-wire-payin
       requestBody:
         required: true
         content:
@@ -1263,7 +1263,7 @@ paths:
   /payment-methods/openbanking/metadata/supported-banks:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View supported banks for Pay by Bank
       operationId: get_payment_methods_openbanking_metadata_supported_banks
       parameters:
@@ -1293,7 +1293,7 @@ paths:
   /payins/payment-methods/openbanking:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Pay by Bank PayIn
       operationId: post_payins_payment_methods_openbanking
       parameters: []
@@ -1311,7 +1311,7 @@ paths:
   /mandates/directdebit/web:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Mandate
       operationId: post_mandates_directdebit_web
       parameters: []
@@ -1326,11 +1326,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-mandate)'
+      description: https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-mandate
   /mandates/{mandateId}:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View a Mandate
       operationId: get_mandates_mandateId
       parameters:
@@ -1350,11 +1350,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#view-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#view-mandate)'
+      description: https://mangopay.com/docs/endpoints/direct-direct-debit-payins#view-mandate
   /mandates/{mandateId}/cancel:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Cancel a Mandate
       operationId: put_mandates_mandateId_cancel
       parameters:
@@ -1374,11 +1374,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#cancel-mandate](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#cancel-mandate)'
+      description: https://mangopay.com/docs/endpoints/direct-direct-debit-payins#cancel-mandate
   /mandates:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List all Mandates
       operationId: get_mandates
       parameters: []
@@ -1393,11 +1393,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates)'
+      description: https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates
   /users/{legaluserbankaccountid}/mandates:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Mandates for a Bank Account
       operationId: get_users_legaluserbankaccountid_mandates
       parameters:
@@ -1417,11 +1417,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-bank-account](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-bank-account)'
+      description: https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-bank-account
   /users/{userId}/mandates:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: List Mandates for a User
       operationId: get_users_userId_mandates
       parameters:
@@ -1441,11 +1441,11 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-user](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-user)'
+      description: https://mangopay.com/docs/endpoints/direct-direct-debit-payins#list-mandates-user
   /payins/directdebit/direct:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Direct Debit PayIn (Legal Payer User)
       operationId: post_payins_directdebit_direct
       parameters: []
@@ -1460,7 +1460,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin](https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin)'
+      description: https://mangopay.com/docs/endpoints/direct-direct-debit-payins#create-direct-direct-debit-payin
       requestBody:
         required: true
         content:
@@ -1482,7 +1482,7 @@ paths:
   /payins/payment-methods/bancontact:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Bancontact PayIn
       operationId: post_payins_payment_methods_bancontact
       parameters: []
@@ -1520,7 +1520,7 @@ paths:
   /payins/payment-methods/bizum:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Bizum PayIn
       operationId: post_payins_payment_methods_bizum
       parameters: []
@@ -1538,7 +1538,7 @@ paths:
   /payins/payment-methods/blik:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a BLIK PayIn
       operationId: post_payins_payment_methods_blik
       parameters: []
@@ -1553,7 +1553,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/blik#create-blik-payin](https://mangopay.com/docs/endpoints/blik#create-blik-payin)'
+      description: https://mangopay.com/docs/endpoints/blik#create-blik-payin
       requestBody:
         required: true
         content:
@@ -1575,7 +1575,7 @@ paths:
   /payins/payment-methods/ideal:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create an iDEAL PayIn
       operationId: post_payins_payment_methods_ideal
       parameters: []
@@ -1590,7 +1590,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/ideal#create-ideal-payin](https://mangopay.com/docs/endpoints/ideal#create-ideal-payin)'
+      description: https://mangopay.com/docs/endpoints/ideal#create-ideal-payin
       requestBody:
         required: true
         content:
@@ -1613,7 +1613,7 @@ paths:
   /payins/payment-methods/klarna:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Klarna PayIn
       operationId: post_payins_payment_methods_klarna
       parameters: []
@@ -1628,7 +1628,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/klarna#create-klarna-payin](https://mangopay.com/docs/endpoints/klarna#create-klarna-payin)'
+      description: https://mangopay.com/docs/endpoints/klarna#create-klarna-payin
       requestBody:
         required: true
         content:
@@ -1687,7 +1687,7 @@ paths:
   /payins/payment-methods/mbway:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create an MB WAY PayIn
       operationId: post_payins_payment_methods_mbway
       parameters: []
@@ -1705,7 +1705,7 @@ paths:
   /payins/payment-methods/multibanco:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Multibanco PayIn
       operationId: post_payins_payment_methods_multibanco
       parameters: []
@@ -1741,7 +1741,7 @@ paths:
   /payins/payment-methods/payconiq:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Payconiq PayIn
       operationId: post_payins_payment_methods_payconiq
       parameters: []
@@ -1778,7 +1778,7 @@ paths:
   /payins/payment-methods/paypal/data-collection:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Submit risk data for PayPal PayIn
       operationId: post_payins_payment_methods_paypal_data_collection
       parameters: []
@@ -1822,7 +1822,7 @@ paths:
   /payins/payment-methods/paypal/data-collection/{datacollectionid}:
     get:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: View risk data for PayPal PayIn
       operationId: get_payins_payment_methods_paypal_data_collection_datacollectionid
       parameters:
@@ -1845,7 +1845,7 @@ paths:
   /payins/payment-methods/paypal/recurring:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Recurring PayPal PayIn (CIT)
       operationId: post_payins_payment_methods_paypal_recurring
       parameters: []
@@ -1891,7 +1891,7 @@ paths:
   /payins/payment-methods/paypal:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a PayPal PayIn
       operationId: post_payins_payment_methods_paypal
       parameters: []
@@ -1906,7 +1906,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/paypal#create-paypal-payin](https://mangopay.com/docs/endpoints/paypal#create-paypal-payin)'
+      description: https://mangopay.com/docs/endpoints/paypal#create-paypal-payin
       requestBody:
         required: true
         content:
@@ -1955,7 +1955,7 @@ paths:
   /payins/{paypalpayinid}/trackings:
     put:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Add tracking information to a PayPal PayIn
       operationId: put_payins_paypalpayinid_trackings
       parameters:
@@ -1975,7 +1975,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin](https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin)'
+      description: https://mangopay.com/docs/endpoints/paypal#add-tracking-paypal-payin
       requestBody:
         required: true
         content:
@@ -1989,7 +1989,7 @@ paths:
   /payins/payment-methods/satispay:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Satispay PayIn
       operationId: post_payins_payment_methods_satispay
       parameters: []
@@ -2004,7 +2004,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/satispay#create-satispay-payin](https://mangopay.com/docs/endpoints/satispay#create-satispay-payin)'
+      description: https://mangopay.com/docs/endpoints/satispay#create-satispay-payin
       requestBody:
         required: true
         content:
@@ -2027,7 +2027,7 @@ paths:
   '{envurl}/v2.1/{clientId}/payins/payment-methods/swish':
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Swish PayIn
       operationId: post_envurl_v2_1_clientId_payins_payment_methods_swish
       parameters:
@@ -2074,7 +2074,7 @@ paths:
   /payins/payment-methods/twint:
     post:
       tags:
-      - Payment methods
+      - Payment Methods
       summary: Create a Twint PayIn
       operationId: post_payins_payment_methods_twint
       parameters: []

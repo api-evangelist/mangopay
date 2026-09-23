@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Reporting API
+  title: Mangopay REST Reporting API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -100,7 +100,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/reporting#create-transactions-report](https://mangopay.com/docs/endpoints/reporting#create-transactions-report)'
+      description: https://mangopay.com/docs/endpoints/reporting#create-transactions-report
   /reports/wallets:
     post:
       tags:
@@ -119,7 +119,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/reporting#create-wallets-report](https://mangopay.com/docs/endpoints/reporting#create-wallets-report)'
+      description: https://mangopay.com/docs/endpoints/reporting#create-wallets-report
   /reports/{reportId}:
     get:
       tags:
@@ -143,7 +143,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/reporting#view-report](https://mangopay.com/docs/endpoints/reporting#view-report)'
+      description: https://mangopay.com/docs/endpoints/reporting#view-report
   /reports:
     get:
       tags:
@@ -162,7 +162,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/reporting#list-reports](https://mangopay.com/docs/endpoints/reporting#list-reports)'
+      description: https://mangopay.com/docs/endpoints/reporting#list-reports
 components:
   securitySchemes:
     OAuth2:

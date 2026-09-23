@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Mangopay REST Bank Accounts Refunds API
+  title: Mangopay REST Refunds API
   description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
   version: '2.01'
   contact:
@@ -69,7 +69,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/refunds#list-refunds-payin](https://mangopay.com/docs/endpoints/refunds#list-refunds-payin)'
+      description: https://mangopay.com/docs/endpoints/refunds#list-refunds-payin
   /transfers/{transferId}/refunds:
     post:
       tags:
@@ -93,7 +93,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/refunds#create-refund-transfer](https://mangopay.com/docs/endpoints/refunds#create-refund-transfer)'
+      description: https://mangopay.com/docs/endpoints/refunds#create-refund-transfer
     get:
       tags:
       - Refunds
@@ -116,7 +116,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/refunds#list-refunds-transfer](https://mangopay.com/docs/endpoints/refunds#list-refunds-transfer)'
+      description: https://mangopay.com/docs/endpoints/refunds#list-refunds-transfer
   /refunds/{refundId}:
     get:
       tags:
@@ -140,7 +140,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/refunds#view-refund](https://mangopay.com/docs/endpoints/refunds#view-refund)'
+      description: https://mangopay.com/docs/endpoints/refunds#view-refund
   /payouts/{payoutId}/refunds:
     get:
       tags:
@@ -187,7 +187,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-      description: '[https://mangopay.com/docs/endpoints/refunds#list-refunds-repudiation](https://mangopay.com/docs/endpoints/refunds#list-refunds-repudiation)'
+      description: https://mangopay.com/docs/endpoints/refunds#list-refunds-repudiation
 components:
   securitySchemes:
     OAuth2:
