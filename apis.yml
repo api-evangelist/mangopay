@@ -31,6 +31,9 @@ url: https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/a
 version: "0.19"
 created: "2026-06-13"
 modified: "2026-06-13"
+x-docs-platform: fern
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-10-03
 tags:
   - Payments
   - Marketplace Payments
@@ -1098,6 +1101,9 @@ apis:
     url: >-
       https://raw.githubusercontent.com/api-evangelist/mangopay/refs/heads/main/finops/finops.yml
 common:
+  - type: CapabilityMap
+    url: capabilities/mangopay-capability-edges.yml
+    name: Mangopay Business Capability Map
   - type: AgenticAccess
     url: agentic-access/mangopay-agentic-access.yml
   - type: DomainSecurity
