@@ -27,3 +27,15 @@ notes: >
   Mangopay does not publish fixed pricing tiers publicly. All pricing is negotiated
   through a sales engagement. Volume discounts are applied automatically as transaction
   volumes increase.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models: []
+  units: []
+  plans:
+  - name: Custom Pricing
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
