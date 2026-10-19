@@ -1,0 +1,155 @@
+openapi: 3.2.0
+info:
+  title: Reference Payment Method Metadata API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: paymentMethodMetadata
+paths:
+  /v2.01/{ClientId}/payment-methods/metadata:
+    post:
+      operationId: paymentMethodMetadata_lookup_payment_method_metadata
+      summary: Look up metadata for a payment method
+      description: '**Best practice – For BIN lookup, use an 8-digit version if available**
+
+
+        An 8-digit BIN provides the most detailed and accurate data for card identification and assessment, and is becoming the industry standard. The 6-digit version continues to be used but provides less granular classification that may be ambiguous if 8-digit sub-ranges have been introduced by the issuer.
+
+
+        A transaction''s `CardInfo.BIN` property returns the 8-digit BIN if its available. In the Card object, the `Alias` only ever reveals the first 6 digits – the 8-digit version should be preferred.'
+      tags:
+      - paymentMethodMetadata
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookUpMetadataForAPaymentMethodResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookUpMetadataForAPaymentMethodRequest'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    LookUpMetadataForAPaymentMethodRequest:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Allowed values:** `BIN`, `GOOGLE_PAY`
+
+
+            The type of metadata.'
+        Bin:
+          type: string
+          description: 'Format: 6 or 8 digits
+
+
+            Required if the `Type` is `BIN`. The bank identification number (BIN).'
+        Token:
+          type: string
+          description: 'Required if the `Type` is `GOOGLE_PAY`.
+
+
+            The tokenized payment data provided by the third-party payment method.'
+      required:
+      - Type
+      title: LookUpMetadataForAPaymentMethodRequest
+    LookUpMetadataForAPaymentMethodResponseBinDataItems:
+      type: object
+      properties:
+        CardType:
+          type: string
+          description: '**Returned values:** `CREDIT`, `DEBIT`, `CHARGE CARD`
+
+
+            The type of the card.'
+        CommercialIndicator:
+          type: string
+          description: '**Returned values:** `PERSONAL`, `COMMERCIAL`
+
+
+            Whether the card is held in a personal or commercial capacity.'
+        SubType:
+          type: string
+          description: 'The subtype of the card product. Examples include: `CLASSIC`, `GOLD`, `PLATINUM`, `PREPAID`, etc.
+
+
+            **Note:** The possible returned values are numerous and liable to evolve over time.'
+        Brand:
+          type: string
+          description: 'The card brand. Examples include: `AMERICAN EXPRESS`, `DISCOVER`, `JCB`, `MASTERCARD`, `VISA`, etc.
+
+
+            **Note:** The possible returned values are numerous and liable to evolve over time.'
+      title: LookUpMetadataForAPaymentMethodResponseBinDataItems
+    LookUpMetadataForAPaymentMethodResponse:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: The type of metadata.
+        Bin:
+          type: string
+          description: 'Format: 6 or 8 digits
+
+
+            The bank identification number (BIN).'
+        IssuerCountryCode:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country where the card was issued.'
+        IssuingBank:
+          type: string
+          description: The name of the card issuer.
+        BinData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LookUpMetadataForAPaymentMethodResponseBinDataItems'
+          description: Additional data about the card based on the BIN. In the case of <a href="/guides/payment-methods/card/co-branded">co-branded card products</a>, two objects are returned.
+        TokenFormat:
+          type: string
+          description: '**Returned values:** `PAN_ONLY`, `CRYPTOGRAM_3DS`
+
+
+            In the case of Google Pay, the format of the `Token`.
+
+            - `PAN_ONLY` – The card is registered in the Google account and requires 3DS authentication.
+
+            - `CRYPTOGRAM_3DS` – The card is enrolled in the customer''s Google Wallet and authentication is handled by the Android device.'
+      title: LookUpMetadataForAPaymentMethodResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

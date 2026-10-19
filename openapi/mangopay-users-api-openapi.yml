@@ -1,78 +1,143 @@
 openapi: 3.2.0
 info:
-  title: Mangopay REST Users API
-  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
-  version: '2.01'
-  contact:
-    name: Mangopay Support
-    url: https://hub.mangopay.com
+  title: Reference Users API
+  version: 1.0.0
 servers:
-- url: https://api.mangopay.com/v2.01/{clientId}
-  description: Production
-  variables:
-    clientId:
-      default: your-client-id
-      description: Your Mangopay Client ID
-- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+- url: https://api.sandbox.mangopay.com
   description: Sandbox
-  variables:
-    clientId:
-      default: your-client-id
-      description: Your Mangopay Client ID
-security:
-- OAuth2: []
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
 tags:
 - name: Users
 paths:
-  /sca/users/natural:
+  /v2.01/{ClientId}/sca/users/natural:
     post:
+      operationId: users_create_natural_user_sca
+      summary: Create a Natural User (SCA)
+      description: 'Register a Natural Payer or Owner (with SCA enrollment)
+
+
+        **Note – SCA triggered for Owners**
+
+
+        If `UserCategory` is `OWNER`, this endpoint triggers SCA enrollment.
+
+
+        Your platform needs to use the returned `PendingUserAction.RedirectUrl` (and add an encoded `returnUrl` query parameter) to redirect the user so they can enroll. Read more about how to redirect them in the SCA session guide.
+
+
+        In Sandbox, you can bypass SCA by including the word `accept` in the Natural User''s `Email` – for example `accept@example.com` or `john.doe+accept@example.com`.
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `Nationality`
+
+        - `CountryOfResidence`
+
+        - `Address.Country`'
       tags:
       - Users
-      summary: Create a Natural Payer User (SCA)
-      operationId: post_sca_users_natural
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /sca/users/natural/{userId}/category:
-    put:
-      tags:
-      - Users
-      summary: Categorize a Natural User (SCA)
-      operationId: put_sca_users_natural_userId_category
       parameters:
-      - name: userId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NaturalUserSCAResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /sca/users/natural/{userId}:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateANaturalUserSCARequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/natural/{UserId}:
     put:
-      tags:
-      - Users
+      operationId: users_update_natural_user_sca
       summary: Update a Natural User (SCA)
-      operationId: put_sca_users_natural_userId
+      description: 'Modify details for a Natural Payer or Owner without changing category.
+
+
+        **Caution – Modification may trigger SCA re-enrollment**
+
+
+        If `UserCategory` is `OWNER`, modifying the following values changes `UserStatus` to `PENDING_USER_ACTION` and requires re-enrollment in SCA using the returned `PendingUserAction.RedirectUrl`:
+
+
+        - `Email`
+
+        - `PhoneNumber`
+
+        - `PhoneNumberCountry`
+
+
+        In Sandbox, you can bypass SCA by including the word `accept` in the Natural User''s `Email` – for example `accept@example.com` or `john.doe+accept@example.com`.
+
+
+        **Caution – Modification may cause KYC/B verification downgrade**
+
+
+        If `KYCLevel` is `REGULAR`, modifying the following values triggers a verification downgrade to `LIGHT`:
+
+        - `FirstName`
+
+        - `LastName`
+
+        - `Birthday`
+
+        - `Nationality`
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `Nationality`
+
+        - `CountryOfResidence`
+
+        - `Address.Country`'
+      tags:
+      - Users
       parameters:
-      - name: userId
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
         in: path
         required: true
         schema:
@@ -80,63 +145,220 @@ paths:
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NaturalUserSCAResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden
-        '404':
-          description: Not Found
-  /sca/users/legal:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateANaturalUserSCARequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/natural/{UserId}/category:
+    put:
+      operationId: users_categorize_natural_user
+      summary: Categorize a Natural User
+      description: 'Transition a Natural Payer to Owner and enroll them in SCA.
+
+
+        This endpoint allows you to transition a user whose `UserCategory` is `PAYER` into an `OWNER` by providing the required information and redirecting them on the `PendingUserAction.RedirectUrl` response value to complete SCA enrollment.
+
+
+        Optionally, you can update the `Email` and provide or update the `PhoneNumber` and `PhoneNumberCountry` before SCA redirection.
+
+
+        If the user''s `UserCategory` is already `OWNER`, use the POST Enroll a User in SCA endpoint to obtain an SCA session link.
+
+
+        Read more about SCA redirection **→**
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `Nationality`
+
+        - `CountryOfResidence`'
+      tags:
+      - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NaturalUserSCAResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategorizeANaturalUserRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/legal:
     post:
+      operationId: users_create_legal_user_sca
+      summary: Create a Legal User (SCA)
+      description: 'Register a Legal Payer or Owner (with SCA enrollment).
+
+
+        **Note – SCA triggered for Owners**
+
+
+        If `UserCategory` is `OWNER`, this endpoint triggers SCA enrollment. SCA applies to all `LegalPersonType`.
+
+
+        Your platform needs to use the returned `PendingUserAction.RedirectUrl` (and add an encoded `returnUrl` query parameter) to redirect the user so they can enroll. Read more about how to redirect them in the SCA session guide.
+
+
+        In Sandbox, you can bypass SCA by including the word `accept` in the Legal User''s `LegalRepresentative.Email` – for example `accept@example.com` or `john.doe+accept@example.com`.
+
+
+        **Note – Legal representative''s email required for Owners**
+
+
+        If `UserCategory` is `OWNER`, the `LegalRepresentative.Email` address is required.
+
+
+        SCA uses this email address for the individual who will complete SCA to build a behavioral biometrics profile and as a backup communication channel. Prior to SCA, it was possible to create a Legal `OWNER` without the `LegalRepresentativeEmail`.
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `HeadquartersAddress.Country`
+
+        - `LegalRepresentative.Nationality`
+
+        - `LegalRepresentative.CountryOfResidence`
+
+        - `LegalRepresentativeAddress.Country`'
       tags:
       - Users
-      summary: Create a Legal Payer User (SCA)
-      operationId: post_sca_users_legal
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /sca/users/legal/{userId}/category:
-    put:
-      tags:
-      - Users
-      summary: Categorize a Legal User (SCA)
-      operationId: put_sca_users_legal_userId_category
       parameters:
-      - name: userId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalUserSCAResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /sca/users/legal/{userId}:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateALegalUserSCARequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/legal/{UserId}:
     put:
-      tags:
-      - Users
+      operationId: users_update_legal_user_sca
       summary: Update a Legal User (SCA)
-      operationId: put_sca_users_legal_userId
+      description: 'Modify details for a Legal Payer or Owner without changing category.
+
+
+        **Caution – Modification may trigger SCA re-enrollment**
+
+
+        If `UserCategory` is `OWNER`, modifying the following values changes `UserStatus` to `PENDING_USER_ACTION` and requires re-enrollment in SCA using the returned `PendingUserAction.RedirectUrl`:
+
+
+        - `LegalRepresentative.Email`
+
+        - `LegalRepresentative.PhoneNumber`
+
+        - `LegalRepresentative.PhoneNumberCountry`
+
+
+        In Sandbox, you can bypass SCA by including the word `accept` in the Legal User''s `LegalRepresentative.Email` – for example `accept@example.com` or `john.doe+accept@example.com`.
+
+
+        **Caution – Modification may cause KYC/B verification downgrade**
+
+
+        If `KYCLevel` is `REGULAR`, modifying the following values triggers a verification downgrade to `LIGHT`:
+
+        - `LegalRepresentative.FirstName`
+
+        - `LegalRepresentative.LastName`
+
+        - `LegalRepresentative.Birthday`
+
+        - `LegalRepresentative.Nationality`
+
+        - `LegalPersonType`
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `HeadquartersAddress.Country`
+
+        - `LegalRepresentative.Nationality`
+
+        - `LegalRepresentative.CountryOfResidence`
+
+        - `LegalRepresentativeAddress.Country`'
+      tags:
+      - Users
       parameters:
-      - name: userId
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
         in: path
         required: true
         schema:
@@ -144,339 +366,3757 @@ paths:
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalUserSCAResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden
-        '404':
-          description: Not Found
-  /sca/users/{userId}/enrollment:
-    post:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateALegalUserSCARequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/legal/{UserId}/category:
+    put:
+      operationId: users_categorize_legal_user
+      summary: Categorize a Legal User
+      description: 'Transition a Legal Payer to Owner and enroll them in SCA
+
+
+        This endpoint allows you to transition a user whose `UserCategory` is `PAYER` into an `OWNER` by providing the required information and redirecting them on the `PendingUserAction.RedirectUrl` response value to complete SCA enrollment.
+
+
+        SCA applies to all `LegalPersonType`: `BUSINESS`, `ORGANIZATION`, `PARTNERSHIP`, and `SOLETRADER`. In Sandbox the `RedirectUrl` is returned for all legal user types (see legal user integration and SCA triggers in Sandbox).
+
+
+        Optionally, you can update the `LegalRepresentative.Email` (in not already present) and provide or update the `LegalRepresentative.PhoneNumber` and `LegalRepresentative.PhoneNumberCountry` before SCA redirection.
+
+
+        If the user''s `UserCategory` is already `OWNER`, use the POST Enroll a User in SCA endpoint to obtain an SCA session link.
+
+
+        Read more about SCA redirection **→**
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `LegalRepresentative.Nationality`
+
+        - `LegalRepresentative.CountryOfResidence`'
       tags:
       - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalUserSCAResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategorizeALegalUserRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/{UserId}/enrollment:
+    post:
+      operationId: users_enroll_user
       summary: Enroll a User in SCA
-      operationId: post_sca_users_userId_enrollment
+      description: 'Obtain an SCA redirection link to enroll an Owner user.
+
+
+        If `UserCategory` is `OWNER`, this endpoint allows you to enroll a user in SCA. To enroll `PAYER` users for the first time, use the PUT Categorize a Natural User or PUT Categorize a Legal User endpoints.
+
+
+        Your platform needs to retrieve the returned `PendingUserAction.RedirectUrl`, add an encoded `returnUrl` query parameter for them to be returned to after the SCA session, and redirect the user.
+
+
+        Read more about SCA redirection **→**
+
+
+        You can use this endpoint to obtain a new session `RedirectUrl`. This is useful to:
+
+        - Enroll Owners created without SCA enrollment
+
+        - Retry enrollment if a previous session was unsuccessful or expired (after 10 minutes)
+
+
+        Calling this endpoint creates a new valid session that can be used, even if there is one already in progress for the user. Calling this endpoint also doesn''t change the user''s `UserStatus`, even if the session expires or is unsuccessful.
+
+
+        **Note – This endpoint doesn''t change UserStatus**
+
+
+        Calling this endpoint does **not** change the user''s status to `PENDING_USER_ACTION` (it stays as `ACTIVE`) and no `USER_ACCOUNT_VALIDATION_ASKED` webhook notification is sent.
+
+
+        This ensures that legacy users do not become blocked if they are unable to complete SCA successfully.
+
+
+        **Caution – Legal representative''s email required**
+
+
+        For `OWNER` users, the `LegalRepresentative.Email` address is required.
+
+
+        SCA uses this email address to build a behavioral biometrics profile and as a backup communication channel.
+
+
+        Prior to SCA, it was possible to create a Legal `OWNER` without the `LegalRepresentativeEmail`, so this data may be missing. Calling this endpoint without this data will return an error.'
+      tags:
+      - Users
       parameters:
-      - name: userId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollUserManageProxyConsentResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /sca/users/{userId}/consent:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/{UserId}/consent:
     post:
-      tags:
-      - Users
+      operationId: users_manage_proxy_consent
       summary: Manage proxy consent for a User
-      operationId: post_sca_users_userId_consent
+      description: 'Allows a user to give or revoke consent for SCA-triggering actions taken under proxy.
+
+
+        Before redirecting the user on the `PendingUserAction.RedirectUrl` returned, ensure you add an encoded `returnUrl` query parameter – read more about SCA redirection.
+
+
+        On the SCA session, the user can:
+
+        - Give consent for the first time
+
+        - Give consent to additional actions included by your platform
+
+        - Revoke consent (which your platform must allow at any time)
+
+
+        This endpoint also allows a user to enroll if they aren''t already.
+
+
+        Read more about proxy consent for SCA-triggering actions **→**"'
+      tags:
+      - Users
       parameters:
-      - name: userId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollUserManageProxyConsentResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /sca/users/{userId}/sca-status:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/{UserId}/sca-status:
     get:
-      tags:
-      - Users
+      operationId: users_view_user_sca_status
       summary: View the SCA status of a User
-      operationId: get_sca_users_userId_sca_status
+      description: 'Retrieve SCA and consent information for a Natural or Legal User.
+
+
+        This endpoint returns information for an `OWNER` user relating to:
+
+        - Whether or not they are enrolled in SCA – but if they never triggered an SCA enrollment, the endpoint returns a 404
+
+        - Their consent for your platform to take SCA-triggering actions by proxy, if activated for your platform'
+      tags:
+      - Users
       parameters:
-      - name: userId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewTheSCAStatusOfAUserResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: Not Found
-  /sca/users/{userId}:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/sca/users/{UserId}:
     get:
-      tags:
-      - Users
+      operationId: users_view_user_sca
       summary: View a User (SCA)
-      operationId: get_sca_users_userId
+      description: 'Retrieve a Natural or Legal User.
+
+
+        This endpoint returns the same data as the legacy GET View a User, including the new `PENDING_USER_ACTION` value for `UserStatus`, with two minor changes:
+
+        - The `PendingUserAction` field, which is always `null` on this endpoint
+
+        - For Legal users, the `LegalRepresentative` object, which contains the data for the legal representative
+
+
+        **Note – `RedirectUrl` not available on this endpoint**
+
+
+        The `RedirectUrl` is only returned on API calls that trigger SCA.
+
+
+        To obtain a new session link for an Owner, call the POST Enroll a User in SCA endpoint.
+
+
+        Read more **→**'
+      tags:
+      - Users
       parameters:
-      - name: userId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /users/natural:
-    post:
-      tags:
-      - Users
-      summary: Create a Natural User (Payer)
-      operationId: post_users_natural
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/users#create-natural-user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            example:
-              FirstName: '{{$randomFirstName}}'
-              LastName: '{{$randomLastName}}'
-              Email: '{{$randomEmail}}'
-              Address:
-                AddressLine1: '{{$randomStreetAddress}}'
-                AddressLine2: '{{$randomStreetName}}'
-                City: Paris
-                Region: Ile-de-France
-                PostalCode: '75001'
-                Country: FR
-              UserCategory: PAYER
-              TermsAndConditionsAccepted: false
-              Tag: Created using Mangopay API Postman Collection
-  /users/natural/{userId}:
-    put:
-      tags:
-      - Users
-      summary: Update a Natural User (Owner)
-      operationId: put_users_natural_userId
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/users#update-natural-user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            example:
-              FirstName: '{{$randomFirstName}}'
-              LastName: '{{$randomLastName}}'
-              Email: '{{$randomEmail}}'
-              Address:
-                AddressLine1: '{{$randomStreetAddress}}'
-                AddressLine2: '{{$randomStreetName}}'
-                City: Paris
-                Region: Ile-de-France
-                PostalCode: '75001'
-                Country: FR
-              Birthday: 652117514
-              CountryOfResidence: FR
-              Nationality: FR
-              UserCategory: OWNER
-              TermsAndConditionsAccepted: true
-              Tag: Created using Mangopay API Postman Collection
-    delete:
-      tags:
-      - Users
-      summary: Close a Natural User
-      operationId: delete_users_natural_userId
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /users/legal:
-    post:
-      tags:
-      - Users
-      summary: Create a Legal User (Payer)
-      operationId: post_users_legal
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/users#create-legal-user
-  /users/legal/{userId}:
-    put:
-      tags:
-      - Users
-      summary: Update a Legal User
-      operationId: put_users_legal_userId
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/users#update-legal-user
-    delete:
-      tags:
-      - Users
-      summary: Close a Legal User
-      operationId: delete_users_legal_userId
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /users/{userId}:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewAUserSCAResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users:
     get:
-      tags:
-      - Users
-      summary: View a User
-      operationId: get_users_userId
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/users#view-user
-  /users:
-    get:
-      tags:
-      - Users
+      operationId: users_list_users
       summary: List all Users
-      operationId: get_users
+      description: 'List User objects and key details.
+
+
+        This endpoint returns key information for each user created by the platform.'
+      tags:
+      - Users
       parameters:
-      - name: Sort
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: page
         in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
         required: false
         schema:
-          type: string
-        description: ''
+          type: integer
       - name: per_page
         in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: Sort
+        in: query
+        description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+          **Default value:** `CreationDate:ASC`
+
+
+          Indicates the direction in which to sort the list.'
         required: false
         schema:
           type: string
-        description: ''
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllUsersResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/natural/{UserId}:
+    delete:
+      operationId: users_close_natural_user
+      summary: Close a Natural User
+      description: 'Permanently close a user account so it can no longer be used.
+
+
+        This endpoint allows your platform to close a Mangopay Account, as per Mangopay''s terms and conditions, in the event that the agreement between the user and the platform comes to an end.
+
+
+        **Caution – Closure is irreversible**
+
+
+        Calling this endpoint immediately and permanently changes the `UserStatus` to `CLOSED` if the API call is successful. This cannot be undone, even by Mangopay.
+
+
+        Your platform can re-register the user using POST Create a Natural User (SCA).
+
+
+        Closure is only possible if all wallets held by the user are empty. Closure is allowed for both `UserCategory` `OWNER` and `PAYER`.
+
+
+        When a User is closed (whether via this endpoint or by Mangopay):
+
+        - The `UserStatus` changes to `CLOSED` (and the `USER_ACCOUNT_CLOSED` webhook is sent)
+
+        - The user has inflows and outflows blocked (and the relevant webhooks are sent)
+
+        - The user object remains available via the API and Dashboard for historical purposes
+
+
+        Closing a user account does not affect Mangopay''s data retention obligations or processes. Personal data associated with the closed account will be retained in accordance with Mangopay''s data retention policies.
+
+
+        **Note – Do not overuse OAuth token endpoint if automating calls**
+
+
+        If you are writing a script to close a set of users, ensure you do not call the OAuth token endpoint before each DELETE call. You must use your authentication for the full duration of its lifetime, as described in the authentication guide.
+
+
+        Overuse of the OAuth token endpoint is a security and performance risk and may result in preventative action from Mangopay.'
+      tags:
+      - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content – Closure was successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/users#list-users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+    put:
+      operationId: users_update_natural_user
+      summary: Update a Natural User
+      description: '**Caution - Deprecated endpoint**
+
+
+        The legacy User endpoints are deprecated. This endpoint will stop working and return an error after **Dec 15, 2025**.
+
+
+        These endpoints were made redundant by the equivalent SCA-enabled endpoints during the introduction of SCA.
+
+
+        Instead of calling this endpoint to change the `UserCategory` from `PAYER` to `OWNER`, your platform must call PUT Categorize a Natural User. You must also redirect the user on the `PendingUserAction.RedirectUrl` returned so they can enroll in SCA.
+
+
+        If you are not changing the `UserCategory`, then call the PUT Update a Natural User (SCA) endpoint instead of this deprecated endpoint. SCA re-enrollment is required if your platform changes the `Email`, `PhoneNumber`, or `PhoneNumberCountry`.
+
+
+        **Caution – Modification may cause KYC/B verification downgrade**
+
+
+        If `KYCLevel` is `REGULAR`, modifying the following values triggers a verification downgrade to `LIGHT`:
+
+        - `FirstName`
+
+        - `LastName`
+
+        - `Birthday`
+
+        - `Nationality`
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `Nationality`
+
+        - `CountryOfResidence`
+
+        - `Address.Country`
+
+
+        Update a Natural User'
+      tags:
+      - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NaturalUserResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateANaturalUserRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/legal/{UserId}:
+    delete:
+      operationId: users_close_legal_user
+      summary: Close a Legal User
+      description: 'Permanently close a user account so it can no longer be used.
+
+
+        This endpoint allows your platform to close a Mangopay Account, as per Mangopay''s terms and conditions, in the event that the agreement between the user and the platform comes to an end.
+
+
+        **Caution – Closure is irreversible**
+
+
+        Calling this endpoint immediately and permanently changes the `UserStatus` to `CLOSED` if the API call is successful. This cannot be undone, even by Mangopay.
+
+
+        Your platform can re-register the user using POST Create a Legal User (SCA).
+
+
+        Closure is only possible if all wallets held by the user are empty. Closure is allowed for both `UserCategory` `OWNER` and `PAYER` and for all types of Legal user (Business, Partnership, Organization, Soletrader).
+
+
+        When a User is closed (whether via this endpoint or by Mangopay):
+
+        - The `UserStatus` changes to `CLOSED` (and the `USER_ACCOUNT_CLOSED` webhook is sent)
+
+        - The user has inflows and outflows blocked (and the relevant webhooks are sent)
+
+        - The user object remains available via the API and Dashboard for historical purposes
+
+
+        Closing a user account does not affect Mangopay''s data retention obligations or processes. Personal data associated with the closed account will be retained in accordance with Mangopay''s data retention policies.
+
+
+        **Note – Do not overuse OAuth token endpoint if automating calls**
+
+
+        If you are writing a script to close a set of users, ensure you do not call the OAuth token endpoint before each DELETE call. You must use your authentication for the full duration of its lifetime, as described in the authentication guide.
+
+
+        Overuse of the OAuth token endpoint is a security and performance risk and may result in preventative action from Mangopay.'
+      tags:
+      - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content – Closure was successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+    put:
+      operationId: users_update_legal_user
+      summary: Update a Legal User
+      description: '**Caution - Deprecated endpoint**
+
+
+        The legacy User endpoints are deprecated. This endpoint will stop working and return an error after **Dec 15, 2025**.
+
+
+        These endpoints were made redundant by the equivalent SCA-enabled endpoints during the introduction of SCA.
+
+
+        Instead of calling this endpoint to change the `UserCategory` from `PAYER` to `OWNER`, your platform must call PUT Categorize a Legal User. You must also redirect the user on the `PendingUserAction.RedirectUrl` returned so they can enroll in SCA.
+
+
+        If you are not changing the `UserCategory`, then call the PUT Update a Legal User (SCA) endpoint instead of this deprecated endpoint. SCA re-enrollment is required if your platform changes the `Email`, `PhoneNumber`, or `PhoneNumberCountry`.
+
+
+        **Caution – Modification may cause KYC/B verification downgrade**
+
+
+        If `KYCLevel` is `REGULAR`, modifying the following values triggers a verification downgrade to `LIGHT`:
+
+        - `LegalRepresentativeFirstName`
+
+        - `LegalRepresentativeLastName`
+
+        - `LegalRepresentativeBirthday`
+
+        - `LegalRepresentativeNationality`
+
+        - `LegalPersonType`
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `HeadquartersAddress.Country`
+
+        - `LegalRepresentativeNationality`
+
+        - `LegalRepresentativeCountryOfResidence`
+
+        - `LegalRepresentativeAddress.Country`
+
+
+        Update a Legal User'
+      tags:
+      - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalUserResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateALegalUserRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/natural:
+    post:
+      operationId: users_create_natural_user
+      summary: Create a Natural User
+      description: '**Caution - Deprecated endpoint**
+
+
+        The legacy User endpoints are deprecated. This endpoint will stop working and return an error after **Dec 15, 2025**.
+
+
+        These endpoints were made redundant by the equivalent SCA-enabled endpoints during the introduction of SCA.
+
+
+        Instead of calling this endpoint for user creation, your platform must call POST Create a Natural User (SCA).
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `Nationality`
+
+        - `CountryOfResidence`
+
+        - `Address.Country`
+
+
+        Create a Natural User'
+      tags:
+      - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NaturalUserResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateANaturalUserRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/legal:
+    post:
+      operationId: users_create_legal_user
+      summary: Create a Legal User
+      description: '**Caution - Deprecated endpoint**
+
+
+        The legacy User endpoints are deprecated. This endpoint will stop working and return an error after **Dec 15, 2025**.
+
+
+        These endpoints were made redundant by the equivalent SCA-enabled endpoints during the introduction of SCA.
+
+
+        Instead of calling this endpoint for user creation, your platform must call POST Create a Legal User (SCA).
+
+
+        **Note – Country-based restrictions apply to users**
+
+
+        Due to Mangopay''s country restrictions, it is not possible to use blocked countries as the following:
+
+        - `HeadquartersAddress.Country`
+
+        - `LegalRepresentativeNationality`
+
+        - `LegalRepresentativeCountryOfResidence`
+
+        - `LegalRepresentativeAddress.Country`
+
+
+        Create a Legal User'
+      tags:
+      - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalUserResponse'
+      deprecated: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateALegalUserRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}:
+    get:
+      operationId: users_view_user
+      summary: View a User
+      description: '**Caution - Deprecated endpoint**
+
+
+        The legacy User endpoints are deprecated. This endpoint will stop working and return an error after **Dec 15, 2025**.
+
+
+        These endpoints were made redundant by the equivalent SCA-enabled endpoints during the introduction of SCA.
+
+
+        Instead of calling this endpoint to retrieve key details of a user, your platform must call the GET View a User (SCA) endpoint.
+
+
+        View a User'
+      tags:
+      - Users
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewAUserResponse'
+      deprecated: true
+      security:
+      - oauth2: []
 components:
+  schemas:
+    NaturalUserScaResponsePendingUserAction:
+      type: object
+      properties:
+        RedirectUrl:
+          type: string
+          description: 'The URL to which to redirect the user to perform strong customer authentication (SCA) via a Mangopay-hosted webpage. This value is a variable and should not be hardcoded.
+
+
+            The SCA session link expires 10 minutes after it''s generated.
+
+
+            **Caution:** Before redirecting the user on this URL, you must add the query parameter `ReturnUrl`  with the percent-encoded URL to which you want the SCA session to return the user after authentication (whether successful or not).
+
+
+            For more details, see [How to redirect a user for an SCA session](/guides/sca/session#how-to-redirect-a-user-for-sca).'
+      description: Object containing the `RedirectUrl` needed for SCA redirection if triggered by the API call (otherwise returned `null`).
+      title: NaturalUserScaResponsePendingUserAction
+    LegalUserSCAResponse:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        LegalPersonType:
+          type: string
+          description: '**Returned values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        LegalRepresentative:
+          $ref: '#/components/schemas/LegalRepresentative_Response'
+        ProofOfRegistration:
+          type:
+          - string
+          - 'null'
+          description: The `Id` of the KYC Document whose `Type` is `REGISTRATION_PROOF` if validated for the user. If no registration proof is validated, then this value is `null`.
+        ShareholderDeclaration:
+          type:
+          - string
+          - 'null'
+          description: The `Id` of the KYC Document whose `Type` is `SHAREHOLDERS_DECLARATION` if validated for the user. If no Shareholder Declaration is validated, then this value is `null`.
+        Statute:
+          type:
+          - string
+          - 'null'
+          description: The `Id` of the KYC Document whose `Type` is `ARTICLES_OF_ASSOCIATION` if validated for the user. If no articles of association document is validated, then this value is `null`.
+        CompanyNumber:
+          type:
+          - string
+          - 'null'
+          description: 'Required if `UserCategory` is `OWNER` and `LegalPersonType` is `BUSINESS`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The registration number of the entity, assigned by the relevant national authority. For information on the expected format for a specific country, see the [Company number](/guides/users/verification/company-number) guide. To validate the format of a number before submitting documents for verification, use [POST Validate the format of User data](/api-reference/user-data-format/validate-user-data-format).'
+        PendingUserAction:
+          oneOf:
+          - $ref: '#/components/schemas/LegalUserScaResponsePendingUserAction'
+          - type: 'null'
+          description: Object containing the `RedirectUrl` needed for SCA redirection if triggered by the API call (otherwise returned `null`).
+        HeadquartersAddress:
+          $ref: '#/components/schemas/LegalUserScaResponseHeadquartersAddress'
+          description: 'The legally registered address of the entity''s administrative center.
+
+            This object''s sub-parameters are `null` if the `UserCategory` is `PAYER`.'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/LegalUserScaResponseLegalRepresentativeAddress'
+          description: The address of the entity's legal representative.
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        PersonType:
+          type: string
+          description: '**Returned values:** NATURAL, LEGAL
+
+
+            The type of the user:
+
+            - `NATURAL` – Natural users are individuals (natural persons).
+
+            - `LEGAL` – Legal users are legal entities (legal persons) like companies, non-profits, and sole proprietors.
+
+
+            The `PersonType` is defined by the endpoint used to create the user and can''t be modified.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address for the entity.'
+        KYCLevel:
+          type: string
+          description: '**Default value:** `LIGHT`
+
+
+            **Returned values:** `LIGHT`, `REGULAR`
+
+
+            The verification status of the user set by Mangopay:
+
+            - `LIGHT` – Unverified, assigned by default to all users.
+
+            - `REGULAR` – Verified, meaning the user has successfully completed the verification process and had the necessary documents validated by Mangopay. Only users whose `UserCategory` is `OWNER` can submit verification documents for validation. Only users whose `KYCLevel` is `REGULAR` can request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        TermsAndConditionsAcceptedDate:
+          type:
+          - integer
+          - 'null'
+          description: 'The date and time at which the `TermsAndConditionsAccepted` value was set to `true`.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.'
+        UserCategory:
+          type: string
+          description: '**Possible values:** `PAYER`, `OWNER`, `PLATFORM`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.
+
+            - `PLATFORM` – Single specific user that represents the platform. The `PLATFORM` value is only assigned by Mangopay and may be used as part of the validated workflow implemented by the platform.'
+        UserStatus:
+          type: string
+          description: '**Returned values:** `PENDING_USER_ACTION`, `ACTIVE`, `CLOSED`
+
+
+            The status of the user:
+
+
+            - `PENDING_USER_ACTION` – The user must enroll in SCA before they can become `ACTIVE`.
+
+            - `ACTIVE` – The user account is active and the user can access Mangopay features.
+
+            - `CLOSED` – The user account is permanently closed. This value is used by Mangopay to close an account following the procedure outlined in the terms and conditions.'
+      description: 'Response body for a Legal User. The same schema is returned for `PAYER` and `OWNER` users.
+
+
+        If `UserCategory` is `PAYER`, the following are returned `null`:
+
+        - `LegalRepresentative.Birthday`
+
+        - `LegalRepresentative.Nationality`
+
+        - `LegalRepresentative.CountryOfResidence`
+
+        - `LegalRepresentative.Email`
+
+        - All `HeadquartersAddress` sub-properties
+
+        - `CompanyNumber`
+
+        - `TermsAndConditionsAcceptedDate`'
+      title: LegalUserSCAResponse
+    LegalRepresentative_CreatePayer_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: "Min. length: 1; max. length: 100 \n\nThe first name of the legal representative."
+        LastName:
+          type: string
+          description: "Min. length: 1; max. length: 100 \n\nThe last name of the legal representative."
+        PhoneNumber:
+          type: string
+          description: "Format: International E.164 standard (preceded by plus sign and country code) or local format. \n\nThe legal representative's phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.\n\nIf present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates."
+        PhoneNumberCountry:
+          type: string
+          description: "Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats)). \n\nRequired if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard."
+      required:
+      - FirstName
+      - LastName
+      description: Information about the legal representative declared for a `PAYER` Legal User.
+      title: LegalRepresentative_CreatePayer_Request
+    CreateNaturalOwnerSCARequest:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address.'
+        PhoneNumber:
+          type: string
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `OWNER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        Birthday:
+          type: integer
+          description: "Required if `UserCategory` is `OWNER`. \n\nThe date of birth of the individual. \n\n**Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before."
+        Nationality:
+          type: string
+          description: "Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats)) \n\nRequired if `UserCategory` is `OWNER`. The nationality of the individual."
+        CountryOfResidence:
+          type: string
+          description: "Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats)) \n\nRequired if `UserCategory` is `OWNER`. The country of residence of the individual."
+        Occupation:
+          type: string
+          description: The occupation of the individual.
+        IncomeRange:
+          type: integer
+          description: '**Allowed values:** `1`, `2`, `3`, `4`, `5`, `6`, `null`.
+
+
+            The bracket indicating the income of the individual. The brackets are:
+
+            - 1: < 18K
+
+            - 2: 18K - 30K
+
+            - 3: 30K - 50K
+
+            - 4: 50K - 80K
+
+            - 5: 80K - 120K
+
+            - 6: > 120K'
+        ScaContext:
+          type: string
+          description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+            **Default value:** `USER_PRESENT`
+
+
+            The SCA context of the request, which is **required** if the `OWNER` value is being assigned for `UserCategory`:
+
+            - `USER_PRESENT` – The user is on session during `OWNER` account creation and can enroll in SCA at the same time. The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session.
+
+            - `USER_NOT_PRESENT` – The platform has explicit permission from Mangopay to create the `OWNER` user account without simultaneous SCA enrollment (see [asynchronous SCA enrollment](/guides/sca/proxy-management#user-account-creation)).
+
+
+            **Note:** On User endpoints, `ScaContext` is not returned in the API response as it does not form part of the User data – it''s only related to the action being performed on the user.'
+      required:
+      - FirstName
+      - LastName
+      - Email
+      - TermsAndConditionsAccepted
+      - UserCategory
+      - Birthday
+      - Nationality
+      - CountryOfResidence
+      - ScaContext
+      description: 'Request body for creating a Natural User with `UserCategory` `OWNER`.
+
+
+        Owners must provide additional data, accept Mangopay''s T&Cs, and enroll in SCA via the `PendingUserAction.RedirectUrl` returned.'
+      title: CreateNaturalOwnerSCARequest
+    Address_SubPropsRequired:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: The postal address.
+      title: Address_SubPropsRequired
+    LegalRepresentative_UpdatePayer_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address.
+
+
+            **Caution:** If `UserCategory` is `OWNER`, modifying this value means the user will be required to re-enroll the new value in SCA via the `PendingUserAction.RedirectUrl`. For more details see the [SCA guides](/guides/sca/users).'
+        PhoneNumber:
+          type: string
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+      description: Information about the legal representative declared for the user.
+      title: LegalRepresentative_UpdatePayer_Request
+    CreateANaturalUserSCARequest:
+      oneOf:
+      - $ref: '#/components/schemas/CreateNaturalPayerSCARequest'
+      - $ref: '#/components/schemas/CreateNaturalOwnerSCARequest'
+      title: CreateANaturalUserSCARequest
+    CreateALegalUserSCARequest:
+      oneOf:
+      - $ref: '#/components/schemas/CreateALegalPayerSCARequest'
+      - $ref: '#/components/schemas/CreateALegalOwnerSCARequest'
+      title: CreateALegalUserSCARequest
+    UpdateANaturalUserRequest:
+      type: object
+      properties:
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `PAYER`, `OWNER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address of the user.'
+        Birthday:
+          type: integer
+          description: 'Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the individual.'
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Occupation:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The occupation of the individual.'
+        IncomeRange:
+          type: integer
+          description: '**Allowed values:** `1`, `2`, `3`, `4`, `5`, `6`, `null`
+
+
+            Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The bracket indicating the income of the individual. The brackets are:
+
+            - 1: < 18K
+
+            - 2: 18K - 30K
+
+            - 3: 30K - 50K
+
+            - 4: 50K - 80K
+
+            - 5: 80K - 120K
+
+            - 6: > 120K'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - UserCategory
+      - TermsAndConditionsAccepted
+      title: UpdateANaturalUserRequest
+    CreateALegalOwnerSCARequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        LegalPersonType:
+          type: string
+          description: '**Allowed values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address for the entity.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `OWNER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        LegalRepresentative:
+          $ref: '#/components/schemas/LegalRepresentative_CreateOwner_Request'
+        CompanyNumber:
+          type: string
+          description: 'Required if `LegalPersonType` is `BUSINESS`.
+
+
+            The registration number of the entity, assigned by the relevant national authority. For information on the expected format for a specific country, see the [Company number](/guides/users/verification/company-number) guide. To validate the format of a number before submitting documents for verification, use [POST Validate the format of User data](/api-reference/user-data-format/validate-user-data-format).'
+        ScaContext:
+          type: string
+          description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+            **Default value:** `USER_PRESENT`
+
+
+            The SCA context of the request, which is **required** if the `OWNER` value is being assigned for `UserCategory`:
+
+            - `USER_PRESENT` – The user is on session during `OWNER` account creation and can enroll in SCA at the same time. The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session.
+
+            - `USER_NOT_PRESENT` – The platform has explicit permission from Mangopay to create the `OWNER` user account without simultaneous SCA enrollment.
+
+
+            Read more about [asynchronous SCA enrollment](/guides/sca/proxy-management#user-account-creation) **&rarr;**
+
+
+            **Note:** On User endpoints, `ScaContext` is not returned in the API response as it does not form part of the User data – it''s only related to the action being performed on the user.'
+      required:
+      - Name
+      - LegalPersonType
+      - HeadquartersAddress
+      - Email
+      - TermsAndConditionsAccepted
+      - UserCategory
+      - LegalRepresentative
+      - ScaContext
+      description: 'Request body for creating a Legal User with `UserCategory` `OWNER`.
+
+
+        Owners must provide additional data, accept Mangopay''s T&Cs, and enroll in SCA via the `PendingUserAction.RedirectUrl` returned.'
+      title: CreateALegalOwnerSCARequest
+    LegalUserScaResponsePendingUserAction:
+      type: object
+      properties:
+        RedirectUrl:
+          type: string
+          description: 'The URL to which to redirect the user to perform strong customer authentication (SCA) via a Mangopay-hosted webpage. This value is a variable and should not be hardcoded.
+
+
+            The SCA session link expires 10 minutes after it''s generated.
+
+
+            **Caution:** Before redirecting the user on this URL, you must add the query parameter `ReturnUrl`  with the percent-encoded URL to which you want the SCA session to return the user after authentication (whether successful or not).
+
+
+            For more details, see [How to redirect a user for an SCA session](/guides/sca/session#how-to-redirect-a-user-for-sca).'
+      description: Object containing the `RedirectUrl` needed for SCA redirection if triggered by the API call (otherwise returned `null`).
+      title: LegalUserScaResponsePendingUserAction
+    UpdateALegalUserRequest:
+      type: object
+      properties:
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `PAYER`, `OWNER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        LegalPersonType:
+          type: string
+          description: '**Allowed values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address for the entity.'
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        CompanyNumber:
+          type: string
+          description: 'Required if `UserCategory` is `OWNER` and `LegalPersonType` is `BUSINESS`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The registration number of the entity, assigned by the relevant national authority. For information on the expected format for a specific country, see the [Company number](/guides/users/verification/company-number) guide. To validate the format of a number before submitting documents for verification, use [POST Validate the format of User data](/api-reference/user-data-format/validate-user-data-format).'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        LegalRepresentativeFirstName:
+          type: string
+          description: '_Min length: 1; max. length: 100_
+
+
+            The first name of the entity''s legal representative.'
+        LegalRepresentativeLastName:
+          type: string
+          description: '_Min length: 1; max. length: 100_
+
+
+            The last name of the entity''s legal representative.'
+        LegalRepresentativeEmail:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address of the entity''s legal representative. Returned `null` if `UserCategory` is `PAYER`.'
+        LegalRepresentativeBirthday:
+          type: integer
+          description: 'Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the entity''s legal representative.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        LegalRepresentativeNationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the entity''s legal representative.'
+        LegalRepresentativeCountryOfResidence:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the entity''s legal representative.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - UserCategory
+      - TermsAndConditionsAccepted
+      title: UpdateALegalUserRequest
+    NaturalUserSCAResponse:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Birthday:
+          type:
+          - integer
+          - 'null'
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type:
+          - string
+          - 'null'
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type:
+          - string
+          - 'null'
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the individual.'
+        Occupation:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The occupation of the individual.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.'
+        IncomeRange:
+          type:
+          - integer
+          - 'null'
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The bracket indicating the income of the individual. The brackets are:
+
+            - 1: < 18K
+
+            - 2: 18K - 30K
+
+            - 3: 30K - 50K
+
+            - 4: 50K - 80K
+
+            - 5: 80K - 120K
+
+            - 6: > 120K'
+        ProofOfIdentity:
+          type:
+          - string
+          - 'null'
+          description: The `Id` of the KYC Document whose `Type` is `IDENTITY_PROOF` if validated for the user. If no identity proof is validated, then this value is `null`.
+        ProofOfAddress:
+          type:
+          - string
+          - 'null'
+          description: The `Id` of the KYC Document whose `Type` is `ADDRESS_PROOF` if validated for the user. If no address proof is validated, then this value is `null`.
+        Capacity:
+          type: string
+          description: This is a deprecated parameter.
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type:
+          - string
+          - 'null'
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+        Address:
+          $ref: '#/components/schemas/Address'
+        PendingUserAction:
+          oneOf:
+          - $ref: '#/components/schemas/NaturalUserScaResponsePendingUserAction'
+          - type: 'null'
+          description: Object containing the `RedirectUrl` needed for SCA redirection if triggered by the API call (otherwise returned `null`).
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        PersonType:
+          type: string
+          description: '**Returned values:** `NATURAL`, `LEGAL`
+
+
+            The type of the user:
+
+            - `NATURAL` – Natural users are individuals (natural persons).
+
+            - `LEGAL` – Legal users are legal entities (legal persons) like companies, non-profits, and sole proprietors.
+
+
+            The `PersonType` is defined by the endpoint used to create the user and can''t be modified.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address.'
+        KYCLevel:
+          type: string
+          description: '**Default value:** `LIGHT`
+
+
+            **Returned values:** `LIGHT`, `REGULAR`
+
+
+            The verification status of the user set by Mangopay:
+
+            - `LIGHT` – Unverified, assigned by default to all users.
+
+            - `REGULAR` – Verified, meaning the user has successfully completed the verification process and had the necessary documents validated by Mangopay. Only users whose `UserCategory` is `OWNER` can submit verification documents for validation. Only users whose `KYCLevel` is `REGULAR` can request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        TermsAndConditionsAcceptedDate:
+          type:
+          - integer
+          - 'null'
+          description: 'The date and time at which the `TermsAndConditionsAccepted` value was set to `true`.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.'
+        UserCategory:
+          type: string
+          description: '**Possible values:** `PAYER`, `OWNER`, `PLATFORM`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.
+
+            - `PLATFORM` – Single specific user that represents the platform. The `PLATFORM` value is only assigned by Mangopay and may be used as part of the validated workflow implemented by the platform.'
+        UserStatus:
+          type: string
+          description: '**Returned values:** `PENDING_USER_ACTION`, `ACTIVE`, `CLOSED`
+
+
+            The status of the user:
+
+
+            - `PENDING_USER_ACTION` – The user must enroll in SCA before they can become `ACTIVE`.
+
+            - `ACTIVE` – The user account is active and the user can access Mangopay features.
+
+            - `CLOSED` – The user account is permanently closed. This value is used by Mangopay to close an account following the procedure outlined in the terms and conditions.'
+      description: 'Response body for a Natural User. The same schema is returned for `PAYER` and `OWNER` users.
+
+
+        If `UserCategory` is `PAYER`, the following are returned `null`:
+
+        - `Birthday`
+
+        - `Nationality`
+
+        - `CountryOfResidence`
+
+        - `Occupation`
+
+        - `IncomeRange`
+
+        - `TermsAndConditionsAcceptedDate`'
+      title: NaturalUserSCAResponse
+    UpdateLegalOwnerScaRequestHeadquartersAddress:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The first line of the address.'
+        AddressLine2:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The second line of the address.'
+        City:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The city of the address.'
+        Region:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            Required if `Country` is US, CA, or MX.
+
+
+            The region of the address.'
+        PostalCode:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: The country of the address.
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: 'Required if `UserCategory` is `OWNER`. Child parameters returned `null` if `UserCategory` is `PAYER`.
+
+
+        The legally registered address of the entity''s administrative center.'
+      title: UpdateLegalOwnerScaRequestHeadquartersAddress
+    PendingUserAction:
+      type: object
+      properties:
+        RedirectUrl:
+          type: string
+          description: 'The URL to which to redirect the user to perform strong customer authentication (SCA) via a Mangopay-hosted webpage. This value is a variable and should not be hardcoded.
+
+
+            The SCA session link expires 10 minutes after it''s generated.
+
+
+            **Caution:** Before redirecting the user on this URL, you must add the query parameter `ReturnUrl`  with the percent-encoded URL to which you want the SCA session to return the user after authentication (whether successful or not).
+
+
+            For more details, see [How to redirect a user for an SCA session](/guides/sca/session#how-to-redirect-a-user-for-sca).'
+      description: Object containing the `RedirectUrl` needed for SCA redirection if triggered by the API call (otherwise returned `null`).
+      title: PendingUserAction
+    UpdateNaturalOwnerSCARequest:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address.
+
+
+            **Caution:** If `UserCategory` is `OWNER`, modifying this value means the user will be required to re-enroll the new value in SCA via the `PendingUserAction.RedirectUrl`. For more details see the [SCA guides](/guides/sca/users).'
+        PhoneNumber:
+          type: string
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `OWNER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        Birthday:
+          type: integer
+          description: 'The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of residence of the individual.'
+        Occupation:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The occupation of the individual.'
+        IncomeRange:
+          type: integer
+          description: '**Allowed values:** `1`, `2`, `3`, `4`, `5`, `6`, `null`.
+
+
+            The bracket indicating the income of the individual. The brackets are:
+
+            - 1: < 18K
+
+            - 2: 18K - 30K
+
+            - 3: 30K - 50K
+
+            - 4: 50K - 80K
+
+            - 5: 80K - 120K
+
+            - 6: > 120K'
+        ScaContext:
+          type: string
+          description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+            **Default value:** `USER_PRESENT`
+
+
+            The SCA context of the request, which is **required** if the user''s `UserCategory` is `OWNER`:
+
+            - `USER_PRESENT` – The user is taking the SCA-triggering action of updating account information and must re-enroll in SCA. The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session.
+
+            - `USER_NOT_PRESENT` – The platform is taking the action under proxy from the user and the user has previously given consent to Mangopay (via the SCA hosted experience) to allow the action. If the user has not given (or has revoked) their consent, then `USER_NOT_PRESENT` returns a 403 error.
+
+
+            Read more about [managing proxy and user consent](/guides/sca/proxy-management) **&rarr;**
+
+
+            **Note:** On User endpoints, `ScaContext` is not returned in the API response as it does not form part of the User data – it''s only related to the action being performed on the user.'
+      required:
+      - TermsAndConditionsAccepted
+      - UserCategory
+      description: 'Request body for updating a Natural User with `UserCategory` `OWNER`.
+
+
+        Modifying `Email`, `PhoneNumber` or `PhoneNumberCountry` requires re-enrollment in SCA via the `PendingUserAction.RedirectUrl` returned.'
+      title: UpdateNaturalOwnerSCARequest
+    LegalUserScaResponseHeadquartersAddress:
+      type: object
+      properties:
+        AddressLine1:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The first line of the address.'
+        AddressLine2:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The second line of the address.'
+        City:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The city of the address.'
+        Region:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The region of the address. This field is optional except if the `Country` is US, CA, or MX.'
+        PostalCode:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type:
+          - string
+          - 'null'
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: 'The legally registered address of the entity''s administrative center.
+
+        This object''s sub-parameters are `null` if the `UserCategory` is `PAYER`.'
+      title: LegalUserScaResponseHeadquartersAddress
+    UpdateALegalUserSCARequest:
+      oneOf:
+      - $ref: '#/components/schemas/UpdateLegalPayerSCARequest'
+      - $ref: '#/components/schemas/UpdateLegalOwnerSCARequest'
+      title: UpdateALegalUserSCARequest
+    UpdateLegalPayerSCARequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        LegalPersonType:
+          type: string
+          description: '**Allowed values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        LegalRepresentative:
+          $ref: '#/components/schemas/LegalRepresentative_UpdatePayer_Request'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address for the entity.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `PAYER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+      required:
+      - TermsAndConditionsAccepted
+      - UserCategory
+      description: Request body for updating a Legal User with `UserCategory` `PAYER`.
+      title: UpdateLegalPayerSCARequest
+    ConsentScope:
+      type: object
+      properties:
+        ContactInformationUpdate:
+          type:
+          - string
+          - 'null'
+          description: 'The status of the user''s consent for your platform to update their SCA contact information on their behalf using:
+
+            - [PUT Update a Natural User (SCA)](/api-reference/users/update-natural-user-sca) to modify the `PhoneNumber`, `PhoneNumberCountry`, or `Email`
+
+            - [PUT Update a Legal User (SCA)](/api-reference/users/update-legal-user-sca) to modify the `PhoneNumber`, `PhoneNumberCountry`, or `Email` of the `LegalRepresentative`
+
+
+            **Possible values:** `ACTIVE`, `INACTIVE`, `null`'
+        RecipientRegistration:
+          type:
+          - string
+          - 'null'
+          description: 'The status of the user''s consent for your platform to register an external bank or payment account on their behalf using:
+
+            - [POST Create a Recipient](/api-reference/recipients/create-recipient)
+
+
+            **Possible values:** `ACTIVE`, `INACTIVE`, `null`'
+        Transfer:
+          type:
+          - string
+          - 'null'
+          description: 'The status of the user''s consent for your platform to initiate a transfer to another `OWNER` user on their behalf using:
+
+            - [POST Create a Transfer](/api-reference/transfers/create-transfer)
+
+
+            **Possible values:** `ACTIVE`, `INACTIVE`, `null`'
+        ViewAccountInformation:
+          type:
+          - string
+          - 'null'
+          description: 'The status of the user''s consent for your platform to retrieve wallet and transaction data on their behalf using:
+
+            - [GET View a Wallet](/api-reference/wallets/view-wallet)
+
+            - [GET List Wallets for a User](/api-reference/wallets/list-wallets-user)
+
+            - [GET List Transactions for a User](/api-reference/transactions/list-transactions-user)
+
+            - [GET List Transactions for a Wallet](/api-reference/transactions/list-transactions-wallet)
+
+
+            **Possible values:** `ACTIVE`, `INACTIVE`, `null`'
+      description: 'Whether or not the user has given consent to the [proxy action scope](/guides/sca/proxy-management) via the SCA hosted experience:
+
+
+        - `ACTIVE` - The user has given consent by checking the corresponding checkbox.
+
+        - `INACTIVE` - The user has not yet given consent or has revoked consent.
+
+        - `null` – The corresponding scope does not have proxy management configured for your platform.
+
+
+        If a scope is `ACTIVE`, your platform can call the relevant endpoint with `ScaContext` set to `USER_NOT_PRESENT` to take the action under proxy.
+
+
+        If a scope is `INACTIVE`, your platform has two options:
+
+        - Call the relevant endpoint with the user on session to complete SCA by redirecting them using the returned `PendingUserAction.RedirectUrl`.
+
+        - Ask the user to give consent using the `PendingUserAction.RedirectUrl` returned by the [POST Manage proxy consent for a User](/api-reference/users/manage-proxy-consent) endpoint, then re-try the action with `ScaContext` set to `USER_NOT_PRESENT`.'
+      title: ConsentScope
+    Address:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The postal address.
+      title: Address
+    ViewAUserSCAResponse:
+      oneOf:
+      - $ref: '#/components/schemas/NaturalUserSCAResponse'
+      - $ref: '#/components/schemas/LegalUserSCAResponse'
+      title: ViewAUserSCAResponse
+    NaturalUserResponse:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/Address'
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Birthday:
+          type: integer
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type: string
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the individual.'
+        Occupation:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The occupation of the individual.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.'
+        IncomeRange:
+          type: integer
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The bracket indicating the income of the individual. The brackets are:
+
+            - 1: < 18K
+
+            - 2: 18K - 30K
+
+            - 3: 30K - 50K
+
+            - 4: 50K - 80K
+
+            - 5: 80K - 120K
+
+            - 6: > 120K'
+        ProofOfIdentity:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `IDENTITY_PROOF` if validated for the user. If no identity proof is validated, then this value is `null`.
+        ProofOfAddress:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `ADDRESS_PROOF` if validated for the user. If no address proof is validated, then this value is `null`.
+        Capacity:
+          type: string
+          description: This is a deprecated parameter.
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        PersonType:
+          type: string
+          description: '**Returned values:** NATURAL, LEGAL
+
+
+            The type of the user:
+
+            - `NATURAL` – Natural users are individuals (natural persons).
+
+            - `LEGAL` – Legal users are legal entities (legal persons) like companies, non-profits, and sole proprietors.
+
+
+            The `PersonType` is defined by the endpoint used to create the user and can''t be modified.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address of the user.'
+        KYCLevel:
+          type: string
+          description: '**Default value:** `LIGHT`
+
+
+            **Returned values:** `LIGHT`, `REGULAR`
+
+
+            The verification status of the user set by Mangopay:
+
+            - `LIGHT` – Unverified, assigned by default to all users.
+
+            - `REGULAR` – Verified, meaning the user has successfully completed the verification process and had the necessary documents validated by Mangopay. Only users whose `UserCategory` is `OWNER` can submit verification documents for validation. Only users whose `KYCLevel` is `REGULAR` can request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        TermsAndConditionsAcceptedDate:
+          type: integer
+          description: 'Unix timestamp (UTC) of the date and time the `TermsAndConditionsAccepted` value was set to `true`.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.'
+        UserCategory:
+          type: string
+          description: '**Possible values:** `PAYER`, `OWNER`, `PLATFORM`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.
+
+            - `PLATFORM` – Single specific user that represents the platform. The `PLATFORM` value is only assigned by Mangopay and may be used as part of the validated workflow implemented by the platform.'
+        UserStatus:
+          type: string
+          description: '**Returned values:** ACTIVE, CLOSED
+
+
+            Internal use only. This field can only be used and updated by Mangopay teams.'
+      title: NaturalUserResponse
+    CreateALegalPayerSCARequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        LegalPersonType:
+          type: string
+          description: '**Allowed values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address for the entity.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `PAYER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        LegalRepresentative:
+          $ref: '#/components/schemas/LegalRepresentative_CreatePayer_Request'
+        CompanyNumber:
+          type: string
+          description: Has no effect if `UserCategory` is `PAYER`.
+      required:
+      - Name
+      - LegalPersonType
+      - Email
+      - TermsAndConditionsAccepted
+      - UserCategory
+      - LegalRepresentative
+      description: Request body for creating a Legal User with `UserCategory` `PAYER`.
+      title: CreateALegalPayerSCARequest
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    LegalUserResponse:
+      type: object
+      properties:
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/Address'
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        LegalPersonType:
+          type: string
+          description: '**Returned values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        LegalRepresentativeFirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the entity''s legal representative.'
+        LegalRepresentativeLastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the entity''s legal representative.'
+        LegalRepresentativeEmail:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address of the entity''s legal representative. Returned `null` if `UserCategory` is `PAYER`.'
+        LegalRepresentativeBirthday:
+          type: integer
+          description: 'The date of birth of the entity''s legal representative.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        LegalRepresentativeNationality:
+          type: string
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the entity''s legal representative.'
+        LegalRepresentativeCountryOfResidence:
+          type: string
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the entity''s legal representative.'
+        ProofOfRegistration:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `REGISTRATION_PROOF` if validated for the user. If no registration proof is validated, then this value is `null`.
+        ShareholderDeclaration:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `SHAREHOLDERS_DECLARATION` if validated for the user. If no Shareholder Declaration is validated, then this value is `null`.
+        Statute:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `ARTICLES_OF_ASSOCIATION` if validated for the user. If no articles of association document is validated, then this value is `null`.
+        LegalRepresentativeProofOfIdentity:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `IDENTITY_PROOF` if validated for the user. If no identity proof is validated, then this value is `null`.
+        CompanyNumber:
+          type: string
+          description: 'Required if `UserCategory` is `OWNER` and `LegalPersonType` is `BUSINESS`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The registration number of the entity, assigned by the relevant national authority. For information on the expected format for a specific country, see the [Company number](/guides/users/verification/company-number) guide. To validate the format of a number before submitting documents for verification, use [POST Validate the format of User data](/api-reference/user-data-format/validate-user-data-format).'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        PersonType:
+          type: string
+          description: '**Returned values:** NATURAL, LEGAL
+
+
+            The type of the user:
+
+            - `NATURAL` – Natural users are individuals (natural persons).
+
+            - `LEGAL` – Legal users are legal entities (legal persons) like companies, non-profits, and sole proprietors.
+
+
+            The `PersonType` is defined by the endpoint used to create the user and can''t be modified.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address for the entity.'
+        KYCLevel:
+          type: string
+          description: '**Default value:** `LIGHT`
+
+
+            **Returned values:** `LIGHT`, `REGULAR`
+
+
+            The verification status of the user set by Mangopay:
+
+            - `LIGHT` – Unverified, assigned by default to all users.
+
+            - `REGULAR` – Verified, meaning the user has successfully completed the verification process and had the necessary documents validated by Mangopay. Only users whose `UserCategory` is `OWNER` can submit verification documents for validation. Only users whose `KYCLevel` is `REGULAR` can request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        TermsAndConditionsAcceptedDate:
+          type: integer
+          description: 'Unix timestamp (UTC) of the date and time the `TermsAndConditionsAccepted` value was set to `true`.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.'
+        UserCategory:
+          type: string
+          description: '**Possible values:** `PAYER`, `OWNER`, `PLATFORM`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.
+
+            - `PLATFORM` – Single specific user that represents the platform. The `PLATFORM` value is only assigned by Mangopay and may be used as part of the validated workflow implemented by the platform.'
+        UserStatus:
+          type: string
+          description: '**Returned values:** ACTIVE, CLOSED
+
+
+            Internal use only. This field can only be used and updated by Mangopay teams.'
+      title: LegalUserResponse
+    UpdateLegalOwnerSCARequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        LegalPersonType:
+          type: string
+          description: '**Allowed values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        LegalRepresentative:
+          $ref: '#/components/schemas/LegalRepresentative_UpdateOwner_Request'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address for the entity.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `OWNER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        CompanyNumber:
+          type: string
+          description: 'Required if `UserCategory` is `OWNER` and `LegalPersonType` is `BUSINESS`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The registration number of the entity, assigned by the relevant national authority. For information on the expected format for a specific country, see the [Company number](/guides/users/verification/company-number) guide. To validate the format of a number before submitting documents for verification, use [POST Validate the format of User data](/api-reference/user-data-format/validate-user-data-format).'
+        HeadquartersAddress:
+          $ref: '#/components/schemas/UpdateLegalOwnerScaRequestHeadquartersAddress'
+          description: 'Required if `UserCategory` is `OWNER`. Child parameters returned `null` if `UserCategory` is `PAYER`.
+
+
+            The legally registered address of the entity''s administrative center.'
+        ScaContext:
+          type: string
+          description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+            **Default value:** `USER_PRESENT`
+
+
+            The SCA context of the request, which is **required** if the user''s `UserCategory` is `OWNER`:
+
+
+            * `USER_PRESENT` – The user is taking the SCA-triggering action of updating account information and must re-enroll in SCA . The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session.
+
+            * `USER_NOT_PRESENT` – The platform is taking the action under proxy from the user and the user has previously given consent to Mangopay (via the SCA hosted experience) to allow the action. If the user has not given (or has revoked) their consent, then `USER_NOT_PRESENT` returns a 403 error.
+
+
+            Read more about [managing proxy and user consent](/guides/sca/proxy-management) **&rarr;**
+
+
+            **Note:** On User endpoints, `ScaContext` is not returned in the API response as it does not form part of the User data – it''s only related to the action being performed on the user.'
+      required:
+      - TermsAndConditionsAccepted
+      - UserCategory
+      description: 'Request body for updating a Legal User with `UserCategory` `OWNER`.
+
+
+        Modifying `LegalRepresentative.Email`, `LegalRepresentative.PhoneNumber` or `LegalRepresentative.PhoneNumberCountry` requires re-enrollment in SCA via the `PendingUserAction.RedirectUrl` returned.'
+      title: UpdateLegalOwnerSCARequest
+    LegalRepresentative_UpdateOwner_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address.
+
+
+            **Caution:** If `UserCategory` is `OWNER`, modifying this value means the user will be required to re-enroll the new value in SCA via the `PendingUserAction.RedirectUrl`. For more details see the [SCA guides](/guides/sca/users).'
+        PhoneNumber:
+          type: string
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+        Birthday:
+          type: integer
+          description: 'Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the individual.'
+      description: Information about the legal representative declared for the user.
+      title: LegalRepresentative_UpdateOwner_Request
+    LegalRepresentative_CreateOwner_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: "Min. length: 1; max. length: 100 \n\nThe first name of the legal representative."
+        LastName:
+          type: string
+          description: "Min. length: 1; max. length: 100 \n\nThe last name of the legal representative."
+        Birthday:
+          type: integer
+          description: "Required if `UserCategory` is `OWNER`. \n\nThe date of birth of the legal representative. \n\n**Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before."
+        Nationality:
+          type: string
+          description: "Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats)). \n\nRequired if `UserCategory` is `OWNER`.\n\nThe nationality of the legal representative."
+        CountryOfResidence:
+          type: string
+          description: "Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats)). \n\nRequired if `UserCategory` is `OWNER`. \n\nThe country of residence of the legal representative."
+        Email:
+          type: string
+          description: "Format: A valid email address\n\nRequired if `UserCategory` is `OWNER`. \n\nThe legal representative's email address. SCA uses this email address to build a [behavioral biometrics profile](/guides/sca/factors#email-confirmation-behavioral-biometrics) and as a backup communication channel."
+        PhoneNumber:
+          type: string
+          description: "Format: International E.164 standard (preceded by plus sign and country code) or local format. \n\nThe legal representative's phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.\n\nIf present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.\n\nFor users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API."
+        PhoneNumberCountry:
+          type: string
+          description: "Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats)). \n\nRequired if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard."
+      required:
+      - FirstName
+      - LastName
+      - Birthday
+      - Nationality
+      - CountryOfResidence
+      - Email
+      description: Information about the legal representative declared for an `OWNER` Legal User.
+      title: LegalRepresentative_CreateOwner_Request
+    LegalRepresentative_Response:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        ProofOfIdentity:
+          type:
+          - string
+          - 'null'
+          description: The `Id` of the KYC Document whose `Type` is `IDENTITY_PROOF` if validated for the user. If no identity proof is validated, then this value is `null`.
+        Birthday:
+          type:
+          - integer
+          - 'null'
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type:
+          - string
+          - 'null'
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type:
+          - string
+          - 'null'
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the individual.'
+        Email:
+          type:
+          - string
+          - 'null'
+          description: 'Format: A valid email address
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The individual''s email address. For `OWNER` users, SCA uses this email address to build a [behavioral biometrics profile](/guides/sca/factors#email-confirmation-behavioral-biometrics) and as a backup communication channel.'
+        PhoneNumberCountry:
+          type:
+          - string
+          - 'null'
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+        PhoneNumber:
+          type:
+          - string
+          - 'null'
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+      description: Information about the legal representative declared for the user.
+      title: LegalRepresentative_Response
+    UpdateANaturalUserSCARequest:
+      oneOf:
+      - $ref: '#/components/schemas/UpdateNaturalPayerSCARequest'
+      - $ref: '#/components/schemas/UpdateNaturalOwnerSCARequest'
+      title: UpdateANaturalUserSCARequest
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    CreateANaturalUserRequest:
+      type: object
+      properties:
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `PAYER`, `OWNER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address of the user.'
+        Birthday:
+          type: integer
+          description: 'Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the individual.'
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Occupation:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The occupation of the individual.'
+        IncomeRange:
+          type: integer
+          description: '**Allowed values:** `1`, `2`, `3`, `4`, `5`, `6`, `null`
+
+
+            Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The bracket indicating the income of the individual. The brackets are:
+
+            - 1: < 18K
+
+            - 2: 18K - 30K
+
+            - 3: 30K - 50K
+
+            - 4: 50K - 80K
+
+            - 5: 80K - 120K
+
+            - 6: > 120K'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - UserCategory
+      - TermsAndConditionsAccepted
+      - FirstName
+      - LastName
+      - Email
+      title: CreateANaturalUserRequest
+    ListAllUsersResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/ListAllUsersResponseItems'
+      description: The list of users created by the platform.
+      title: ListAllUsersResponse
+    CreateALegalUserRequest:
+      type: object
+      properties:
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `PAYER`, `OWNER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        LegalPersonType:
+          type: string
+          description: '**Allowed values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address for the entity.'
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        CompanyNumber:
+          type: string
+          description: 'Required if `UserCategory` is `OWNER` and `LegalPersonType` is `BUSINESS`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The registration number of the entity, assigned by the relevant national authority. For information on the expected format for a specific country, see the [Company number](/guides/users/verification/company-number) guide. To validate the format of a number before submitting documents for verification, use [POST Validate the format of User data](/api-reference/user-data-format/validate-user-data-format).'
+        LegalRepresentativeFirstName:
+          type: string
+          description: '_Min length: 1; max. length: 100_
+
+
+            The first name of the entity''s legal representative.'
+        LegalRepresentativeLastName:
+          type: string
+          description: '_Min length: 1; max. length: 100_
+
+
+            The last name of the entity''s legal representative.'
+        LegalRepresentativeEmail:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address of the entity''s legal representative. Returned `null` if `UserCategory` is `PAYER`.'
+        LegalRepresentativeBirthday:
+          type: integer
+          description: 'Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the entity''s legal representative.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        LegalRepresentativeNationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the entity''s legal representative.'
+        LegalRepresentativeCountryOfResidence:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if `UserCategory` is `OWNER`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the entity''s legal representative.'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - UserCategory
+      - TermsAndConditionsAccepted
+      - LegalPersonType
+      - Name
+      - Email
+      - LegalRepresentativeFirstName
+      - LegalRepresentativeLastName
+      title: CreateALegalUserRequest
+    LegalRepresentative_Categorize_Request:
+      type: object
+      properties:
+        Birthday:
+          type: integer
+          description: 'The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of residence of the individual.'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address. For `OWNER` users, SCA uses this email address to build a [behavioral biometrics profile](/guides/sca/factors#email-confirmation-behavioral-biometrics) and as a backup communication channel.'
+        PhoneNumber:
+          type: string
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+      required:
+      - Birthday
+      - Nationality
+      - CountryOfResidence
+      description: Information about the legal representative declared for the user.
+      title: LegalRepresentative_Categorize_Request
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    ViewAUserResponse:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/Address'
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Birthday:
+          type: integer
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type: string
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the individual.'
+        Occupation:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The occupation of the individual. Returned `null` if `UserCategory` is `PAYER`.'
+        IncomeRange:
+          type: integer
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The bracket indicating the income of the individual. The brackets are:
+
+            - 1: < 18K
+
+            - 2: 18K - 30K
+
+            - 3: 30K - 50K
+
+            - 4: 50K - 80K
+
+            - 5: 80K - 120K
+
+            - 6: > 120K'
+        ProofOfIdentity:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `IDENTITY_PROOF` if validated for the user. If no identity proof is validated, then this value is `null`.
+        ProofOfAddress:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `ADDRESS_PROOF` if validated for the user. If no address proof is validated, then this value is `null`.
+        Capacity:
+          type: string
+          description: This is a deprecated parameter.
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        PersonType:
+          type: string
+          description: '**Returned values:** NATURAL, LEGAL
+
+
+            The type of the user:
+
+            - `NATURAL` – Natural users are individuals (natural persons).
+
+            - `LEGAL` – Legal users are legal entities (legal persons) like companies, non-profits, and sole proprietors.
+
+
+            The `PersonType` is defined by the endpoint used to create the user and can''t be modified.'
+        Email:
+          type: string
+          description: The email address for the entity.
+        KYCLevel:
+          type: string
+          description: '**Default value:** `LIGHT`
+
+
+            **Returned values:** `LIGHT`, `REGULAR`
+
+
+            The verification status of the user set by Mangopay:
+
+            - `LIGHT` – Unverified, assigned by default to all users.
+
+            - `REGULAR` – Verified, meaning the user has successfully completed the verification process and had the necessary documents validated by Mangopay. Only users whose `UserCategory` is `OWNER` can submit verification documents for validation. Only users whose `KYCLevel` is `REGULAR` can request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        TermsAndConditionsAcceptedDate:
+          type: integer
+          description: 'Unix timestamp (UTC) of the date and time the `TermsAndConditionsAccepted` value was set to `true`.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.'
+        UserCategory:
+          type: string
+          description: '**Possible values:** `PAYER`, `OWNER`, `PLATFORM`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.
+
+            - `PLATFORM` – Single specific user that represents the platform. The `PLATFORM` value is only assigned by Mangopay and may be used as part of the validated workflow implemented by the platform.'
+        UserStatus:
+          type: string
+          description: '**Returned values:** ACTIVE, CLOSED
+
+
+            Internal use only. This field can only be used and updated by Mangopay teams.'
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address'
+        LegalRepresentativeAddress:
+          $ref: '#/components/schemas/Address'
+        Name:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The registered legal name of the entity. The `Name` value should be the one registered with the relevant national authority.'
+        LegalPersonType:
+          type: string
+          description: '**Returned values:** BUSINESS, PARTNERSHIP, ORGANIZATION, SOLETRADER
+
+
+            The type of legal user. For information on which `LegalPersonType` to use for a particular local legal structure, see the <a href="/guides/users/verification/requirements" target="_blank">verification requirements</a>.
+
+
+            **Caution:** Modification of the `LegalPersonType` may result in a <a href="/guides/users/verification/downgrade" target="_blank">verification downgrade</a>.'
+        LegalRepresentativeFirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the entity''s legal representative.'
+        LegalRepresentativeLastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the entity''s legal representative.'
+        LegalRepresentativeEmail:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The email address of the entity''s legal representative. Returned `null` if `UserCategory` is `PAYER`.'
+        LegalRepresentativeBirthday:
+          type: integer
+          description: 'The date of birth of the entity''s legal representative.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        LegalRepresentativeNationality:
+          type: string
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The nationality of the entity''s legal representative.'
+        LegalRepresentativeCountryOfResidence:
+          type: string
+          description: 'Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The country of residence of the entity''s legal representative.'
+        ProofOfRegistration:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `REGISTRATION_PROOF` if validated for the user. If no registration proof is validated, then this value is `null`.
+        ShareholderDeclaration:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `SHAREHOLDERS_DECLARATION` if validated for the user. If no Shareholder Declaration is validated, then this value is `null`.
+        Statute:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `ARTICLES_OF_ASSOCIATION` if validated for the user. If no articles of association document is validated, then this value is `null`.
+        LegalRepresentativeProofOfIdentity:
+          type: string
+          description: The `Id` of the KYC Document whose `Type` is `IDENTITY_PROOF` if validated for the user. If no identity proof is validated, then this value is `null`.
+        CompanyNumber:
+          type: string
+          description: 'Required if `UserCategory` is `OWNER` and `LegalPersonType` is `BUSINESS`. Returned `null` if `UserCategory` is `PAYER`.
+
+
+            The registration number of the entity, assigned by the relevant national authority. For information on the expected format for a specific country, see the [Company number](/guides/users/verification/company-number) guide. To validate the format of a number before submitting documents for verification, use [POST Validate the format of User data](/api-reference/user-data-format/validate-user-data-format).'
+      title: ViewAUserResponse
+    ViewTheSCAStatusOfAUserResponse:
+      type: object
+      properties:
+        UserStatus:
+          type: string
+          description: '**Returned values:** `PENDING_USER_ACTION`, `ACTIVE`, `CLOSED`
+
+
+            The status of the user:
+
+
+            - `PENDING_USER_ACTION` – The user must enroll in SCA before they can become `ACTIVE`.
+
+            - `ACTIVE` – The user account is active and the user can access Mangopay features.
+
+            - `CLOSED` – The user account is permanently closed. This value is used by Mangopay to close an account following the procedure outlined in the terms and conditions.'
+        IsEnrolled:
+          type: boolean
+          description: Whether or not the User has been enrolled in SCA. This value is `false` before the User enrolls successfully for the first time. Once enrolled, this value remains `true` during re-enrollment (but the `UserStatus` changes to `PENDING_USER_ACTION`).
+        LastEnrollmentDate:
+          type:
+          - string
+          - 'null'
+          description: The date and time of the last successful SCA enrollment, whether for the first time or a re-enrollment. Not returned if the user has not yet completed enrollment
+        LastConsentCollectionDate:
+          type:
+          - string
+          - 'null'
+          description: The date and time of the last modification to any of the 4 scopes, whether to give or revoke consent.
+        ConsentScope:
+          $ref: '#/components/schemas/ConsentScope'
+      title: ViewTheSCAStatusOfAUserResponse
+    CategorizeALegalUserRequest:
+      type: object
+      properties:
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `OWNER`
+
+
+            The new category of the user, which must be `OWNER`.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: '**Allowed values:** `true`
+
+
+            Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).'
+        LegalRepresentative:
+          $ref: '#/components/schemas/LegalRepresentative_Categorize_Request'
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        CompanyNumber:
+          type: string
+          description: 'Required if `LegalPersonType` is `BUSINESS`.
+
+
+            The registration number of the entity, assigned by the relevant national authority. For information on the expected format for a specific country, see the [Company number](/guides/users/verification/company-number) guide. To validate the format of a number before submitting documents for verification, use [POST Validate the format of User data](/api-reference/user-data-format/validate-user-data-format).'
+        ScaContext:
+          type: string
+          description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+            **Default value:** `USER_PRESENT`
+
+
+            The SCA context of the request, which is **required** if the `OWNER` value is being assigned for `UserCategory`:
+
+            - `USER_PRESENT` – The user is on session during `OWNER` account creation and can enroll in SCA at the same time. The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session.
+
+            - `USER_NOT_PRESENT` – The platform has explicit permission from Mangopay to create the `OWNER` user account without simultaneous SCA enrollment.
+
+
+            Read more about [asynchronous SCA enrollment](/guides/sca/proxy-management#user-account-creation) **&rarr;**
+
+
+            **Note:** On User endpoints, `ScaContext` is not returned in the API response as it does not form part of the User data – it''s only related to the action being performed on the user.'
+      required:
+      - UserCategory
+      - TermsAndConditionsAccepted
+      - LegalRepresentative
+      - HeadquartersAddress
+      title: CategorizeALegalUserRequest
+    CategorizeANaturalUserRequest:
+      type: object
+      properties:
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `OWNER`
+
+
+            The new category of the user, which must be `OWNER`.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: '**Allowed values:** `true`
+
+
+            Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address.'
+        Birthday:
+          type: integer
+          description: 'The date of birth of the individual.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The nationality of the individual.'
+        CountryOfResidence:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of residence of the individual.'
+        PhoneNumber:
+          type: string
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+        ScaContext:
+          type: string
+          description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+            **Default value:** `USER_PRESENT`
+
+
+            The SCA context of the request, which is **required** if the `OWNER` value is being assigned for `UserCategory`:
+
+            - `USER_PRESENT` – The user is on session during `OWNER` account creation and can enroll in SCA at the same time. The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session.
+
+            - `USER_NOT_PRESENT` – The platform has explicit permission from Mangopay to create the `OWNER` user account without simultaneous SCA enrollment.
+
+
+            Read more about [asynchronous SCA enrollment](/guides/sca/proxy-management#user-account-creation) **&rarr;**
+
+
+            **Note:** On User endpoints, `ScaContext` is not returned in the API response as it does not form part of the User data – it''s only related to the action being performed on the user.'
+      required:
+      - UserCategory
+      - TermsAndConditionsAccepted
+      - Birthday
+      - Nationality
+      - CountryOfResidence
+      title: CategorizeANaturalUserRequest
+    EnrollUserManageProxyConsentResponse:
+      type: object
+      properties:
+        PendingUserAction:
+          $ref: '#/components/schemas/PendingUserAction'
+      title: EnrollUserManageProxyConsentResponse
+    ListAllUsersResponseItems:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        PersonType:
+          type: string
+          description: '**Returned values:** NATURAL, LEGAL
+
+
+            The type of the user:
+
+            - `NATURAL` – Natural users are individuals (natural persons).
+
+            - `LEGAL` – Legal users are legal entities (legal persons) like companies, non-profits, and sole proprietors.
+
+
+            The `PersonType` is defined by the endpoint used to create the user and can''t be modified.'
+        Email:
+          type: string
+          description: The email address of the user.
+        KYCLevel:
+          type: string
+          description: '**Default value:** `LIGHT`
+
+
+            **Returned values:** `LIGHT`, `REGULAR`
+
+
+            The verification status of the user set by Mangopay:
+
+            - `LIGHT` – Unverified, assigned by default to all users.
+
+            - `REGULAR` – Verified, meaning the user has successfully completed the verification process and had the necessary documents validated by Mangopay. Only users whose `UserCategory` is `OWNER` can submit verification documents for validation. Only users whose `KYCLevel` is `REGULAR` can request payouts.'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        TermsAndConditionsAcceptedDate:
+          type: integer
+          description: 'Unix timestamp (UTC) of the date and time the `TermsAndConditionsAccepted` value was set to `true`.
+
+
+            Returned `null` if `UserCategory` is `PAYER`.'
+        UserCategory:
+          type: string
+          description: '**Possible values:** `PAYER`, `OWNER`, `PLATFORM`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.
+
+            - `PLATFORM` – Single specific user that represents the platform. The `PLATFORM` value is only assigned by Mangopay and may be used as part of the validated workflow implemented by the platform.'
+        UserStatus:
+          type: string
+          description: '**Returned values:** ACTIVE, CLOSED
+
+
+            Internal use only. This field can only be used and updated by Mangopay teams.'
+      description: The key information on the user created by the platform.
+      title: ListAllUsersResponseItems
+    UpdateNaturalPayerSCARequest:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address.
+
+
+            **Caution:** If `UserCategory` is `OWNER`, modifying this value means the user will be required to re-enroll the new value in SCA via the `PendingUserAction.RedirectUrl`. For more details see the [SCA guides](/guides/sca/users).'
+        PhoneNumber:
+          type: string
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `PAYER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+      required:
+      - TermsAndConditionsAccepted
+      - UserCategory
+      description: Request body for updating a Natural User with `UserCategory` `PAYER`.
+      title: UpdateNaturalPayerSCARequest
+    CreateNaturalPayerSCARequest:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The first name of the individual.'
+        LastName:
+          type: string
+          description: 'Min. length: 1; max. length: 100
+
+
+            The last name of the individual.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The individual''s email address.'
+        PhoneNumber:
+          type: string
+          description: 'Format: International E.164 standard (preceded by plus sign and country code) or local format
+
+
+            The individual''s phone number. The local format (recommended) requires `PhoneNumberCountry` to ensure correct formatting.
+
+
+            If present, the phone number forms part of card transaction data that is passed to issuers to improve authentication rates.
+
+
+            For users with `UserCategory` `OWNER` , the phone number is used to pre-populate the SCA session for them to confirm and receive an SMS OTP. If the individual modifies the phone number during the session, this data is not updated in the API.'
+        PhoneNumberCountry:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            Required if the `PhoneNumber` is provided in local format (recommended), to render the value in the E.164 standard.'
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        TermsAndConditionsAccepted:
+          type: boolean
+          description: 'Whether the user has accepted Mangopay''s terms and conditions (as defined by your contract, see the [T&Cs guide](/guides/users/terms) for details).
+
+
+            Must be `true` if `UserCategory` is `OWNER`.'
+        UserCategory:
+          type: string
+          description: '**Allowed values:** `PAYER`
+
+
+            The [category](/guides/users/categories) of the user:
+
+            - `PAYER` – User who can only make pay-ins to their wallets and transfers to other wallets (as well as refunds for pay-ins and transfers).
+
+            - `OWNER` – User who can also receive transfers to their wallets. Owners are able to request [KYC verification](/guides/users/verification), which if successful gives them the `KYCLevel` of `REGULAR` and the ability to request payouts.'
+      required:
+      - FirstName
+      - LastName
+      - Email
+      - TermsAndConditionsAccepted
+      - UserCategory
+      description: Request body for creating a Natural User with `UserCategory` `PAYER`.
+      title: CreateNaturalPayerSCARequest
+    LegalUserScaResponseLegalRepresentativeAddress:
+      type: object
+      properties:
+        AddressLine1:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The first line of the address.'
+        AddressLine2:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The second line of the address.'
+        City:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The city of the address.'
+        Region:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The region of the address. This field is optional except if the `Country` is US, CA, or MX.'
+        PostalCode:
+          type:
+          - string
+          - 'null'
+          description: 'Max. length: 255 characters
+
+
+            The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type:
+          - string
+          - 'null'
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The address of the entity's legal representative.
+      title: LegalUserScaResponseLegalRepresentativeAddress
   securitySchemes:
-    OAuth2:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
-          scopes: {}
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

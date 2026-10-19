@@ -1,0 +1,118 @@
+openapi: 3.2.0
+info:
+  title: Reference User Emoney API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: userEmoney
+paths:
+  /v2.01/{ClientId}/users/{UserId}/emoney/{Year}/{Month}:
+    get:
+      operationId: userEmoney_view_user_emoney
+      summary: View User EMoney
+      description: 'View User EMoney
+
+
+        The path parameters `Month` and `Year` are optional. If not given, this call returns all the credited and debited e-money since the user was created.'
+      tags:
+      - userEmoney
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: Year
+        in: path
+        description: The year by which to filter the returned values.
+        required: true
+        schema:
+          type: string
+      - name: Month
+        in: path
+        description: The month by which to filter the returned values.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewUserEMoneyResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ViewUserEMoneyResponseCreditedEMoney:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the pay-ins and transfers credited to wallets owned by the user.
+      title: ViewUserEMoneyResponseCreditedEMoney
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    ViewUserEMoneyResponse:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        CreditedEMoney:
+          $ref: '#/components/schemas/ViewUserEMoneyResponseCreditedEMoney'
+          description: Information about the pay-ins and transfers credited to wallets owned by the user.
+        DebitedEMoney:
+          $ref: '#/components/schemas/ViewUserEMoneyResponseDebitedEMoney'
+          description: Information about the payouts debited from wallets owned by the user.
+      title: ViewUserEMoneyResponse
+    ViewUserEMoneyResponseDebitedEMoney:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the payouts debited from wallets owned by the user.
+      title: ViewUserEMoneyResponseDebitedEMoney
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

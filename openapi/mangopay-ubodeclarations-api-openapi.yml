@@ -1,0 +1,751 @@
+openapi: 3.2.0
+info:
+  title: Reference Ubo Declarations API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: uboDeclarations
+paths:
+  /v2.01/{ClientId}/users/{UserId}/kyc/ubodeclarations:
+    post:
+      operationId: uboDeclarations_create_ubo_declaration
+      summary: Create a UBO Declaration
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms, and allows Legal Users to declare and verify all beneficial owners in the same IDV Session object.
+
+
+        The criteria defining beneficial owners remain the same.'
+      tags:
+      - uboDeclarations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UBODeclarationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+    get:
+      operationId: uboDeclarations_list_ubo_declarations_user
+      summary: List UBO Declarations for a User
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms, and allows Legal Users to declare and verify all beneficial owners in the same IDV Session object.
+
+
+        The criteria defining beneficial owners remain the same.'
+      tags:
+      - uboDeclarations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: Sort
+        in: query
+        description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+          **Default value:** `CreationDate:ASC`
+
+
+          Indicates the direction in which to sort the list.'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UBODeclarationResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/kyc/ubodeclarations/{UboDeclarationId}/ubos:
+    post:
+      operationId: uboDeclarations_create_ubo
+      summary: Create a UBO
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms, and allows Legal Users to declare and verify all beneficial owners in the same IDV Session object.
+
+
+        The criteria defining beneficial owners remain the same.
+
+
+        In Sandbox, you can set the `FirstName` of the first UBO to simulate the outcome (`Status`) of the declaration after submission:
+
+        - `AcceptUBO` for `VALIDATED`
+
+        - `RefusedUBO` for `REFUSED`
+
+        - `IncompleteUBO` for `INCOMPLETE`
+
+
+        See the guide for more details **→**'
+      tags:
+      - uboDeclarations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: UboDeclarationId
+        in: path
+        description: The unique identifier of the UBO Declaration.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UBOResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAUBORequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/kyc/ubodeclarations/{UboDeclarationId}:
+    put:
+      operationId: uboDeclarations_submit_ubo_declaration
+      summary: Submit a UBO Declaration
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms, and allows Legal Users to declare and verify all beneficial owners in the same IDV Session object.
+
+
+        The criteria defining beneficial owners remain the same.
+
+
+        Submitting a UBO Declaration consists in updating the object `Status` parameter value to `VALIDATION_ASKED`.
+
+
+        From there, Mangopay Compliance team will validate, indicate as incomplete, or reject the declaration.'
+      tags:
+      - uboDeclarations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: UboDeclarationId
+        in: path
+        description: The unique identifier of the UBO Declaration.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UBODeclarationResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitADisputeDocumentRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/kyc/ubodeclarations/{UboDeclarationId}/ubos/{UboId}:
+    put:
+      operationId: uboDeclarations_update_ubo
+      summary: Update a UBO
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms, and allows Legal Users to declare and verify all beneficial owners in the same IDV Session object.
+
+
+        The criteria defining beneficial owners remain the same.'
+      tags:
+      - uboDeclarations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: UboDeclarationId
+        in: path
+        description: The unique identifier of the UBO Declaration.
+        required: true
+        schema:
+          type: string
+      - name: UboId
+        in: path
+        description: The unique identifier of the UBO.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UBOResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAUBORequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: uboDeclarations_view_ubo
+      summary: View a UBO
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms, and allows Legal Users to declare and verify all beneficial owners in the same IDV Session object.
+
+
+        The criteria defining beneficial owners remain the same.'
+      tags:
+      - uboDeclarations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: UboDeclarationId
+        in: path
+        description: The unique identifier of the UBO Declaration.
+        required: true
+        schema:
+          type: string
+      - name: UboId
+        in: path
+        description: The unique identifier of the UBO.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UBOResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/kyc/ubodeclarations/{UboDeclarationId}:
+    get:
+      operationId: uboDeclarations_view_ubo_declaration
+      summary: View a UBO Declaration
+      description: 'View a UBO Declaration
+
+
+        Read more about the UBO Declaration object →'
+      tags:
+      - uboDeclarations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UboDeclarationId
+        in: path
+        description: The unique identifier of the UBO Declaration.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UBODeclarationResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    UboDeclarationResponseUbosItemsObjectUbo:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        LastName:
+          type: string
+          description: The last name of the beneficial owner.
+        Nationality:
+          type: string
+          description: The nationality of the beneficial owner.
+        Address:
+          $ref: '#/components/schemas/Address'
+        Birthplace:
+          $ref: '#/components/schemas/UboDeclarationResponseUbosItemsObjectUboBirthplace'
+          description: Information about the beneficial owner's place of birth.
+        IsActive:
+          type: boolean
+          description: Whether or not the UBO is considered in the declaration. To disregard a UBO, this parameter must be set to `false`. This action is irreversible.
+      description: The UBO object created by the platform.
+      title: UboDeclarationResponseUbosItemsObjectUbo
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    Address:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The postal address.
+      title: Address
+    UboResponseBirthplace:
+      type: object
+      properties:
+        City:
+          type: string
+          description: The city in which the beneficial owner was born.
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country in which the beneficial owner was born.'
+      description: Information about the beneficial owner's place of birth.
+      title: UboResponseBirthplace
+    Address_SubPropsRequired:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: The postal address.
+      title: Address_SubPropsRequired
+    UpdateAUBORequest:
+      type: object
+      properties:
+        LastName:
+          type: string
+          description: 'Max. length: 100 characters
+
+
+            The last name of the beneficial owner.'
+        FirstName:
+          type: string
+          description: 'Max. length: 100 characters
+
+
+            The first name of the beneficial owner.'
+        Birthday:
+          type: integer
+          description: 'The date of birth of the beneficial owner.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The nationality of the beneficial owner.'
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Birthplace:
+          $ref: '#/components/schemas/UpdateAuboRequestBirthplace'
+          description: Information about the beneficial owner's place of birth.
+        IsActive:
+          type: boolean
+          description: Whether or not the UBO is considered in the declaration. To disregard a UBO, set this parameter to `false`. This action is irreversible.
+      title: UpdateAUBORequest
+    UBOResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        LastName:
+          type: string
+          description: 'Max. length: 100 characters
+
+
+            The last name of the beneficial owner.'
+        FirstName:
+          type: string
+          description: 'Max. length: 100 characters
+
+
+            The first name of the beneficial owner.'
+        Birthday:
+          type: integer
+          description: 'The date of birth of the beneficial owner.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: The nationality of the beneficial owner.
+        Address:
+          $ref: '#/components/schemas/Address'
+        Birthplace:
+          $ref: '#/components/schemas/UboResponseBirthplace'
+          description: Information about the beneficial owner's place of birth.
+        IsActive:
+          type: boolean
+          description: Whether or not the UBO is considered in the declaration. To disregard a UBO, this parameter must be set to `false`. This action is irreversible.
+      title: UBOResponse
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    UpdateAuboRequestBirthplace:
+      type: object
+      properties:
+        City:
+          type: string
+          description: The city in which the beneficial owner was born.
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country in which the beneficial owner was born.'
+      required:
+      - City
+      - Country
+      description: Information about the beneficial owner's place of birth.
+      title: UpdateAuboRequestBirthplace
+    UBODeclarationResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ProcessedDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the UBO Declaration was processed by Mangopay's team.
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `VALIDATION_ASKED`, `INCOMPLETE`, `VALIDATED`, `REFUSED`
+
+
+            The status of the declaration:
+
+            - `CREATED` – The UBO Declaration is created, but not submitted yet.
+
+            - `VALIDATION_ASKED` – The UBO Declaration is submitted for validation.
+
+            - `INCOMPLETE` – The UBO Declaration is deemed incomplete by Mangopay teams.
+
+            - `VALIDATED` – The UBO Declaration is validated by Mangopay''s team.
+
+            - `REFUSED` – The UBO Declaration is rejected by Mangopay''s team. You can learn more about the reasons for refusal in the `Reason` and  `Message` fields.'
+        Reason:
+          type: string
+          description: The reason for which the UBO Declaration was `REFUSED` or considered as `INCOMPLETE`.
+        Message:
+          type: string
+          description: Additional information about why the UBO Declaration was refused or marked as incomplete, provided by Mangopay's team.
+        Ubos:
+          type: array
+          items:
+            $ref: '#/components/schemas/UboDeclarationResponseUbosItems'
+          description: The list of UBOs attached to the UBO Declaration.
+      title: UBODeclarationResponse
+    UboDeclarationResponseUbosItemsObjectUboBirthplace:
+      type: object
+      properties:
+        City:
+          type: string
+          description: The city in which the beneficial owner was born.
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country in which the beneficial owner was born.'
+      description: Information about the beneficial owner's place of birth.
+      title: UboDeclarationResponseUbosItemsObjectUboBirthplace
+    SubmitADisputeDocumentRequest:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Allowed values:** `VALIDATION_ASKED`
+
+
+            The status of the dispute document.'
+      required:
+      - Status
+      title: SubmitADisputeDocumentRequest
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    UboDeclarationResponseUbosItems:
+      type: object
+      properties:
+        Object (UBO):
+          $ref: '#/components/schemas/UboDeclarationResponseUbosItemsObjectUbo'
+          description: The UBO object created by the platform.
+      title: UboDeclarationResponseUbosItems
+    CreateAUBORequest:
+      type: object
+      properties:
+        LastName:
+          type: string
+          description: 'Max. length: 100 characters
+
+
+            The last name of the beneficial owner.'
+        FirstName:
+          type: string
+          description: 'Max. length: 100 characters
+
+
+            The first name of the beneficial owner.'
+        Birthday:
+          type: integer
+          description: 'The date of birth of the beneficial owner.
+
+
+            **Note:** This is a Unix timestamp in UTC. Ensure you convert your timezone to UTC to avoid midnight being interpreted as the day before.'
+        Nationality:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The nationality of the beneficial owner.'
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+        Birthplace:
+          $ref: '#/components/schemas/CreateAuboRequestBirthplace'
+          description: Information about the beneficial owner's place of birth.
+      required:
+      - LastName
+      - FirstName
+      - Birthday
+      - Nationality
+      - Address
+      - Birthplace
+      title: CreateAUBORequest
+    CreateAuboRequestBirthplace:
+      type: object
+      properties:
+        City:
+          type: string
+          description: The city in which the beneficial owner was born.
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country in which the beneficial owner was born.'
+      required:
+      - City
+      - Country
+      description: Information about the beneficial owner's place of birth.
+      title: CreateAuboRequestBirthplace
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

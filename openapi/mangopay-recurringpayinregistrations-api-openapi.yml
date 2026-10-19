@@ -1,0 +1,2025 @@
+openapi: 3.2.0
+info:
+  title: Reference Recurring Payin Registrations API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: recurringPayinRegistrations
+paths:
+  /v2.01/{ClientId}/recurringpayinregistrations:
+    post:
+      operationId: recurringPayinRegistrations_create_recurring_payin_registration
+      summary: Create a Recurring PayIn Registration
+      description: 'Register a series of recurring payment requests for the following payment methods (indicated by `PaymentType`):
+
+
+        | PaymentType | Requires | Captured using |
+
+        | --- | --- | --- |
+
+        | `CARD_DIRECT` (default) | Tokenized `CardId` obtained from the card registration process. | Create a Recurring Card PayIn (CIT or MIT) |
+
+        | `APPLEPAY` | Tokenized `PaymentData` object retrieved from the Apple Pay API. | Create a Recurring Apple Pay PayIn |
+
+        | `GOOGLE_PAY` | Tokenized `PaymentData` string retrieved from the Google Pay API. | Create a Recurring Google Pay PayIn |
+
+        | `PAYPAL` | No prerequisites. | Create a Recurring PayPal PayIn (CIT or MIT) |
+
+
+        **Note – Only one registration per user on PayPal**
+
+
+        On PayPal, only one recurring pay-in registration can be used per `UserId`. You can end a user''s existing registration object to create a new one with the same user.
+
+
+        This restriction does not apply to other payment methods.'
+      tags:
+      - recurringPayinRegistrations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringPayInRegistrationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateARecurringPayInRegistrationRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/recurringpayinregistrations/{RecurringPayinRegistrationId}:
+    put:
+      operationId: recurringPayinRegistrations_update_recurring_payin_registration
+      summary: Update a Recurring PayIn Registration
+      description: 'This call can be used to modify parameters in the following scenarios:
+
+        - **Reauthentication** – Update the `CardId` (card) or `PaymentData` (Apple Pay and Google Pay) if re-authentication is necessary (indicated by the `Status` becoming `AUTHENTICATION_NEEDED`). This must be followed by a CIT pay-in request.
+
+        - **User data change** – Update `Billing` or `Shipping` if required
+
+        - **Recurrence ending** – Set the `Status` to `ENDED` if the recurring payments have finished or will no longer be used
+
+
+        The existing registration''s `PaymentType` must match the request variant.'
+      tags:
+      - recurringPayinRegistrations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: RecurringPayinRegistrationId
+        in: path
+        description: The unique identifier of the recurring pay-in registration.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringPayInRegistrationResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateARecurringPayInRegistrationRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: recurringPayinRegistrations_view_recurring_payin_registration
+      summary: View a Recurring PayIn Registration
+      tags:
+      - recurringPayinRegistrations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: RecurringPayinRegistrationId
+        in: path
+        description: The unique identifier of the recurring pay-in registration.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringPayInRegistrationResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    RecurringPayInRegistrationCardResponseCurrentStateCumulatedFeesAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the cumulated fees amount.
+      title: RecurringPayInRegistrationCardResponseCurrentStateCumulatedFeesAmount
+    RecurringPayInRegistrationGooglePayResponseNextTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The fees of the subsequent recurring pay-ins.
+      title: RecurringPayInRegistrationGooglePayResponseNextTransactionFees
+    RecurringPayInRegistrationCardResponseCurrentStateCumulatedDebitedAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the cumulated debited funds amount.
+      title: RecurringPayInRegistrationCardResponseCurrentStateCumulatedDebitedAmount
+    RecurringPayInRegistrationApplePayResponseFirstTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The amount of the first recurring pay-in.
+      title: RecurringPayInRegistrationApplePayResponseFirstTransactionDebitedFunds
+    RecurringPayInRegistrationPayPalResponseFirstTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: 'The amount of the first recurring pay-in.
+
+
+        This value can be different from the `NextTransactionDebitedFunds`'
+      title: RecurringPayInRegistrationPayPalResponseFirstTransactionDebitedFunds
+    RecurringPayInRegistrationPayPalResponseCurrentState:
+      type: object
+      properties:
+        PayinsLinked:
+          type: integer
+          description: The number of recurring pay-ins already made for the registration object.
+        CumulatedDebitedAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationPayPalResponseCurrentStateCumulatedDebitedAmount'
+          description: Information about the cumulated debited funds amount.
+        CumulatedFeesAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationPayPalResponseCurrentStateCumulatedFeesAmount'
+          description: Information about the cumulated fees amount.
+        LastPayinId:
+          type: string
+          description: The unique identifier of the last recurring pay-in made for the registration.
+      description: Information about the recurring pay-ins related to the registration object. **Note:** If the `LastPayinId` references a transaction older than 13 months, it may have been <a href="/api-reference/overview/data-availability-periods">archived</a>.
+      title: RecurringPayInRegistrationPayPalResponseCurrentState
+    RecurringPayInRegistrationGooglePayResponseFirstTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The fees of the first recurring pay-in.
+      title: RecurringPayInRegistrationGooglePayResponseFirstTransactionFees
+    Address:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The postal address.
+      title: Address
+    UpdateARecurringPayInRegistrationRequest_GooglePay:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Allowed values:** `ENDED`
+
+
+            The status of the recurring registration:
+
+            - `CREATED` – The recurring registration was created, but no recurring pay-in has yet been made.
+
+            - `AUTHENTICATION_NEEDED` – The latest recurring pay-in linked to the registration object was refused. The registration object can still be used, but you need to execute a new customer-initiated transaction (CIT) for the end user to reauthenticate.
+
+            - `IN_PROGRESS` – The recurring registration object is in use and the subsequent corresponding recurring pay-ins can be made.
+
+            - `ENDED` – The recurrence ended: the registration can no longer be modified nor reused.'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        PaymentData:
+          type: string
+          description: The data returned by Google Pay containing information about the payment.
+        PaymentType:
+          type: string
+          description: '**Allowed values:** `GOOGLE_PAY`
+
+
+            The existing registration''s `PaymentType` must match the request variant.
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+      description: 'Request body for updating a Google Pay recurring pay-in registration (`PaymentType` `GOOGLE_PAY`).
+
+
+        The existing registration''s `PaymentType` must match the request variant. Updating the `PaymentData` requires re-authentication via a new CIT.'
+      title: UpdateARecurringPayInRegistrationRequest_GooglePay
+    RecurringPayInRegistrationCardResponseNextTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: 'The amount of the subsequent recurring pay-ins.
+
+
+        If this field is empty and either `FixedNextAmount` or `FractionedPayment` are `true`, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.'
+      title: RecurringPayInRegistrationCardResponseNextTransactionDebitedFunds
+    RecurringPayInRegistrationCardResponseCurrentState:
+      type: object
+      properties:
+        PayinsLinked:
+          type: integer
+          description: The number of recurring pay-ins already made for the registration object.
+        CumulatedDebitedAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationCardResponseCurrentStateCumulatedDebitedAmount'
+          description: Information about the cumulated debited funds amount.
+        CumulatedFeesAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationCardResponseCurrentStateCumulatedFeesAmount'
+          description: Information about the cumulated fees amount.
+        LastPayinId:
+          type: string
+          description: The unique identifier of the last recurring pay-in made for the registration.
+      description: Information about the recurring pay-ins related to the registration object. **Note:** If the `LastPayinId` references a transaction older than 13 months, it may have been <a href="/api-reference/overview/data-availability-periods">archived</a>.
+      title: RecurringPayInRegistrationCardResponseCurrentState
+    CreateARecurringPayInRegistrationPayPalRequestFirstTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The amount of the first recurring pay-in. This value can be different from the `NextTransactionDebitedFunds``.
+      title: CreateARecurringPayInRegistrationPayPalRequestFirstTransactionDebitedFunds
+    RecurringPayInRegistrationGooglePayResponseCurrentStateCumulatedDebitedAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The sum of the DebitedFunds amounts of the recurring pay-ins made for the registration.
+      title: RecurringPayInRegistrationGooglePayResponseCurrentStateCumulatedDebitedAmount
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    RecurringPayInRegistrationApplePayResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `AUTHENTICATION_NEEDED`, `IN_PROGRESS`, `ENDED`
+
+
+            The status of the recurring registration:
+
+            - `CREATED` – The recurring registration was created, but no recurring pay-in has yet been made.
+
+            - `AUTHENTICATION_NEEDED` – The latest recurring pay-in linked to the registration object was refused. The registration object can still be used, but you need to execute a new customer-initiated transaction (CIT) for the end user to reauthenticate.
+
+            - `IN_PROGRESS` – The recurring registration object is in use and the subsequent corresponding recurring pay-ins can be made.
+
+            - `ENDED` – The recurrence ended: the registration can no longer be modified nor reused.'
+        CurrentState:
+          $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponseCurrentState'
+          description: 'Information about the recurring pay-ins related to the registration object.
+
+
+            **Note:** If the LastPayinId references a transaction older than 13 months, it may have been archived.'
+        RecurringType:
+          type: string
+        TotalAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponseTotalAmount'
+        CycleNumber:
+          type: integer
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Response'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        EndDate:
+          type: integer
+          description: 'The date and time at which the recurring pay-ins will end. This value has no impact on the recurring registration Status.
+
+
+            **Caution:** If the EndDate is left unspecified, please bear in mind that one could be defined by default and be displayed to your end users (not taken into account in the payment recurrence).'
+        Frequency:
+          type: string
+          description: '**Returned values:** `Daily`, `Weekly`, `TwiceAMonth`, `Monthly`, `Bimonthly`, `Quarterly`, `Semiannual`, `Annual`, `Biannual`
+
+
+            The frequency at which the recurring pay-ins will occur:
+
+            - `Daily` – 1 transaction per day.
+
+            - `Weekly` – 1 transaction every 7 days.
+
+            - `TwiceAMonth` – 2 transactions per month.
+
+            - `Monthly` – 1 transaction per month.
+
+            - `Bimonthly` – 1 transaction every 2 months.
+
+            - `Quarterly` – 1 transaction every 3 months.
+
+            - `Semiannual` – 1 transaction every 6 months.
+
+            - `Annual` – 1 transaction per year.
+
+            - `Biannual` – 1 transaction every 2 years.'
+        FixedNextAmount:
+          type: boolean
+          description: Whether or not the recurring pay-ins' debited amounts remain the same for all the pay-ins linked to the recurring registration object.
+        FractionedPayment:
+          type: boolean
+          description: Whether or not the recurring pay-ins are being made to split a payment in several installments.
+        FreeCycles:
+          type: integer
+          description: 'The number of initial consecutive pay-ins where there will be no debited funds nor fees. This value cannot exceed the CycleNumber value (for recurring objects with an EndDate, FixedNextAmount, and Frequency).
+
+
+            **Note:** When creating a recurring pay-in (CIT or MIT) for a pay-in subject to a free cycle, the DebitedFunds and Fees parameters cannot be sent.'
+        FirstTransactionDebitedFunds:
+          $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponseFirstTransactionDebitedFunds'
+          description: The amount of the first recurring pay-in.
+        FirstTransactionFees:
+          $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponseFirstTransactionFees'
+          description: The fees of the first recurring pay-in.
+        NextTransactionDebitedFunds:
+          $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponseNextTransactionDebitedFunds'
+          description: The amount of the subsequent recurring pay-ins.
+        NextTransactionFees:
+          $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponseNextTransactionFees'
+          description: The fees of the subsequent recurring pay-ins.
+        Migration:
+          type: boolean
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+        PaymentType:
+          type: string
+          description: '**Returned values:** `APPLEPAY`
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        CardInfo:
+          $ref: '#/components/schemas/CardInfo'
+      description: Response object for Apple Pay recurring pay-in registrations.
+      title: RecurringPayInRegistrationApplePayResponse
+    RecurringPayInRegistrationApplePayResponseNextTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The fees of the subsequent recurring pay-ins.
+      title: RecurringPayInRegistrationApplePayResponseNextTransactionFees
+    CreateARecurringPayInRegistrationCardRequestFirstTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The amount of the first recurring pay-in. This value can be different from the `NextTransactionDebitedFunds``.
+      title: CreateARecurringPayInRegistrationCardRequestFirstTransactionDebitedFunds
+    CardInfo:
+      type: object
+      properties:
+        BIN:
+          type: string
+          description: The bank identification number (BIN) of the card.
+        IssuingBank:
+          type: string
+          description: The name of the bank that issued the card.
+        IssuerCountryCode:
+          type: string
+          description: The country code of the card issuer.
+        Type:
+          type: string
+          description: The type of card (for example, `CREDIT` or `DEBIT`).
+        SubType:
+          type:
+          - string
+          - 'null'
+          description: The sub-type of the card, if available.
+        Brand:
+          type: string
+          description: The card brand (for example, `VISA` or `MASTERCARD`).
+      description: Information about the card used for the transaction. If the information or data is not available, `null` is returned.
+      title: CardInfo
+    RecurringPayInRegistrationApplePayResponseFirstTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The fees of the first recurring pay-in.
+      title: RecurringPayInRegistrationApplePayResponseFirstTransactionFees
+    CreateARecurringPayInRegistrationCardRequest:
+      type: object
+      properties:
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        FirstTransactionDebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationCardRequestFirstTransactionDebitedFunds'
+          description: The amount of the first recurring pay-in. This value can be different from the `NextTransactionDebitedFunds``.
+        FirstTransactionFees:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationCardRequestFirstTransactionFees'
+          description: The fees of the first recurring pay-in. This amount can be different from the `NextTransactionDebitedFunds`.
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        NextTransactionDebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationCardRequestNextTransactionDebitedFunds'
+          description: The amount of the subsequent recurring pay-ins. If this field is empty and either `FixedNextAmount` or `FractionedPayment` are true, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.
+        NextTransactionFees:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationCardRequestNextTransactionFees'
+          description: The fees of the subsequent recurring pay-ins.
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+        CardId:
+          type: string
+          description: The unique identifier of the Card object, obtained during the card registration process.
+        EndDate:
+          type: integer
+          description: 'The date and time at which the recurring pay-ins will end. This value has no impact on the recurring registration `Status`.
+
+
+            **Caution:** If the `EndDate` is left unspecified, please bear in mind that one could be defined by default and be displayed to your end users (not taken into account in the payment recurrence).'
+        FixedNextAmount:
+          type: boolean
+          description: Whether or not the recurring pay-ins' debited amounts remain the same for all the pay-ins linked to the recurring registration object.
+        Frequency:
+          type: string
+          description: '**Allowed values:** `Daily`, `Weekly`, `TwiceAMonth`, `Monthly`, `Bimonthly`, `Quarterly`, `Semiannual`, `Annual`, `Biannual`
+
+
+            The frequency at which the recurring pay-ins will occur:
+
+            - `Daily` – 1 transaction per day.
+
+            - `Weekly` – 1 transaction every 7 days.
+
+            - `TwiceAMonth` – 2 transactions per month.
+
+            - `Monthly` – 1 transaction per month.
+
+            - `Bimonthly` – 1 transaction every 2 months.
+
+            - `Quarterly` – 1 transaction every 3 months.
+
+            - `Semiannual` – 1 transaction every 6 months.
+
+            - `Annual` – 1 transaction per year.
+
+            - `Biannual` – 1 transaction every 2 years.'
+        FractionedPayment:
+          type: boolean
+          description: Whether or not the recurring pay-ins are being made to split a payment in several installments.
+        FreeCycles:
+          type: integer
+          description: 'The number of initial consecutive pay-ins where there will be no debited funds nor fees. This value cannot exceed the `CycleNumber` value (for recurring objects with an `EndDate`, `FixedNextAmount`, and `Frequency`).
+
+
+            **Note:** When creating a recurring pay-in (CIT or MIT) for a pay-in subject to a free cycle, the `DebitedFunds` and `Fees` parameters cannot be sent.'
+        Migration:
+          type: boolean
+          description: 'Whether or not to attempt the first recurring pay-in as a merchant-initiated transaction (MIT).
+
+
+            **Caution:** Migration is no longer supported. You can only use objects with `Migration` set to `false`. When Mangopay decommissions this parameter (date communicated by email), the `false` value will be forced on all objects, including existing ones. Before decommissioning, you need to re-create the object; after decommissioning, you can re-authenticate the same object.
+
+
+            The need to re-authenticate may be indicated by the `Status` changing to `AUTHENTICATION_NEEDED` or by errors on the pay-in request, for example: non-existent card account (<a href="/errors/codes/008008">008008</a>), soft decline (<a href="/errors/codes/101305">101305</a>), expired card (<a href="/errors/codes/101105">101105</a>), or stolen card (<a href="/errors/codes/008003">008003</a>).'
+        PaymentType:
+          type: string
+          description: '**Allowed values:** `CARD_DIRECT`
+
+
+            **Default value:** `CARD_DIRECT`
+
+
+            Optional on create. If omitted, defaults to `CARD_DIRECT`.
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.'
+      required:
+      - AuthorId
+      - CreditedWalletId
+      - FirstTransactionDebitedFunds
+      - FirstTransactionFees
+      - CardId
+      description: Request body for card recurring pay-in registrations, using a tokenized `CardId`.
+      title: CreateARecurringPayInRegistrationCardRequest
+    RecurringPayInRegistrationCardResponseFirstTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: 'The amount of the first recurring pay-in.
+
+
+        This value can be different from the `NextTransactionDebitedFunds`'
+      title: RecurringPayInRegistrationCardResponseFirstTransactionDebitedFunds
+    CreateARecurringPayInRegistrationGooglePayRequestFirstTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The amount of the first recurring pay-in. This value can be different from the `NextTransactionDebitedFunds``.
+      title: CreateARecurringPayInRegistrationGooglePayRequestFirstTransactionDebitedFunds
+    RecurringPayInRegistrationGooglePayResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `AUTHENTICATION_NEEDED`, `IN_PROGRESS`, `ENDED`
+
+
+            The status of the recurring registration:
+
+            - `CREATED` – The recurring registration was created, but no recurring pay-in has yet been made.
+
+            - `AUTHENTICATION_NEEDED` – The latest recurring pay-in linked to the registration object was refused. The registration object can still be used, but you need to execute a new customer-initiated transaction (CIT) for the end user to reauthenticate.
+
+            - `IN_PROGRESS` – The recurring registration object is in use and the subsequent corresponding recurring pay-ins can be made.
+
+            - `ENDED` – The recurrence ended: the registration can no longer be modified nor reused.'
+        CurrentState:
+          $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponseCurrentState'
+          description: 'Information about the recurring pay-ins related to the registration object.
+
+
+            **Note:** If the LastPayinId references a transaction older than 13 months, it may have been archived.'
+        RecurringType:
+          type: string
+        TotalAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponseTotalAmount'
+        CycleNumber:
+          type: integer
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Response'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        EndDate:
+          type: integer
+          description: 'The date and time at which the recurring pay-ins will end. This value has no impact on the recurring registration Status.
+
+
+            **Caution:** If the EndDate is left unspecified, please bear in mind that one could be defined by default and be displayed to your end users (not taken into account in the payment recurrence).'
+        Frequency:
+          type: string
+          description: '**Returned values:** `Daily`, `Weekly`, `TwiceAMonth`, `Monthly`, `Bimonthly`, `Quarterly`, `Semiannual`, `Annual`, `Biannual`
+
+
+            The frequency at which the recurring pay-ins will occur:
+
+            - `Daily` – 1 transaction per day.
+
+            - `Weekly` – 1 transaction every 7 days.
+
+            - `TwiceAMonth` – 2 transactions per month.
+
+            - `Monthly` – 1 transaction per month.
+
+            - `Bimonthly` – 1 transaction every 2 months.
+
+            - `Quarterly` – 1 transaction every 3 months.
+
+            - `Semiannual` – 1 transaction every 6 months.
+
+            - `Annual` – 1 transaction per year.
+
+            - `Biannual` – 1 transaction every 2 years.'
+        FixedNextAmount:
+          type: boolean
+          description: Whether or not the recurring pay-ins' debited amounts remain the same for all the pay-ins linked to the recurring registration object.
+        FractionedPayment:
+          type: boolean
+          description: Whether or not the recurring pay-ins are being made to split a payment in several installments.
+        FreeCycles:
+          type: integer
+          description: 'The number of initial consecutive pay-ins where there will be no debited funds nor fees. This value cannot exceed the CycleNumber value (for recurring objects with an EndDate, FixedNextAmount, and Frequency).
+
+
+            **Note:** When creating a recurring pay-in (CIT or MIT) for a pay-in subject to a free cycle, the DebitedFunds and Fees parameters cannot be sent.'
+        FirstTransactionDebitedFunds:
+          $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponseFirstTransactionDebitedFunds'
+          description: The amount of the first recurring pay-in.
+        FirstTransactionFees:
+          $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponseFirstTransactionFees'
+          description: The fees of the first recurring pay-in.
+        NextTransactionDebitedFunds:
+          $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponseNextTransactionDebitedFunds'
+          description: The amount of the subsequent recurring pay-ins.
+        NextTransactionFees:
+          $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponseNextTransactionFees'
+          description: The fees of the subsequent recurring pay-ins.
+        Migration:
+          type: boolean
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+        PaymentType:
+          type: string
+          description: '**Returned values:** `GOOGLE_PAY`
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        CardInfo:
+          $ref: '#/components/schemas/CardInfo'
+      description: Response object for Google Pay recurring pay-in registrations.
+      title: RecurringPayInRegistrationGooglePayResponse
+    UpdateARecurringPayInRegistrationRequest_ApplePay:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Allowed values:** `ENDED`
+
+
+            The status of the recurring registration:
+
+            - `CREATED` – The recurring registration was created, but no recurring pay-in has yet been made.
+
+            - `AUTHENTICATION_NEEDED` – The latest recurring pay-in linked to the registration object was refused. The registration object can still be used, but you need to execute a new customer-initiated transaction (CIT) for the end user to reauthenticate.
+
+            - `IN_PROGRESS` – The recurring registration object is in use and the subsequent corresponding recurring pay-ins can be made.
+
+            - `ENDED` – The recurrence ended: the registration can no longer be modified nor reused.'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        PaymentData:
+          $ref: '#/components/schemas/PaymentData_ApplePay'
+        PaymentType:
+          type: string
+          description: '**Allowed values:** `APPLEPAY`
+
+
+            The existing registration''s `PaymentType` must match the request variant.
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+      description: 'Request body for updating an Apple Pay recurring pay-in registration (`PaymentType` `APPLEPAY`).
+
+
+        The existing registration''s `PaymentType` must match the request variant. Updating the `PaymentData` requires re-authentication via a new CIT.'
+      title: UpdateARecurringPayInRegistrationRequest_ApplePay
+    CreateARecurringPayInRegistrationPayPalRequestNextTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The amount of the subsequent recurring pay-ins. If this field is empty and either `FixedNextAmount` or `FractionedPayment` are true, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.
+      title: CreateARecurringPayInRegistrationPayPalRequestNextTransactionDebitedFunds
+    CreateARecurringPayInRegistrationGooglePayRequestNextTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The amount of the subsequent recurring pay-ins. If this field is empty and either `FixedNextAmount` or `FractionedPayment` are true, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.
+      title: CreateARecurringPayInRegistrationGooglePayRequestNextTransactionDebitedFunds
+    FlowDescriptorRequest:
+      type: object
+      properties:
+        Beneficiaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FlowDescriptorRequestBeneficiariesItems'
+          description: 'Max. length: 5 items
+
+
+            The list of up to 5 Natural or Legal Users declared as beneficiaries of the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made. The pay-in also fails if the `Beneficiaries` array contains nulled objects or invalid `UserId` values.'
+      description: "Information about the Owner beneficiaries targeted by the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made ([read more](/guides/payin-beneficiaries)).\n\nIf the `FlowDescriptor.Beneficiaries` is sent in the API request, then:\n- The transaction's `CreditedWalletId` holder is disregarded in KYC/KYB checks.\n- **ALL** `UserId` values in the array must be one of:\n  - `OWNER` whose `KYCLevel` is `REGULAR`\n  - `PLATFORM`\n  \nThe pay-in `Status` becomes `FAILED` with `ResultCode` [002951](/errors/codes/002951) if at least one `FlowDescriptor.Beneficiaries.UserId` is:\n- `PAYER`\n- `OWNER` whose `KYCLevel` is `LIGHT`\n\nIf the `FlowDescriptor.Beneficiaries` is not sent in the API request, then the `CreditedWalletId` holder is subject to KYC/KYB checks. This property is optional for backwards compatibility but is recommended for all pay-in flows, even when the `CreditedWalletId` holder is a `PAYER` or the same value as one of the `FlowDescriptor.Beneficiaries`. \n"
+      title: FlowDescriptorRequest
+    Shipping_DefaultsBillingUser_Response:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Billing` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the shipping address. '
+      title: Shipping_DefaultsBillingUser_Response
+    CreateARecurringPayInRegistrationPayPalRequestNextTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The fees of the subsequent recurring pay-ins.
+      title: CreateARecurringPayInRegistrationPayPalRequestNextTransactionFees
+    RecurringPayInRegistrationPayPalResponseNextTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: 'The amount of the subsequent recurring pay-ins.
+
+
+        If this field is empty and either `FixedNextAmount` or `FractionedPayment` are `true`, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.'
+      title: RecurringPayInRegistrationPayPalResponseNextTransactionDebitedFunds
+    Shipping_DefaultsBillingUser_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Billing` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the shipping address. '
+      title: Shipping_DefaultsBillingUser_Request
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    RecurringPayInRegistrationPayPalResponseFirstTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: 'The fees of the first recurring pay-in.
+
+
+        This amount can be different from the `NextTransactionDebitedFunds`.'
+      title: RecurringPayInRegistrationPayPalResponseFirstTransactionFees
+    CreateARecurringPayInRegistrationPayPalRequest:
+      type: object
+      properties:
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        FirstTransactionDebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationPayPalRequestFirstTransactionDebitedFunds'
+          description: The amount of the first recurring pay-in. This value can be different from the `NextTransactionDebitedFunds``.
+        FirstTransactionFees:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationPayPalRequestFirstTransactionFees'
+          description: The fees of the first recurring pay-in. This amount can be different from the `NextTransactionDebitedFunds`.
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        NextTransactionDebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationPayPalRequestNextTransactionDebitedFunds'
+          description: The amount of the subsequent recurring pay-ins. If this field is empty and either `FixedNextAmount` or `FractionedPayment` are true, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.
+        NextTransactionFees:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationPayPalRequestNextTransactionFees'
+          description: The fees of the subsequent recurring pay-ins.
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+        PaymentType:
+          type: string
+          description: '**Allowed values:** `PAYPAL`
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+      required:
+      - AuthorId
+      - CreditedWalletId
+      - FirstTransactionDebitedFunds
+      - FirstTransactionFees
+      - PaymentType
+      description: 'Request body for PayPal recurring pay-in registrations, redirecting the user to authenticate via PayPal.
+
+
+        Note that for PayPal:
+
+        - Only one active `PAYPAL` registration object can exist for a user.
+
+        - You can use `NextTransactionDebitedFunds` and `NextTransactionFees` in the registration (and therefore omit them from MIT pay-in requests). The `RecurringType` is always `CUSTOM`, and the `FixedNextAmount` parameter is not supported.
+
+        - The `FreeCycles` property is not supported.'
+      title: CreateARecurringPayInRegistrationPayPalRequest
+    RecurringPayInRegistrationPayPalResponseNextTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The fees of the subsequent recurring pay-ins.
+      title: RecurringPayInRegistrationPayPalResponseNextTransactionFees
+    RecurringPayInRegistrationCardResponseNextTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The fees of the subsequent recurring pay-ins.
+      title: RecurringPayInRegistrationCardResponseNextTransactionFees
+    RecurringPayInRegistrationApplePayResponseCurrentState:
+      type: object
+      properties:
+        PayinsLinked:
+          type: integer
+          description: The number of recurring pay-ins already made for the registration object.
+        CumulatedDebitedAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponseCurrentStateCumulatedDebitedAmount'
+          description: The sum of the DebitedFunds amounts of the recurring pay-ins made for the registration.
+        CumulatedFeesAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponseCurrentStateCumulatedFeesAmount'
+          description: The sum of the Fees amounts of the recurring pay-ins made for the registration.
+        LastPayinId:
+          type: string
+          description: The unique identifier of the last recurring pay-in made for the registration.
+      description: 'Information about the recurring pay-ins related to the registration object.
+
+
+        **Note:** If the LastPayinId references a transaction older than 13 months, it may have been archived.'
+      title: RecurringPayInRegistrationApplePayResponseCurrentState
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    RecurringPayInRegistrationGooglePayResponseCurrentStateCumulatedFeesAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The sum of the Fees amounts of the recurring pay-ins made for the registration.
+      title: RecurringPayInRegistrationGooglePayResponseCurrentStateCumulatedFeesAmount
+    CreateARecurringPayInRegistrationGooglePayRequestFirstTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The fees of the first recurring pay-in. This amount can be different from the `NextTransactionDebitedFunds`.
+      title: CreateARecurringPayInRegistrationGooglePayRequestFirstTransactionFees
+    RecurringPayInRegistrationPayPalResponseCurrentStateCumulatedDebitedAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the cumulated debited funds amount.
+      title: RecurringPayInRegistrationPayPalResponseCurrentStateCumulatedDebitedAmount
+    RecurringPayInRegistrationCardResponseTotalAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: 'Information about the total amount.
+
+
+        This value is automatically calculated based on the `EndDate`, `FixedNextAmount`, and `Frequency` parameters (if defined).'
+      title: RecurringPayInRegistrationCardResponseTotalAmount
+    RecurringPayInRegistrationApplePayResponseNextTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The amount of the subsequent recurring pay-ins.
+      title: RecurringPayInRegistrationApplePayResponseNextTransactionDebitedFunds
+    CreateARecurringPayInRegistrationGooglePayRequest:
+      type: object
+      properties:
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        FirstTransactionDebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationGooglePayRequestFirstTransactionDebitedFunds'
+          description: The amount of the first recurring pay-in. This value can be different from the `NextTransactionDebitedFunds``.
+        FirstTransactionFees:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationGooglePayRequestFirstTransactionFees'
+          description: The fees of the first recurring pay-in. This amount can be different from the `NextTransactionDebitedFunds`.
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        NextTransactionDebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationGooglePayRequestNextTransactionDebitedFunds'
+          description: The amount of the subsequent recurring pay-ins. If this field is empty and either `FixedNextAmount` or `FractionedPayment` are true, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.
+        NextTransactionFees:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationGooglePayRequestNextTransactionFees'
+          description: The fees of the subsequent recurring pay-ins.
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+        PaymentData:
+          type: string
+          description: The data returned by Google Pay containing information about the payment.
+        PaymentType:
+          type: string
+          description: '**Allowed values:** `GOOGLE_PAY`
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+        EndDate:
+          type: integer
+          description: 'The date and time at which the recurring pay-ins will end. This value has no impact on the recurring registration `Status`.
+
+
+            **Caution:** If the `EndDate` is left unspecified, please bear in mind that one could be defined by default and be displayed to your end users (not taken into account in the payment recurrence).'
+        Frequency:
+          type: string
+          description: '**Allowed values:** `Daily`, `Weekly`, `TwiceAMonth`, `Monthly`, `Bimonthly`, `Quarterly`, `Semiannual`, `Annual`, `Biannual`
+
+
+            The frequency at which the recurring pay-ins will occur:
+
+            - `Daily` – 1 transaction per day.
+
+            - `Weekly` – 1 transaction every 7 days.
+
+            - `TwiceAMonth` – 2 transactions per month.
+
+            - `Monthly` – 1 transaction per month.
+
+            - `Bimonthly` – 1 transaction every 2 months.
+
+            - `Quarterly` – 1 transaction every 3 months.
+
+            - `Semiannual` – 1 transaction every 6 months.
+
+            - `Annual` – 1 transaction per year.
+
+            - `Biannual` – 1 transaction every 2 years.'
+        FixedNextAmount:
+          type: boolean
+          description: Whether or not the recurring pay-ins' debited amounts remain the same for all the pay-ins linked to the recurring registration object.
+        FractionedPayment:
+          type: boolean
+          description: Whether or not the recurring pay-ins are being made to split a payment in several installments.
+        FreeCycles:
+          type: integer
+          description: 'The number of initial consecutive pay-ins where there will be no debited funds nor fees. This value cannot exceed the `CycleNumber` value (for recurring objects with an `EndDate`, `FixedNextAmount`, and `Frequency`).
+
+
+            **Note:** When creating a recurring pay-in (CIT or MIT) for a pay-in subject to a free cycle, the `DebitedFunds` and `Fees` parameters cannot be sent.'
+      required:
+      - AuthorId
+      - CreditedWalletId
+      - FirstTransactionDebitedFunds
+      - FirstTransactionFees
+      - PaymentData
+      - PaymentType
+      description: Request body for Google Pay recurring pay-in registrations, using the tokenized `PaymentData` string retrieved from the Google Pay API.
+      title: CreateARecurringPayInRegistrationGooglePayRequest
+    CreateARecurringPayInRegistrationApplePayRequestNextTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The fees of the subsequent recurring pay-ins.
+      title: CreateARecurringPayInRegistrationApplePayRequestNextTransactionFees
+    UpdateARecurringPayInRegistrationRequest_PayPal:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Allowed values:** `ENDED`
+
+
+            The status of the recurring registration:
+
+            - `CREATED` – The recurring registration was created, but no recurring pay-in has yet been made.
+
+            - `AUTHENTICATION_NEEDED` – The latest recurring pay-in linked to the registration object was refused. The registration object can still be used, but you need to execute a new customer-initiated transaction (CIT) for the end user to reauthenticate.
+
+            - `IN_PROGRESS` – The recurring registration object is in use and the subsequent corresponding recurring pay-ins can be made.
+
+            - `ENDED` – The recurrence ended: the registration can no longer be modified nor reused.'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        PaymentType:
+          type: string
+          description: '**Allowed values:** `PAYPAL`
+
+
+            The existing registration''s `PaymentType` must match the request variant.
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+      description: 'Request body for updating a PayPal recurring pay-in registration (`PaymentType` `PAYPAL`).
+
+
+        The existing registration''s `PaymentType` must match the request variant.'
+      title: UpdateARecurringPayInRegistrationRequest_PayPal
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    FlowDescriptorRequestBeneficiariesItems:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the Natural User or Legal User declared as a beneficiary of the pay-in.
+      title: FlowDescriptorRequestBeneficiariesItems
+    FlowDescriptorResponseBeneficiariesItems:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the Natural User or Legal User declared as a beneficiary of the pay-in.
+      title: FlowDescriptorResponseBeneficiariesItems
+    ProfilingAttemptReference:
+      type: string
+      description: 'The unique reference generated for the profiling session, used by the <a href="/guides/fraud-prevention">fraud prevention</a> solution to produce recommendations for the transaction using the profiling data.
+
+
+        **Note:** Parameter not returned by the API. Profiling feature available on request – contact Mangopay <a href="https://hub.mangopay.com/" target="_blank">via the Dashboard</a> for more information.'
+      title: ProfilingAttemptReference
+    RecurringPayInRegistrationApplePayResponseTotalAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      title: RecurringPayInRegistrationApplePayResponseTotalAmount
+    Billing_DefaultsShippingUser_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Shipping` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the billing address. '
+      title: Billing_DefaultsShippingUser_Request
+    CreateARecurringPayInRegistrationCardRequestNextTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The amount of the subsequent recurring pay-ins. If this field is empty and either `FixedNextAmount` or `FractionedPayment` are true, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.
+      title: CreateARecurringPayInRegistrationCardRequestNextTransactionDebitedFunds
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+    RecurringPayInRegistrationApplePayResponseCurrentStateCumulatedFeesAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The sum of the Fees amounts of the recurring pay-ins made for the registration.
+      title: RecurringPayInRegistrationApplePayResponseCurrentStateCumulatedFeesAmount
+    RecurringPayInRegistrationPayPalResponseCurrentStateCumulatedFeesAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the cumulated fees amount.
+      title: RecurringPayInRegistrationPayPalResponseCurrentStateCumulatedFeesAmount
+    CreateARecurringPayInRegistrationCardRequestFirstTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The fees of the first recurring pay-in. This amount can be different from the `NextTransactionDebitedFunds`.
+      title: CreateARecurringPayInRegistrationCardRequestFirstTransactionFees
+    CreateARecurringPayInRegistrationRequest:
+      oneOf:
+      - $ref: '#/components/schemas/CreateARecurringPayInRegistrationCardRequest'
+      - $ref: '#/components/schemas/CreateARecurringPayInRegistrationApplePayRequest'
+      - $ref: '#/components/schemas/CreateARecurringPayInRegistrationGooglePayRequest'
+      - $ref: '#/components/schemas/CreateARecurringPayInRegistrationPayPalRequest'
+      title: CreateARecurringPayInRegistrationRequest
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    CreateARecurringPayInRegistrationApplePayRequestNextTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The amount of the subsequent recurring pay-ins. If this field is empty and either `FixedNextAmount` or `FractionedPayment` are true, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.
+      title: CreateARecurringPayInRegistrationApplePayRequestNextTransactionDebitedFunds
+    RecurringPayInRegistrationGooglePayResponseTotalAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      title: RecurringPayInRegistrationGooglePayResponseTotalAmount
+    RecurringPayInRegistrationGooglePayResponseNextTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The amount of the subsequent recurring pay-ins.
+      title: RecurringPayInRegistrationGooglePayResponseNextTransactionDebitedFunds
+    Address_SubPropsRequired:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: The postal address.
+      title: Address_SubPropsRequired
+    RecurringPayInRegistrationCardResponseFirstTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: 'The fees of the first recurring pay-in.
+
+
+        This amount can be different from the `NextTransactionDebitedFunds`.'
+      title: RecurringPayInRegistrationCardResponseFirstTransactionFees
+    RecurringPayInRegistrationGooglePayResponseFirstTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The amount of the first recurring pay-in.
+      title: RecurringPayInRegistrationGooglePayResponseFirstTransactionDebitedFunds
+    CreateARecurringPayInRegistrationApplePayRequest:
+      type: object
+      properties:
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        FirstTransactionDebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationApplePayRequestFirstTransactionDebitedFunds'
+          description: The amount of the first recurring pay-in. This value can be different from the `NextTransactionDebitedFunds``.
+        FirstTransactionFees:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationApplePayRequestFirstTransactionFees'
+          description: The fees of the first recurring pay-in. This amount can be different from the `NextTransactionDebitedFunds`.
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        NextTransactionDebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationApplePayRequestNextTransactionDebitedFunds'
+          description: The amount of the subsequent recurring pay-ins. If this field is empty and either `FixedNextAmount` or `FractionedPayment` are true, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.
+        NextTransactionFees:
+          $ref: '#/components/schemas/CreateARecurringPayInRegistrationApplePayRequestNextTransactionFees'
+          description: The fees of the subsequent recurring pay-ins.
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+        PaymentData:
+          $ref: '#/components/schemas/PaymentData_ApplePay'
+        PaymentType:
+          type: string
+          description: '**Allowed values:** `APPLEPAY`
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+        EndDate:
+          type: integer
+          description: 'The date and time at which the recurring pay-ins will end. This value has no impact on the recurring registration `Status`.
+
+
+            **Caution:** If the `EndDate` is left unspecified, please bear in mind that one could be defined by default and be displayed to your end users (not taken into account in the payment recurrence).'
+        FixedNextAmount:
+          type: boolean
+          description: Whether or not the recurring pay-ins' debited amounts remain the same for all the pay-ins linked to the recurring registration object.
+        Frequency:
+          type: string
+          description: '**Allowed values:** `Daily`, `Weekly`, `TwiceAMonth`, `Monthly`, `Bimonthly`, `Quarterly`, `Semiannual`, `Annual`, `Biannual`
+
+
+            The frequency at which the recurring pay-ins will occur:
+
+            - `Daily` – 1 transaction per day.
+
+            - `Weekly` – 1 transaction every 7 days.
+
+            - `TwiceAMonth` – 2 transactions per month.
+
+            - `Monthly` – 1 transaction per month.
+
+            - `Bimonthly` – 1 transaction every 2 months.
+
+            - `Quarterly` – 1 transaction every 3 months.
+
+            - `Semiannual` – 1 transaction every 6 months.
+
+            - `Annual` – 1 transaction per year.
+
+            - `Biannual` – 1 transaction every 2 years.'
+        FractionedPayment:
+          type: boolean
+          description: Whether or not the recurring pay-ins are being made to split a payment in several installments.
+        FreeCycles:
+          type: integer
+          description: 'The number of initial consecutive pay-ins where there will be no debited funds nor fees. This value cannot exceed the `CycleNumber` value (for recurring objects with an `EndDate`, `FixedNextAmount`, and `Frequency`).
+
+
+            **Note:** When creating a recurring pay-in (CIT or MIT) for a pay-in subject to a free cycle, the `DebitedFunds` and `Fees` parameters cannot be sent.'
+      required:
+      - AuthorId
+      - CreditedWalletId
+      - FirstTransactionDebitedFunds
+      - FirstTransactionFees
+      - PaymentData
+      - PaymentType
+      description: Request body for Apple Pay recurring pay-in registrations, using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+      title: CreateARecurringPayInRegistrationApplePayRequest
+    AuthorId:
+      type: string
+      description: The unique identifier of the user at the source of the transaction.
+      title: AuthorId
+    RecurringPayInRegistrationGooglePayResponseCurrentState:
+      type: object
+      properties:
+        PayinsLinked:
+          type: integer
+          description: The number of recurring pay-ins already made for the registration object.
+        CumulatedDebitedAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponseCurrentStateCumulatedDebitedAmount'
+          description: The sum of the DebitedFunds amounts of the recurring pay-ins made for the registration.
+        CumulatedFeesAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponseCurrentStateCumulatedFeesAmount'
+          description: The sum of the Fees amounts of the recurring pay-ins made for the registration.
+        LastPayinId:
+          type: string
+          description: The unique identifier of the last recurring pay-in made for the registration.
+      description: 'Information about the recurring pay-ins related to the registration object.
+
+
+        **Note:** If the LastPayinId references a transaction older than 13 months, it may have been archived.'
+      title: RecurringPayInRegistrationGooglePayResponseCurrentState
+    CreateARecurringPayInRegistrationApplePayRequestFirstTransactionDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The amount of the first recurring pay-in. This value can be different from the `NextTransactionDebitedFunds``.
+      title: CreateARecurringPayInRegistrationApplePayRequestFirstTransactionDebitedFunds
+    RecurringPayInRegistrationPayPalResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          type: string
+          description: "**Returned values:** `CREATED`, `AUTHENTICATION_NEEDED`, `IN_PROGRESS`, `ENDED` \n\nThe status of the recurring registration for PayPal:\n- `CREATED` – The recurring registration was created, but no recurring pay-in has yet been made.\n- `AUTHENTICATION_NEEDED` – A customer-initiated transaction (CIT) has been initiated against the registration but not authenticated. Note that there is no re-authentication process with PayPal: this status is only returned after the CIT is initiated but not yet successful.\n- `IN_PROGRESS` – The CIT was successful and subsequent merchant-initiated transactions (MIT) can be requested.\n- `ENDED` – The registration can no longer be modified nor reused. A new one can be created for the same user."
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        CurrentState:
+          $ref: '#/components/schemas/RecurringPayInRegistrationPayPalResponseCurrentState'
+          description: Information about the recurring pay-ins related to the registration object. **Note:** If the `LastPayinId` references a transaction older than 13 months, it may have been <a href="/api-reference/overview/data-availability-periods">archived</a>.
+        RecurringType:
+          type: string
+          description: '**Returned values:** `CUSTOM`
+
+
+            For PayPal recurring registrations, this value is always `CUSTOM`.'
+        TotalAmount:
+          description: For PayPal recurring registrations, this value is returned `null`.
+        CycleNumber:
+          description: For PayPal recurring registrations, this value is returned `null`.
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CardId:
+          description: For PayPal recurring registrations, this value is returned `null`.
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Response'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        EndDate:
+          description: For PayPal recurring registrations, this value is returned `null`.
+        Frequency:
+          description: For PayPal recurring registrations, this value is returned `null`.
+        FixedNextAmount:
+          type: boolean
+          description: For PayPal recurring registrations, this value is ignored if sent and automatically returned `false`. However, you can specify `NextTransactionDebitedFunds` and `NextTransactionFees` to set up a fixed-amount recurrence.
+        FractionedPayment:
+          description: For PayPal recurring registrations, this value is returned `null`.
+        FreeCycles:
+          type: integer
+          description: For PayPal recurring registrations, this value is returned `0`.
+        FirstTransactionDebitedFunds:
+          $ref: '#/components/schemas/RecurringPayInRegistrationPayPalResponseFirstTransactionDebitedFunds'
+          description: 'The amount of the first recurring pay-in.
+
+
+            This value can be different from the `NextTransactionDebitedFunds`'
+        FirstTransactionFees:
+          $ref: '#/components/schemas/RecurringPayInRegistrationPayPalResponseFirstTransactionFees'
+          description: 'The fees of the first recurring pay-in.
+
+
+            This amount can be different from the `NextTransactionDebitedFunds`.'
+        NextTransactionDebitedFunds:
+          $ref: '#/components/schemas/RecurringPayInRegistrationPayPalResponseNextTransactionDebitedFunds'
+          description: 'The amount of the subsequent recurring pay-ins.
+
+
+            If this field is empty and either `FixedNextAmount` or `FractionedPayment` are `true`, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.'
+        NextTransactionFees:
+          $ref: '#/components/schemas/RecurringPayInRegistrationPayPalResponseNextTransactionFees'
+          description: The fees of the subsequent recurring pay-ins.
+        Migration:
+          type: boolean
+          description: For PayPal recurring registrations, this value is returned `false`.
+          deprecated: true
+        PaymentType:
+          type: string
+          description: '**Returned values:** `PAYPAL`
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+      description: Response object for PayPal recurring pay-in registrations.
+      title: RecurringPayInRegistrationPayPalResponse
+    UpdateARecurringPayInRegistrationRequest:
+      oneOf:
+      - $ref: '#/components/schemas/UpdateARecurringPayInRegistrationRequest_Card'
+      - $ref: '#/components/schemas/UpdateARecurringPayInRegistrationRequest_ApplePay'
+      - $ref: '#/components/schemas/UpdateARecurringPayInRegistrationRequest_GooglePay'
+      - $ref: '#/components/schemas/UpdateARecurringPayInRegistrationRequest_PayPal'
+      title: UpdateARecurringPayInRegistrationRequest
+    FlowDescriptorResponse:
+      type: object
+      properties:
+        FlowId:
+          type: string
+          description: Unique identifier of the payment flow, used by Mangopay for internal purposes.
+        Beneficiaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FlowDescriptorResponseBeneficiariesItems'
+          description: 'Max. length: 5 items
+
+
+            The list of up to 5 Natural or Legal Users declared as beneficiaries of the pay-in, who must all be KYC/KYB verified when the pay-in request is made. The pay-in also fails if the `Beneficiaries` array contains nulled objects or invalid `UserId` values.'
+      description: "Information about the Owner beneficiaries targeted by the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made ([read more](/guides/payin-beneficiaries)).\n\nIf the `FlowDescriptor.Beneficiaries` is sent in the API request, then:\n- The transaction's `CreditedWalletId` holder is disregarded in KYC/KYB checks.\n- **ALL** `UserId` values in the array must be one of:\n  - `OWNER` whose `KYCLevel` is `REGULAR`\n  - `PLATFORM`\n  \nThe pay-in `Status` becomes `FAILED` with `ResultCode` [002951](/errors/codes/002951) if at least one `FlowDescriptor.Beneficiaries.UserId` is:\n- `PAYER`\n- `OWNER` whose `KYCLevel` is `LIGHT`\n\nIf the `FlowDescriptor.Beneficiaries` is not sent in the API request, then the `CreditedWalletId` holder is subject to KYC/KYB checks. This property is optional for backwards compatibility but is recommended for all pay-in flows, even when the `CreditedWalletId` holder is a `PAYER` or the same value as one of the `FlowDescriptor.Beneficiaries`.\n"
+      title: FlowDescriptorResponse
+    CreditedUserId:
+      type: string
+      description: '**Default value:** The unique identifier of the owner of the credited wallet.
+
+
+        The unique identifier of the user whose wallet is credited.'
+      title: CreditedUserId
+    CreateARecurringPayInRegistrationPayPalRequestFirstTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The fees of the first recurring pay-in. This amount can be different from the `NextTransactionDebitedFunds`.
+      title: CreateARecurringPayInRegistrationPayPalRequestFirstTransactionFees
+    RecurringPayInRegistrationResponse:
+      oneOf:
+      - $ref: '#/components/schemas/RecurringPayInRegistrationCardResponse'
+      - $ref: '#/components/schemas/RecurringPayInRegistrationPayPalResponse'
+      - $ref: '#/components/schemas/RecurringPayInRegistrationApplePayResponse'
+      - $ref: '#/components/schemas/RecurringPayInRegistrationGooglePayResponse'
+      title: RecurringPayInRegistrationResponse
+    CreateARecurringPayInRegistrationCardRequestNextTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The fees of the subsequent recurring pay-ins.
+      title: CreateARecurringPayInRegistrationCardRequestNextTransactionFees
+    Billing_DefaultsShippingUser_Response:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Shipping` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the billing address. '
+      title: Billing_DefaultsShippingUser_Response
+    UpdateARecurringPayInRegistrationRequest_Card:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Allowed values:** `ENDED`
+
+
+            The status of the recurring registration:
+
+            - `CREATED` – The recurring registration was created, but no recurring pay-in has yet been made.
+
+            - `AUTHENTICATION_NEEDED` – The latest recurring pay-in linked to the registration object was refused. The registration object can still be used, but you need to execute a new customer-initiated transaction (CIT) for the end user to reauthenticate.
+
+            - `IN_PROGRESS` – The recurring registration object is in use and the subsequent corresponding recurring pay-ins can be made.
+
+            - `ENDED` – The recurrence ended: the registration can no longer be modified nor reused.'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        CardId:
+          type: string
+          description: The unique identifier of the Card object, obtained during the card registration process.
+        PaymentType:
+          type: string
+          description: '**Allowed values:** `CARD_DIRECT`
+
+
+            The existing registration''s `PaymentType` must match the request variant.
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+      description: 'Request body for updating a Card recurring pay-in registration (`PaymentType` `CARD_DIRECT`).
+
+
+        The existing registration''s `PaymentType` must match the request variant. Updating the `CardId` requires re-authentication via a new CIT.'
+      title: UpdateARecurringPayInRegistrationRequest_Card
+    RecurringPayInRegistrationApplePayResponseCurrentStateCumulatedDebitedAmount:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The sum of the DebitedFunds amounts of the recurring pay-ins made for the registration.
+      title: RecurringPayInRegistrationApplePayResponseCurrentStateCumulatedDebitedAmount
+    CreateARecurringPayInRegistrationGooglePayRequestNextTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The fees of the subsequent recurring pay-ins.
+      title: CreateARecurringPayInRegistrationGooglePayRequestNextTransactionFees
+    RecurringPayInRegistrationCardResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `AUTHENTICATION_NEEDED`, `IN_PROGRESS`, `ENDED`
+
+
+            The status of the recurring registration:
+
+            - `CREATED` – The recurring registration was created, but no recurring pay-in has yet been made.
+
+            - `AUTHENTICATION_NEEDED` – The latest recurring pay-in linked to the registration object was refused. The registration object can still be used, but you need to execute a new customer-initiated transaction (CIT) for the end user to reauthenticate.
+
+            - `IN_PROGRESS` – The recurring registration object is in use and the subsequent corresponding recurring pay-ins can be made.
+
+            - `ENDED` – The recurrence ended: the registration can no longer be modified nor reused.'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        CurrentState:
+          $ref: '#/components/schemas/RecurringPayInRegistrationCardResponseCurrentState'
+          description: Information about the recurring pay-ins related to the registration object. **Note:** If the `LastPayinId` references a transaction older than 13 months, it may have been <a href="/api-reference/overview/data-availability-periods">archived</a>.
+        RecurringType:
+          type: string
+          description: '**Returned values:** `CLASSIC_SUBSCRIPTION`, `FRACTIONED_PAYMENT`, `CUSTOM`
+
+
+            The type of recurrence, which can be one of the following:
+
+            - `CLASSIC_SUBSCRIPTION` – For fixed-amount subscriptions. The `Amount` of each pay-in and the subscription''s `EndDate` are known, and these values cannot be modified during the recurrence.
+
+            - `FRACTIONED_PAYMENT` – For payments in 3 or 4 times. The `Amount` of each pay-in and the registration''s `EndDate` are known, and these values cannot be modified during the recurrence.
+
+            - `CUSTOM` – For recurring registrations where the `Amount` and `EndDate` are unknown.'
+        TotalAmount:
+          $ref: '#/components/schemas/RecurringPayInRegistrationCardResponseTotalAmount'
+          description: 'Information about the total amount.
+
+
+            This value is automatically calculated based on the `EndDate`, `FixedNextAmount`, and `Frequency` parameters (if defined).'
+        CycleNumber:
+          type: integer
+          description: The number of cycles in the registration (and therefore the number of payments). This value is automatically calculated based on the `EndDate`, `FixedNextAmount`, and `Frequency` parameters (if defined).
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CardId:
+          type: string
+          description: The unique identifier of the Card object, obtained during the card registration process.
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Response'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        EndDate:
+          type: integer
+          description: 'Unix timestamp (UTC) of the date and time the recurring pay-ins will end. This value has no impact on the recurring registration `Status`.
+
+
+            **Caution:** If the `EndDate` is left unspecified, please bear in mind that one could be defined by default and be displayed to your end users (not taken into account in the payment recurrence).'
+        Frequency:
+          type: string
+          description: '**Returned values:** `Daily`, `Weekly`, `TwiceAMonth`, `Monthly`, `Bimonthly`, `Quarterly`, `Semiannual`, `Annual`, `Biannual`
+
+
+            The frequency at which the recurring pay-ins will occur:
+
+            - `Daily` – 1 transaction per day.
+
+            - `Weekly` – 1 transaction every 7 days.
+
+            - `TwiceAMonth` – 2 transactions per month.
+
+            - `Monthly` – 1 transaction per month.
+
+            - `Bimonthly` – 1 transaction every 2 months.
+
+            - `Quarterly` – 1 transaction every 3 months.
+
+            - `Semiannual` – 1 transaction every 6 months.
+
+            - `Annual` – 1 transaction per year.
+
+            - `Biannual` – 1 transaction every 2 years.'
+        FixedNextAmount:
+          type: boolean
+          description: Whether or not the recurring pay-ins' debited amounts remain the same for all the pay-ins linked to the recurring registration object.
+        FractionedPayment:
+          type: boolean
+          description: Whether or not the recurring pay-ins are being made to split a payment in several installments.
+        FreeCycles:
+          type: integer
+          description: 'The number of initial consecutive pay-ins where there will be no debited funds nor fees. This value cannot exceed the `CycleNumber` value (for recurring objects with an `EndDate`, `FixedNextAmount`, and `Frequency`).
+
+
+            **Note:** When creating a recurring pay-in (CIT or MIT) for a pay-in subject to a free cycle, the `DebitedFunds` and `Fees` parameters cannot be sent.'
+        FirstTransactionDebitedFunds:
+          $ref: '#/components/schemas/RecurringPayInRegistrationCardResponseFirstTransactionDebitedFunds'
+          description: 'The amount of the first recurring pay-in.
+
+
+            This value can be different from the `NextTransactionDebitedFunds`'
+        FirstTransactionFees:
+          $ref: '#/components/schemas/RecurringPayInRegistrationCardResponseFirstTransactionFees'
+          description: 'The fees of the first recurring pay-in.
+
+
+            This amount can be different from the `NextTransactionDebitedFunds`.'
+        NextTransactionDebitedFunds:
+          $ref: '#/components/schemas/RecurringPayInRegistrationCardResponseNextTransactionDebitedFunds'
+          description: 'The amount of the subsequent recurring pay-ins.
+
+
+            If this field is empty and either `FixedNextAmount` or `FractionedPayment` are `true`, the subsequent amount will be the same as `FirstTransactionDebitedFunds` amount.'
+        NextTransactionFees:
+          $ref: '#/components/schemas/RecurringPayInRegistrationCardResponseNextTransactionFees'
+          description: The fees of the subsequent recurring pay-ins.
+        Migration:
+          type: boolean
+          description: 'Whether or not to attempt the first recurring pay-in as a merchant-initiated transaction (MIT).
+
+
+            **Caution:** Migration is no longer supported. You can only use objects with `Migration` set to `false`. When Mangopay decommissions this parameter (date communicated by email), the `false` value will be forced on all objects, including existing ones. Before decommissioning, you need to re-create the object; after decommissioning, you can re-authenticate the same object.
+
+
+            The need to re-authenticate may be indicated by the `Status` changing to `AUTHENTICATION_NEEDED` or by errors on the pay-in request, for example: non-existent card account (<a href="/errors/codes/008008">008008</a>), soft decline (<a href="/errors/codes/101305">101305</a>), expired card (<a href="/errors/codes/101105">101105</a>), or stolen card (<a href="/errors/codes/008003">008003</a>).'
+        PaymentType:
+          type: string
+          description: '**Returned values:** `CARD_DIRECT`
+
+
+            **Default value:** `CARD_DIRECT`
+
+
+            The type of recurring pay-in registration (which must correspond to the pay-ins requested against it):
+
+            - `CARD_DIRECT` – Card payments using a tokenized `CardId`.
+
+            - `APPLEPAY` – Apple Pay payments using the tokenized `PaymentData` object retrieved from the Apple Pay API.
+
+            - `GOOGLE_PAY` – Google Pay payments using the tokenized `PaymentData` string retrieved from the Google Pay API.
+
+            - `PAYPAL` – PayPal payments, redirecting the user to authenticate via PayPal.'
+      description: Response object for card recurring pay-in registrations.
+      title: RecurringPayInRegistrationCardResponse
+    PaymentData_ApplePay:
+      type: object
+      properties:
+        TokenData:
+          type: string
+          description: The encrypted string for the payment request.
+        TransactionId:
+          type: string
+          description: Apple Pay's unique identifier of the payment.
+        Network:
+          type: string
+          description: '**Returned values:** MasterCard, Visa, CartesBancaires
+
+
+            The payment network used for the payment request, as resolved by Apple Pay. The pay-in''s `PreferredCardNetwork` property does not apply to Apple Pay.'
+      required:
+      - TokenData
+      - TransactionId
+      - Network
+      description: The data returned by Apple Pay containing information about the payment.
+      title: PaymentData_ApplePay
+    CreateARecurringPayInRegistrationApplePayRequestFirstTransactionFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: The fees of the first recurring pay-in. This amount can be different from the `NextTransactionDebitedFunds`.
+      title: CreateARecurringPayInRegistrationApplePayRequestFirstTransactionFees
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

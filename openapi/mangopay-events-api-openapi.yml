@@ -1,0 +1,153 @@
+openapi: 3.2.0
+info:
+  title: Reference Events API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Events
+paths:
+  /v2.01/{ClientId}/events:
+    get:
+      operationId: events_list_events
+      summary: List all Events
+      description: '**Note**
+
+
+        Events are returned up to 45 days after they occur. Any request attempting to access an event older than 45 days will result in an HTTP 400 - error.
+
+
+        List all Events'
+      tags:
+      - Events
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: EventType
+        in: query
+        description: '**Allowed values:** An `EventType` listed in the <a href="/webhooks/event-types">event types list</a>
+
+
+          The type of the event.'
+        required: true
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the event was created (based on the event's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the event was created (based on the event's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllEventsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ListAllEventsResponseArrayEventsItems:
+      type: object
+      properties:
+        Object:
+          $ref: '#/components/schemas/EventResponse'
+      title: ListAllEventsResponseArrayEventsItems
+    EventResponse:
+      type: object
+      properties:
+        ResourceId:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The unique identifier of the event.'
+        Date:
+          type: integer
+          description: The date and time the event occurred.
+        EventType:
+          type: string
+          description: '**Returned values:** An `EventType` listed in the <a href="/webhooks/event-types">event types list</a>
+
+
+            The type of the event.'
+      title: EventResponse
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ListAllEventsResponse:
+      type: object
+      properties:
+        Array (Events):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAllEventsResponseArrayEventsItems'
+          description: The list of events created by the platform.
+      title: ListAllEventsResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

@@ -1,0 +1,451 @@
+openapi: 3.2.0
+info:
+  title: Reference Dispute Documents API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: disputeDocuments
+paths:
+  /v2.01/{ClientId}/disputes/{DisputeId}/documents:
+    post:
+      operationId: disputeDocuments_create_dispute_document
+      summary: Create a Dispute Document
+      tags:
+      - disputeDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: DisputeId
+        in: path
+        description: The unique identifier of the dispute.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisputeDocumentResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateADisputeDocumentRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: disputeDocuments_list_documents_dispute
+      summary: List Documents for a Dispute
+      tags:
+      - disputeDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: DisputeId
+        in: path
+        description: The unique identifier of the dispute.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllDisputeDocumentsResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/dispute-documents/{DisputeDocumentId}:
+    get:
+      operationId: disputeDocuments_view_dispute_document
+      summary: View a Dispute Document
+      tags:
+      - disputeDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: DisputeDocumentId
+        in: path
+        description: The unique identifier of the dispute document.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisputeDocumentResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/disputes/{DisputeId}/documents/{DisputeDocumentId}:
+    put:
+      operationId: disputeDocuments_submit_dispute_document
+      summary: Submit a Dispute Document
+      tags:
+      - disputeDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: DisputeId
+        in: path
+        description: The unique identifier of the dispute.
+        required: true
+        schema:
+          type: string
+      - name: DisputeDocumentId
+        in: path
+        description: The unique identifier of the dispute document.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisputeDocumentResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitADisputeDocumentRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/dispute-documents:
+    get:
+      operationId: disputeDocuments_list_dispute_documents
+      summary: List all Dispute Documents
+      tags:
+      - disputeDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllDisputeDocumentsResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/disputes/{DisputeId}/documents/{DisputeDocumentId}/pages:
+    post:
+      operationId: disputeDocuments_create_dispute_document_page
+      summary: Create a Dispute Document Page
+      description: 'Create a file attached to the Dispute Document for Mangopay''s team to review. You can have as many Dispute Document Pages as there are actual pages of the document you send.
+
+
+        In order to be able to create a document page:
+
+        - The corresponding Dispute Document `Status` must be `CREATED`
+
+        - The `File` must be a base64 encoded file and have a maximum size of 10MB'
+      tags:
+      - disputeDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: DisputeId
+        in: path
+        description: The unique identifier of the dispute.
+        required: true
+        schema:
+          type: string
+      - name: DisputeDocumentId
+        in: path
+        description: The unique identifier of the dispute document.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/disputeDocuments_create_dispute_document_page_Response_200'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadAClientLogoRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/dispute-documents/{DisputeDocumentId}/consult:
+    post:
+      operationId: disputeDocuments_create_weblink_to_view_dispute_document_pages
+      summary: Create a weblink to view the Pages of a Dispute Document
+      description: 'Create a weblink to view the Pages of a Dispute Document
+
+
+        This call returns one link per document page in order to consult them. These links are available for 10 minutes.'
+      tags:
+      - disputeDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: DisputeDocumentId
+        in: path
+        description: The unique identifier of the dispute document.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisputeDocumentWeblinkResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    DisputeDocumentWeblinkResponseArrayDisputeDocumentPagesItems:
+      type: object
+      properties:
+        Object (Page):
+          $ref: '#/components/schemas/DisputeDocumentWeblinkResponseArrayDisputeDocumentPagesItemsObjectPage'
+          description: The dispute document page created by the platform.
+      title: DisputeDocumentWeblinkResponseArrayDisputeDocumentPagesItems
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    DisputeDocumentResponse:
+      type: object
+      properties:
+        DisputeId:
+          type: string
+          description: The unique identifier of the dispute.
+        Type:
+          type: string
+          description: '**Returned values:** `DELIVERY_PROOF`, `INVOICE`, `REFUND_PROOF`, `USER_CORRESPONDANCE`, `USER_ACCEPTANCE_PROOF`, `PRODUCT_REPLACEMENT_PROOF`, `OTHER`
+
+
+            The type of the dispute document.'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ProcessedDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the document was processed by Mangopay's team.
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `VALIDATION_ASKED`, `VALIDATED`, `REFUSED`, `OUT_OF_DATE`
+
+
+            The status of the dispute document.'
+        RefusedReasonType:
+          type: string
+          description: '**Returned values:** DOCUMENT_DO_NOT_MATCH_USER_DATA, DOCUMENT_FALSIFIED, DOCUMENT_HAS_EXPIRED, DOCUMENT_INCOMPLETE, DOCUMENT_MISSING, DOCUMENT_NOT_ACCEPTED, DOCUMENT_UNREADABLE, SPECIFIC_CASE, UNDERAGE_PERSON
+
+
+            The reason for the dispute document refusal. See the <inline-code>RefusedReasonMessage</inline-code> for more information.'
+        RefusedReasonMessage:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            **Default value:** null Additional information about why the dispute document was refused, provided by Mangopay''s team.'
+      title: DisputeDocumentResponse
+    ListAllDisputeDocumentsResponse:
+      type: object
+      properties:
+        Array (Dispute documents):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAllDisputeDocumentsResponseArrayDisputeDocumentsItems'
+          description: The list of dispute documents created by the platform.
+      title: ListAllDisputeDocumentsResponse
+    disputeDocuments_create_dispute_document_page_Response_200:
+      type: object
+      properties: {}
+      description: Empty response body
+      title: disputeDocuments_create_dispute_document_page_Response_200
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    UploadAClientLogoRequest:
+      type: object
+      properties:
+        File:
+          type: string
+          description: 'Format: Base64 encoded file
+
+
+            The encoded file of the logo to upload.'
+      required:
+      - File
+      title: UploadAClientLogoRequest
+    DisputeDocumentWeblinkResponseArrayDisputeDocumentPagesItemsObjectPage:
+      type: object
+      properties: {}
+      description: The dispute document page created by the platform.
+      title: DisputeDocumentWeblinkResponseArrayDisputeDocumentPagesItemsObjectPage
+    ListAllDisputeDocumentsResponseArrayDisputeDocumentsItemsObjectDisputeDocument:
+      type: object
+      properties:
+        DisputeId:
+          type: string
+          description: The unique identifier of the dispute.
+        Type:
+          type: string
+          description: '**Returned values:** `DELIVERY_PROOF`, `INVOICE`, `REFUND_PROOF`, `USER_CORRESPONDANCE`, `USER_ACCEPTANCE_PROOF`, `PRODUCT_REPLACEMENT_PROOF`, `OTHER`
+
+
+            The type of the dispute document.'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ProcessedDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the document was processed by Mangopay's team.
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `VALIDATION_ASKED`, `VALIDATED`, `REFUSED`, `OUT_OF_DATE`
+
+
+            The status of the dispute document.'
+        RefusedReasonType:
+          type: string
+          description: '**Returned values:** DOCUMENT_DO_NOT_MATCH_USER_DATA, DOCUMENT_FALSIFIED, DOCUMENT_HAS_EXPIRED, DOCUMENT_INCOMPLETE, DOCUMENT_MISSING, DOCUMENT_NOT_ACCEPTED, DOCUMENT_UNREADABLE, SPECIFIC_CASE, UNDERAGE_PERSON
+
+
+            The reason for the dispute document refusal. See the <inline-code>RefusedReasonMessage</inline-code> for more information.'
+        RefusedReasonMessage:
+          type: string
+          description: '**Default value:** null
+
+
+            Additional information about why the KYC Document was refused, provided by Mangopay''s team.'
+      description: The dispute document created by the platform.
+      title: ListAllDisputeDocumentsResponseArrayDisputeDocumentsItemsObjectDisputeDocument
+    SubmitADisputeDocumentRequest:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Allowed values:** `VALIDATION_ASKED`
+
+
+            The status of the dispute document.'
+      required:
+      - Status
+      title: SubmitADisputeDocumentRequest
+    ListAllDisputeDocumentsResponseArrayDisputeDocumentsItems:
+      type: object
+      properties:
+        Object (Dispute document):
+          $ref: '#/components/schemas/ListAllDisputeDocumentsResponseArrayDisputeDocumentsItemsObjectDisputeDocument'
+          description: The dispute document created by the platform.
+      title: ListAllDisputeDocumentsResponseArrayDisputeDocumentsItems
+    CreateADisputeDocumentRequest:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Allowed values:** `DELIVERY_PROOF`, `INVOICE`, `REFUND_PROOF`, `USER_CORRESPONDANCE`, `USER_ACCEPTANCE_PROOF`, `PRODUCT_REPLACEMENT_PROOF`, `OTHER`
+
+
+            The type of the dispute document.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - Type
+      title: CreateADisputeDocumentRequest
+    DisputeDocumentWeblinkResponse:
+      type: object
+      properties:
+        Array (Dispute Document Pages):
+          type: array
+          items:
+            $ref: '#/components/schemas/DisputeDocumentWeblinkResponseArrayDisputeDocumentPagesItems'
+          description: The list of Dispute Document Pages created by the platform.
+      title: DisputeDocumentWeblinkResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

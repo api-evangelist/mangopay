@@ -1,0 +1,379 @@
+openapi: 3.2.0
+info:
+  title: Reference Webhooks API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Webhooks
+paths:
+  /v2.01/{ClientId}/hooks:
+    post:
+      operationId: webhooks_create_hook
+      summary: Create a Hook
+      description: '**Caution – Setting email for consecutive failures after April 2026**
+
+
+        In Production, if your platform had `VALID` Hook objects before April 2, 2026, then Mangopay automatically populates the `Email` property on new Hooks with the previously used global address **unless and until** you set it proactively using this endpoint.
+
+
+        If you send the `Email` on a POST or PUT request, other new Hooks created without the `Email` do not populate the `Email` automatically and do not emit alerts in case of consecutive failed notifications or if the Hook becomes `INVALID`.
+
+
+        Platforms integrating after April 2, 2026 **must** proactively set the `Email` to receive alerts.
+
+
+        Read more about this change **→**'
+      tags:
+      - Webhooks
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HookResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAHookRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: webhooks_list_hooks
+      summary: List all Hooks
+      description: 'List all Hooks
+
+
+        This call returns all the Hooks that have been created for the platform. It includes both enabled and disabled hooks.'
+      tags:
+      - Webhooks
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllHooksResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/hooks/{HookId}:
+    put:
+      operationId: webhooks_update_hook
+      summary: Update a Hook
+      description: '**Caution – Setting email for consecutive failures after April 2026**
+
+
+        In Production, if your platform had `VALID` Hook objects before April 2, 2026, then Mangopay automatically populates the `Email` property with the previously used global address **unless and until** you set it proactively using this endpoint.
+
+
+        If you send the `Email` on a POST or PUT request, other new Hooks created without the `Email` do not populate the `Email` automatically and do not emit alerts in case of consecutive failed notifications or if the Hook becomes `INVALID`.
+
+
+        Platforms integrating after April 2, 2026 **must** proactively set the `Email` to receive alerts.
+
+
+        Read more about this change **→**'
+      tags:
+      - Webhooks
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: HookId
+        in: path
+        description: The unique identifier of the hook.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HookResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAHookRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: webhooks_view_hook
+      summary: View a Hook
+      tags:
+      - Webhooks
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: HookId
+        in: path
+        description: The unique identifier of the hook.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HookResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    CreateAHookRequest:
+      type: object
+      properties:
+        EventType:
+          type: string
+          description: '**Allowed values:** An `EventType` listed in the <a href="/webhooks/event-types">event types list</a>
+
+
+            The type of the event.'
+        Url:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The URL to which the notification is sent.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The `Email` address to which alerts are sent in case of [consecutive failed notification attempts](/webhooks#notification-retries-and-failure).
+
+
+            **Caution:** Mangopay may populate this property automatically if your platform had webhooks integrated in Production before April 2, 2026. If so, setting the `Email` on a single Hook stops this automatic population for any new Hooks you create - [read more](/webhooks#transition-from-default-email-april-2026).
+
+
+            For all platforms, if this property is returned `null` then no alerts are sent but the Hook still becomes `INVALID` after 100 consecutive failed notifications.'
+      required:
+      - EventType
+      - Url
+      title: CreateAHookRequest
+    ListAllHooksResponseArrayHooksItems:
+      type: object
+      properties:
+        Hook:
+          $ref: '#/components/schemas/ListAllHooksResponseArrayHooksItemsHook'
+          description: The hook object created by the platform.
+      title: ListAllHooksResponseArrayHooksItems
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    UpdateAHookRequest:
+      type: object
+      properties:
+        Url:
+          type: string
+          description: The URL to which the notification is sent.
+        Status:
+          type: string
+          description: '**Allowed values:** `DISABLED`, `ENABLED`
+
+
+            Whether the hook is enabled or not.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: UpdateAHookRequest
+    HookResponse:
+      type: object
+      properties:
+        Url:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The URL to which the notification is sent.'
+        Status:
+          type: string
+          description: '**Returned values:** `DISABLED`, `ENABLED`
+
+
+            Whether the hook is enabled or not.'
+        Validity:
+          type: string
+          description: '**Returned values:** `VALID`, `INVALID`
+
+
+            Whether the hook is valid or not. Once `INVALID` (following unsuccessful retries) the hook must be disabled and re-enabled.'
+        EventType:
+          type: string
+          description: '**Returned values:** An `EventType` listed in the <a href="/webhooks/event-types">event types list</a>
+
+
+            The type of the event.'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The `Email` address to which alerts are sent in case of [consecutive failed notification attempts](/webhooks#notification-retries-and-failure).
+
+
+            **Caution:** Mangopay may populate this property automatically if your platform had webhooks integrated in Production before April 2, 2026. If so, setting the `Email` on a single Hook stops this automatic population for any new Hooks you create - [read more](/webhooks#transition-from-default-email-april-2026).
+
+
+            For all platforms, if this property is returned `null` then no alerts are sent but the Hook still becomes `INVALID` after 100 consecutive failed notifications.'
+      title: HookResponse
+    ListAllHooksResponse:
+      type: object
+      properties:
+        Array (Hooks):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAllHooksResponseArrayHooksItems'
+          description: The list of hooks created by the platform.
+      title: ListAllHooksResponse
+    ListAllHooksResponseArrayHooksItemsHook:
+      type: object
+      properties:
+        Url:
+          type: string
+          description: The URL to which the notification is sent.
+        Status:
+          type: string
+          description: '**Returned values:** `DISABLED`, `ENABLED`
+
+
+            Whether the hook is enabled or not.'
+        Validity:
+          type: string
+          description: '**Returned values:** `VALID`, `INVALID`
+
+
+            Whether the hook is valid or not. Once `INVALID` (following unsuccessful retries) the hook must be disabled and re-enabled.'
+        EventType:
+          type: string
+          description: '**Returned values:** An `EventType` listed in the <a href="/webhooks/event-types">event types list</a>
+
+
+            The type of the event.'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Email:
+          type: string
+          description: 'Format: A valid email address
+
+
+            The `Email` address to which alerts are sent in case of [consecutive failed notification attempts](/webhooks#notification-retries-and-failure).
+
+
+            **Caution:** Mangopay may populate this property automatically if your platform had webhooks integrated in Production before April 2, 2026. If so, setting the `Email` on a single Hook stops this automatic population for any new Hooks you create - [read more](/webhooks#transition-from-default-email-april-2026).
+
+
+            For all platforms, if this property is returned `null` then no alerts are sent but the Hook still becomes `INVALID` after 100 consecutive failed notifications.'
+      description: The hook object created by the platform.
+      title: ListAllHooksResponseArrayHooksItemsHook
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

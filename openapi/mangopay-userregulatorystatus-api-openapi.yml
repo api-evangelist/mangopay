@@ -1,0 +1,126 @@
+openapi: 3.2.0
+info:
+  title: Reference User Regulatory Status API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: userRegulatoryStatus
+paths:
+  /v2.01/{ClientId}/users/{UserId}/regulatory:
+    get:
+      operationId: userRegulatoryStatus_view_user_regulatory_status
+      summary: View the Regulatory Status of a User
+      tags:
+      - userRegulatoryStatus
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegulatoryStatusResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    UserRegulatoryStatusResponseKycInformation:
+      type: object
+      properties:
+        LastKycDate:
+          type:
+          - string
+          - 'null'
+          description: 'Format: YYYY-MM-DD (UTC, date-only ISO 8601); example: `2025-12-15`
+
+
+            The date of the User''s last successful KYC/KYB verification, when `KYCLevel` changed from `LIGHT` to `REGULAR`.
+
+
+            Returned `null` if the User has never been KYC/KYB-verified.'
+        KycRenewalDeadline:
+          type:
+          - string
+          - 'null'
+          description: 'Format: YYYY-MM-DD (UTC, date-only ISO 8601); example: `2026-12-15`
+
+
+            The date after which the User is KYC/KYB downgraded, and their `KYCLevel` changed from `REGULAR` to `LIGHT`, unless they successfully complete the KYC/KYB verification process again.
+
+
+            May be in the past if the User didn''t renew their verification.
+
+
+            Returned `null` if the User has never been KYC/KYB-verified.'
+      description: 'Information about the Natural or Legal User''s upcoming `KycRenewalDeadline` and their `LastKycDate`, as part of Mangopay''s [continuous KYC/KYB verification](/guides/users/verification/renewal) obligations.
+
+
+        If the User doesn''t renew their KYC/KYB verification before the `KycRenewalDeadline`, they are downgraded the day after (UTC) and their `KYCLevel` is changed to `LIGHT`.'
+      title: UserRegulatoryStatusResponseKycInformation
+    UserRegulatoryStatusResponseScopeBlocked:
+      type: object
+      properties:
+        Inflows:
+          type: boolean
+          description: Whether or not the user is blocked from making pay-ins or sending or receiving transfers.
+        Outflows:
+          type: boolean
+          description: Whether or not the user is blocked from making payouts or sending or receiving transfers.
+      description: Information about which payment flows are blocked for the user.
+      title: UserRegulatoryStatusResponseScopeBlocked
+    UserRegulatoryStatusResponse:
+      type: object
+      properties:
+        ActionCode:
+          type: string
+          description: '**Returned values:** One of the action codes available in the [Blocked users](/guides/users/blocked-users) article.
+
+
+            Code indicating the reason for blocking the user, and steps you can take to get them unblocked.'
+        ScopeBlocked:
+          $ref: '#/components/schemas/UserRegulatoryStatusResponseScopeBlocked'
+          description: Information about which payment flows are blocked for the user.
+        KycInformation:
+          $ref: '#/components/schemas/UserRegulatoryStatusResponseKycInformation'
+          description: 'Information about the Natural or Legal User''s upcoming `KycRenewalDeadline` and their `LastKycDate`, as part of Mangopay''s [continuous KYC/KYB verification](/guides/users/verification/renewal) obligations.
+
+
+            If the User doesn''t renew their KYC/KYB verification before the `KycRenewalDeadline`, they are downgraded the day after (UTC) and their `KYCLevel` is changed to `LIGHT`.'
+        Id:
+          type: string
+          description: The unique identifier of the user.
+      title: UserRegulatoryStatusResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

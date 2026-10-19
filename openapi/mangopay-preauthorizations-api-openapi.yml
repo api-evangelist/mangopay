@@ -1,0 +1,1371 @@
+openapi: 3.2.0
+info:
+  title: Reference Preauthorizations API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Preauthorizations
+paths:
+  /v2.01/{ClientId}/preauthorizations/card/direct:
+    post:
+      operationId: preauthorizations_create_preauthorization
+      summary: Create a Preauthorization
+      tags:
+      - Preauthorizations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreauthorizationResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAPreauthorizationRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/preauthorizations/{PreauthorizationId}:
+    put:
+      operationId: preauthorizations_cancel_validate_preauthorization
+      summary: Cancel or validate a Preauthorization
+      description: '**Caution – Canceling or validating a preauthorization is irreversible**
+
+
+        A preauthorization with the `CANCELED` or `VALIDATED` status can''t be reused.
+
+
+        Cancel or validate a Preauthorization
+
+
+        This call is used to manually close the preauthorization hold period before the `ExpirationDate`, thereby releasing the preauthorized funds.
+
+
+        The `PaymentStatus` can be set to:
+
+        - `CANCELED` when no preauthorized pay-ins have been made to capture funds. Trying to cancel a used preauthorization returns an error.
+
+        - `VALIDATED` when at least one preauthorized pay-in has been made to capture funds. Trying to validate an unused preauthorization returns an error.'
+      tags:
+      - Preauthorizations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: PreauthorizationId
+        in: path
+        description: The unique identifier of the preauthorization.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelOrValidateAPreauthorizationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelAnExtendedPreauthorizationRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: preauthorizations_view_preauthorization
+      summary: View a Preauthorization
+      tags:
+      - Preauthorizations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: PreauthorizationId
+        in: path
+        description: The unique identifier of the preauthorization.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreauthorizationResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/cards/{CardId}/preauthorizations:
+    get:
+      operationId: preauthorizations_list_preauthorizations_card
+      summary: List Preauthorizations for a Card
+      tags:
+      - Preauthorizations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: CardId
+        in: path
+        description: The unique identifier of the Card object, obtained during the card registration process.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPreauthorizationsForACardResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/preauthorizations:
+    get:
+      operationId: preauthorizations_list_preauthorizations_user
+      summary: List Preauthorizations for a User
+      tags:
+      - Preauthorizations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPreauthorizationsForACardResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/payins/preauthorized/direct:
+    post:
+      operationId: preauthorizations_create_preauthorized_payin
+      summary: Create a Preauthorized PayIn
+      tags:
+      - Preauthorizations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreauthorizedPayInResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAPreauthorizedPayInRequest'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    PreauthorizationResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the preauthorized funds.
+      title: PreauthorizationResponseDebitedFunds
+    PreauthorizationResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The unique identifier of the preauthorization.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        DebitedFunds:
+          $ref: '#/components/schemas/PreauthorizationResponseDebitedFunds'
+          description: Information about the preauthorized funds.
+        RemainingFunds:
+          $ref: '#/components/schemas/PreauthorizationResponseRemainingFunds'
+          description: Information about the remaining preauthorized funds.
+        AuthorizationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time successful authorization occurred. If authorization failed, the value is `null`.
+        Status:
+          $ref: '#/components/schemas/AuthorizationStatus'
+        PaymentStatus:
+          type: string
+          description: '**Returned values:** `WAITING`, `CANCELED`, `EXPIRED`, `VALIDATED`
+
+
+            The status of the preauthorization object:
+
+            - `WAITING` – The remaining preauthorized funds can be captured by making one or several preauthorized pay-ins. Pay-ins can only be made against a preauthorization with the `WAITING` status.
+
+            - `CANCELED` – The preauthorization was canceled manually before any preauthorized pay-ins were made, or it was canceled automatically because the authorization failed.
+
+            - `EXPIRED` – The hold period on the preauthorized funds has ended without any preauthorized pay-ins taking place.
+
+            - `VALIDATED` – During the hold period: Indicates that all the preauthorized funds have been captured (`RemainingFunds` is zero) and no more preauthorized pay-ins can be made. After the hold period: Indicates that at least one capture was made during the hold period.'
+        ExpirationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the hold period ends and the preauthorized funds are released. At the expiration date, the preauthorization's `PaymentStatus` changes to `EXPIRED` if no captures were made or `VALIDATED` if at least one capture was made.
+        PayInId:
+          type: string
+          description: The unique identifier of the pay-in.
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        SecureMode:
+          type: string
+          description: '**Returned values:** `DEFAULT`, `FORCE`, `NO_CHOICE`
+
+
+            The mode applied for the 3DS2 protocol for CB, Visa, and Mastercard. The options are:
+
+            - `DEFAULT` – Requests an exemption to strong customer authentication (SCA), and thus a frictionless payment experience, if allowed by your Mangopay contract and accepted by the issuer.
+
+            - `FORCE` – Requests SCA.
+
+            - `NO_CHOICE` – Leaves the choice to the issuer whether to allow for a frictionless payment experience or to enforce SCA.'
+        CardId:
+          type: string
+          description: The unique identifier of the Card object, obtained during the card registration process.
+        SecureModeReturnURL:
+          $ref: '#/components/schemas/SecureModeReturnURL'
+        SecureModeRedirectURL:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The URL to which to redirect the user to proceed to 3DS2 validation.'
+        SecureModeNeeded:
+          type: boolean
+          description: Whether or not the `SecureMode` was used.
+        PaymentType:
+          type: string
+          description: '**Returned values:** `CARD`
+
+
+            The payment type of the preauthorization.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `DIRECT`
+
+
+            The execution type of the preauthorization.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor_22'
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): DE, EN, ES, FR, IT, NL, PL, PT.
+
+
+            The language in which the payment page is to be displayed.'
+        SecurityInfo:
+          $ref: '#/components/schemas/AVSResult'
+        MultiCapture:
+          type: boolean
+          description: '**Default value:** true
+
+
+            Whether multiple captures are activated for the preauthorization.'
+        BrowserInfo:
+          $ref: '#/components/schemas/BrowserInfo'
+        IpAddress:
+          $ref: '#/components/schemas/IpAddress'
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Response'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        Requested3DSVersion:
+          type: string
+          description: '**Returned values:** `V1`, `V2_1`
+
+
+            The 3DS protocol version to be applied to the transaction.'
+        Applied3DSVersion:
+          type: string
+          description: '**Returned values:** `V1`, `V2_1`
+
+
+            The 3DS protocol version applied to the transaction.'
+        PreferredCardNetwork:
+          $ref: '#/components/schemas/PreferredCardNetwork'
+        PaymentCategory:
+          $ref: '#/components/schemas/PaymentCategory'
+        CardInfo:
+          $ref: '#/components/schemas/CardInfo'
+        AuthenticationResult:
+          $ref: '#/components/schemas/AuthenticationResult'
+      title: PreauthorizationResponse
+    ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorizationRemainingFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the remaining preauthorized funds.
+      title: ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorizationRemainingFunds
+    SecureModeReturnURL:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        The URL to which users are automatically returned after 3DS2 if it is triggered (i.e., if the `SecureModeNeeded` parameter is set to `true`).'
+      title: SecureModeReturnURL
+    Address_SubPropsRequired:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: The postal address.
+      title: Address_SubPropsRequired
+    AuthenticationResult:
+      type: object
+      properties:
+        AuthenticationType:
+          type:
+          - string
+          - 'null'
+          description: '**Returned values:** `CHALLENGE`, `FRICTIONLESS`, `DIRECT_AUTHORIZATION`
+
+
+            The type of authentication:
+
+
+            - `CHALLENGE` – The issuer requested SCA to be enforced (for example, using 3DS).
+
+            - `FRICTIONLESS` – The transaction was exempted from SCA because an exemption was granted by the issuer.
+
+            - `DIRECT_AUTHORIZATION` – The transaction was sent to the issuer for authorization without any frictionless or challenge (for example, if SCA doesn''t apply). A `null` value typically indicates that authentication was not requested (for example, because the request failed before being sent) or a decision was not received.
+
+
+            A `null` value typically indicates that authentication was not requested (for example, because the request failed before being sent) or a decision was not received.'
+      description: Information about the authentication result, based on the request made by Mangopay and the decision of the issuer regarding the type of authentication to be enforced (if applicable).
+      title: AuthenticationResult
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    FlowDescriptorRequestBeneficiariesItems:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the Natural User or Legal User declared as a beneficiary of the pay-in.
+      title: FlowDescriptorRequestBeneficiariesItems
+    PreauthorizedPayInResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        DebitedFunds:
+          $ref: '#/components/schemas/PreauthorizedPayInResponseDebitedFunds'
+          description: Information about the debited funds.
+        CreditedFunds:
+          $ref: '#/components/schemas/PreauthorizedPayInResponseCreditedFunds'
+          description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+        Fees:
+          $ref: '#/components/schemas/PreauthorizedPayInResponseFees'
+          description: Information about the fees taken by the platform for this transaction (and hence transferred to the Fees Wallet).
+        Status:
+          $ref: '#/components/schemas/TransactionStatus'
+        ExecutionDate:
+          $ref: '#/components/schemas/TransactionExecutionDate'
+        Type:
+          $ref: '#/components/schemas/TransactionType'
+        Nature:
+          $ref: '#/components/schemas/TransactionNature'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        DebitedWalletId:
+          type: string
+          description: 'The unique identifier of the debited wallet.
+
+
+            In the case of a pay-in, this value is always `null` since there is no debited wallet.'
+        PaymentType:
+          type: string
+          description: '**Returned values:** `PREAUTHORIZED`
+
+
+            The payment type of the pay-in.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `DIRECT`
+
+
+            The execution type of the pay-in.'
+        PreauthorizationId:
+          type: string
+          description: The unique identifier of the preauthorization.
+        AuthenticationResult:
+          $ref: '#/components/schemas/AuthenticationResult'
+      description: 'A 7-day preauthorized card pay-in:
+
+        - `PaymentType` – `PREAUTHORIZED`
+
+        - `ExecutionType` – `DIRECT`
+
+        - Object includes `PreauthorizationId`'
+      title: PreauthorizedPayInResponse
+    CreateAPreauthorizationRequest:
+      type: object
+      properties:
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateAPreauthorizationRequestDebitedFunds'
+          description: Information about the preauthorized funds.
+        SecureMode:
+          type: string
+          description: '**Allowed values:** `DEFAULT`, `FORCE`, `NO_CHOICE`
+
+
+            **Default value:** `DEFAULT`
+
+
+            The mode applied for the 3DS2 protocol for CB, Visa, and Mastercard. The options are:
+
+            - `DEFAULT` – Requests an exemption to strong customer authentication (SCA), and thus a frictionless payment experience, if allowed by your Mangopay contract and accepted by the issuer.
+
+            - `FORCE` – Requests SCA.
+
+            - `NO_CHOICE` – Leaves the choice to the issuer whether to allow for a frictionless payment experience or to enforce SCA.'
+        CardId:
+          type: string
+          description: The unique identifier of the Card object, obtained during the card registration process.
+        SecureModeReturnURL:
+          $ref: '#/components/schemas/SecureModeReturnURL'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor_22'
+        Culture:
+          type: string
+          description: '**Allowed values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): DE, EN, ES, FR, IT, NL, PL, PT.
+
+
+            The language in which the payment page is to be displayed.'
+        BrowserInfo:
+          $ref: '#/components/schemas/BrowserInfo'
+        IpAddress:
+          $ref: '#/components/schemas/IpAddress'
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Request'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Request'
+        PreferredCardNetwork:
+          $ref: '#/components/schemas/PreferredCardNetwork'
+        PaymentCategory:
+          $ref: '#/components/schemas/PaymentCategory'
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+      required:
+      - AuthorId
+      - DebitedFunds
+      - CardId
+      - SecureModeReturnURL
+      - BrowserInfo
+      - IpAddress
+      title: CreateAPreauthorizationRequest
+    PaymentCategory:
+      type: string
+      description: '**Default value:** `ECommerce`
+
+
+        **Allowed values:** `ECommerce`, `TelephoneOrder`
+
+
+        The channel through which the user provided their card details, used to indicate mail-order and telephone-order (MOTO) payments:
+
+        - `ECommerce` – Payment received online.
+
+        - `TelephoneOrder` – Payment received via mail order or telephone order (MOTO).'
+      title: PaymentCategory
+    TransactionExecutionDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the status changed to `SUCCEEDED`, indicating that the transaction occurred. The statuses `CREATED` and `FAILED` return an `ExecutionDate` of `null`.
+      title: TransactionExecutionDate
+    FlowDescriptorResponseBeneficiariesItems:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the Natural User or Legal User declared as a beneficiary of the pay-in.
+      title: FlowDescriptorResponseBeneficiariesItems
+    AuthorId:
+      type: string
+      description: The unique identifier of the user at the source of the transaction.
+      title: AuthorId
+    ProfilingAttemptReference:
+      type: string
+      description: 'The unique reference generated for the profiling session, used by the <a href="/guides/fraud-prevention">fraud prevention</a> solution to produce recommendations for the transaction using the profiling data.
+
+
+        **Note:** Parameter not returned by the API. Profiling feature available on request – contact Mangopay <a href="https://hub.mangopay.com/" target="_blank">via the Dashboard</a> for more information.'
+      title: ProfilingAttemptReference
+    FlowDescriptorRequest:
+      type: object
+      properties:
+        Beneficiaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FlowDescriptorRequestBeneficiariesItems'
+          description: 'Max. length: 5 items
+
+
+            The list of up to 5 Natural or Legal Users declared as beneficiaries of the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made. The pay-in also fails if the `Beneficiaries` array contains nulled objects or invalid `UserId` values.'
+      description: "Information about the Owner beneficiaries targeted by the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made ([read more](/guides/payin-beneficiaries)).\n\nIf the `FlowDescriptor.Beneficiaries` is sent in the API request, then:\n- The transaction's `CreditedWalletId` holder is disregarded in KYC/KYB checks.\n- **ALL** `UserId` values in the array must be one of:\n  - `OWNER` whose `KYCLevel` is `REGULAR`\n  - `PLATFORM`\n  \nThe pay-in `Status` becomes `FAILED` with `ResultCode` [002951](/errors/codes/002951) if at least one `FlowDescriptor.Beneficiaries.UserId` is:\n- `PAYER`\n- `OWNER` whose `KYCLevel` is `LIGHT`\n\nIf the `FlowDescriptor.Beneficiaries` is not sent in the API request, then the `CreditedWalletId` holder is subject to KYC/KYB checks. This property is optional for backwards compatibility but is recommended for all pay-in flows, even when the `CreditedWalletId` holder is a `PAYER` or the same value as one of the `FlowDescriptor.Beneficiaries`. \n"
+      title: FlowDescriptorRequest
+    ListPreauthorizationsForACardResponseArrayPreauthorizationsItems:
+      type: object
+      properties:
+        Preauthorization:
+          $ref: '#/components/schemas/ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorization'
+          description: The preauthorization created by the platform.
+      title: ListPreauthorizationsForACardResponseArrayPreauthorizationsItems
+    CreateAPreauthorizationRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the preauthorized funds.
+      title: CreateAPreauthorizationRequestDebitedFunds
+    Shipping_DefaultsBillingUser_Response:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Billing` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the shipping address. '
+      title: Shipping_DefaultsBillingUser_Response
+    CreateAPreauthorizedPayInRequest:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateAPreauthorizedPayInRequestDebitedFunds'
+          description: Information about the debited funds.
+        Fees:
+          $ref: '#/components/schemas/CreateAPreauthorizedPayInRequestFees'
+          description: Information about the fees.
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        PreauthorizationId:
+          type: string
+          description: The unique identifier of the preauthorization.
+      required:
+      - DebitedFunds
+      - Fees
+      - CreditedWalletId
+      - PreauthorizationId
+      title: CreateAPreauthorizedPayInRequest
+    AuthorizationStatus:
+      type: string
+      description: '**Returned values:** `CREATED`, `SUCCEEDED`, `FAILED`
+
+
+        The status of the authorization.'
+      title: AuthorizationStatus
+    Billing_DefaultsShippingUser_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Shipping` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the billing address. '
+      title: Billing_DefaultsShippingUser_Request
+    TransactionStatus:
+      type: string
+      description: '**Returned values:** `CREATED`, `SUCCEEDED`, `FAILED`
+
+
+        The status of the transaction.'
+      title: TransactionStatus
+    CreateAPreauthorizedPayInRequestFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the fees.
+      title: CreateAPreauthorizedPayInRequestFees
+    Shipping_DefaultsBillingUser_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Billing` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the shipping address. '
+      title: Shipping_DefaultsBillingUser_Request
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    CreditedUserId:
+      type: string
+      description: '**Default value:** The unique identifier of the owner of the credited wallet.
+
+
+        The unique identifier of the user whose wallet is credited.'
+      title: CreditedUserId
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+    FlowDescriptorResponse:
+      type: object
+      properties:
+        FlowId:
+          type: string
+          description: Unique identifier of the payment flow, used by Mangopay for internal purposes.
+        Beneficiaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FlowDescriptorResponseBeneficiariesItems'
+          description: 'Max. length: 5 items
+
+
+            The list of up to 5 Natural or Legal Users declared as beneficiaries of the pay-in, who must all be KYC/KYB verified when the pay-in request is made. The pay-in also fails if the `Beneficiaries` array contains nulled objects or invalid `UserId` values.'
+      description: "Information about the Owner beneficiaries targeted by the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made ([read more](/guides/payin-beneficiaries)).\n\nIf the `FlowDescriptor.Beneficiaries` is sent in the API request, then:\n- The transaction's `CreditedWalletId` holder is disregarded in KYC/KYB checks.\n- **ALL** `UserId` values in the array must be one of:\n  - `OWNER` whose `KYCLevel` is `REGULAR`\n  - `PLATFORM`\n  \nThe pay-in `Status` becomes `FAILED` with `ResultCode` [002951](/errors/codes/002951) if at least one `FlowDescriptor.Beneficiaries.UserId` is:\n- `PAYER`\n- `OWNER` whose `KYCLevel` is `LIGHT`\n\nIf the `FlowDescriptor.Beneficiaries` is not sent in the API request, then the `CreditedWalletId` holder is subject to KYC/KYB checks. This property is optional for backwards compatibility but is recommended for all pay-in flows, even when the `CreditedWalletId` holder is a `PAYER` or the same value as one of the `FlowDescriptor.Beneficiaries`.\n"
+      title: FlowDescriptorResponse
+    PreauthorizedPayInResponseFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the fees taken by the platform for this transaction (and hence transferred to the Fees Wallet).
+      title: PreauthorizedPayInResponseFees
+    CancelOrValidateAPreauthorizationResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The unique identifier of the preauthorization.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/CancelOrValidateAPreauthorizationResponseDebitedFunds'
+          description: Information about the preauthorized funds.
+        RemainingFunds:
+          $ref: '#/components/schemas/CancelOrValidateAPreauthorizationResponseRemainingFunds'
+          description: Information about the remaining preauthorized funds.
+        AuthorizationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time successful authorization occurred. If authorization failed, the value is `null`.
+        Status:
+          $ref: '#/components/schemas/AuthorizationStatus'
+        PaymentStatus:
+          type: string
+          description: '**Returned values:** `WAITING`, `CANCELED`, `EXPIRED`, `VALIDATED`
+
+
+            The status of the preauthorization object:
+
+            - `WAITING` – The remaining preauthorized funds can be captured by making one or several preauthorized pay-ins. Pay-ins can only be made against a preauthorization with the `WAITING` status.
+
+            - `CANCELED` – The preauthorization was canceled manually before any preauthorized pay-ins were made, or it was canceled automatically because the authorization failed.
+
+            - `EXPIRED` – The hold period on the preauthorized funds has ended without any preauthorized pay-ins taking place.
+
+            - `VALIDATED` – During the hold period: Indicates that all the preauthorized funds have been captured (`RemainingFunds` is zero) and no more preauthorized pay-ins can be made. After the hold period: Indicates that at least one capture was made during the hold period.'
+        ExpirationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the hold period ends and the preauthorized funds are released. At the expiration date, the preauthorization's `PaymentStatus` changes to `EXPIRED` if no captures were made or `VALIDATED` if at least one capture was made.
+        PayInId:
+          type: string
+          description: The unique identifier of the pay-in.
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        SecureMode:
+          type: string
+          description: '**Returned values:** `DEFAULT`, `FORCE`, `NO_CHOICE`
+
+
+            The mode applied for the 3DS2 protocol for CB, Visa, and Mastercard. The options are:
+
+            - `DEFAULT` – Requests an exemption to strong customer authentication (SCA), and thus a frictionless payment experience, if allowed by your Mangopay contract and accepted by the issuer.
+
+            - `FORCE` – Requests SCA.
+
+            - `NO_CHOICE` – Leaves the choice to the issuer whether to allow for a frictionless payment experience or to enforce SCA.'
+        CardId:
+          type: string
+          description: The unique identifier of the Card object, obtained during the card registration process.
+        SecureModeReturnURL:
+          $ref: '#/components/schemas/SecureModeReturnURL'
+        SecureModeRedirectURL:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The URL to which to redirect the user to proceed to 3DS2 validation.'
+        SecureModeNeeded:
+          type: boolean
+          description: Whether or not the `SecureMode` was used.
+        PaymentType:
+          type: string
+          description: '**Returned values:** `CARD`
+
+
+            The payment type of the preauthorization.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `DIRECT`
+
+
+            The execution type of the preauthorization.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor_22'
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): DE, EN, ES, FR, IT, NL, PL, PT.
+
+
+            The language in which the payment page is to be displayed.'
+        SecurityInfo:
+          $ref: '#/components/schemas/AVSResult'
+        MultiCapture:
+          type: boolean
+          description: '**Default value:** true
+
+
+            Whether multiple captures are activated for the preauthorization.'
+        BrowserInfo:
+          $ref: '#/components/schemas/BrowserInfo'
+        IpAddress:
+          $ref: '#/components/schemas/IpAddress'
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Response'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        Requested3DSVersion:
+          type: string
+          description: '**Returned values:** `V1`, `V2_1`
+
+
+            The 3DS protocol version to be applied to the transaction.'
+        Applied3DSVersion:
+          type: string
+          description: '**Returned values:** `V1`, `V2_1`
+
+
+            The 3DS protocol version applied to the transaction.'
+        PreferredCardNetwork:
+          $ref: '#/components/schemas/PreferredCardNetwork'
+        CardInfo:
+          $ref: '#/components/schemas/CardInfo'
+      title: CancelOrValidateAPreauthorizationResponse
+    Address:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The postal address.
+      title: Address
+    StatementDescriptor_22:
+      type: string
+      description: 'Max. length: 22 characters; only alphanumeric and spaces
+
+
+        Custom description to appear on the user’s bank statement along with the platform name. Different banks may show more or less information. See the <a href="/bank-statements">Customizing bank statement references</a> article for details.'
+      title: StatementDescriptor_22
+    TransactionNature:
+      type: string
+      description: '**Returned values:** `REGULAR`, `REPUDIATION`, `REFUND`, `SETTLEMENT`
+
+
+        The nature of the transaction, providing more information about the context in which the transaction occurred:
+
+        - `REGULAR` – Relative to most of the transactions (pay-ins, payouts, and transfers) in a usual workflow.
+
+        - `REPUDIATION` – Automatic withdrawal of funds from the platform''s repudiation wallet as part of the dispute process (when the user has requested a chargeback).
+
+        - `REFUND` – Reimbursement of a transaction to the user (pay-in refund), to a wallet (transfer refund), or of a payout (payout refund, only initiated by Mangopay).
+
+        - `SETTLEMENT` – Transfer made to the repudiation wallet by the platform to settle a lost dispute.'
+      title: TransactionNature
+    AVSResult:
+      type: object
+      properties:
+        AVSResult:
+          type: string
+          description: The result of the Address Verification System check (only available for UK, US, and Canada).
+      description: Information regarding security and anti-fraud tools.
+      title: AVSResult
+    ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorizationDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the preauthorized funds.
+      title: ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorizationDebitedFunds
+    IpAddress:
+      type: string
+      description: The IP address of the end user initiating the transaction, in IPV4 or IPV6 format.
+      title: IpAddress
+    Billing_DefaultsShippingUser_Response:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Shipping` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the billing address. '
+      title: Billing_DefaultsShippingUser_Response
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreateAPreauthorizedPayInRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the debited funds.
+      title: CreateAPreauthorizedPayInRequestDebitedFunds
+    CancelAnExtendedPreauthorizationRequest:
+      type: object
+      properties:
+        PaymentStatus:
+          type: string
+          description: '**Allowed values:** `CANCELED`
+
+
+            The payment status of the extended preauthorization object:
+
+            - `WAITING` – The extended preauthorization can be used: the preauthorized funds can be captured (if `Status` is `SUCCEEDED`) or the preauthorization can be canceled manually.
+
+            - `CANCELED` – Value to pass to manually cancel the extended preauthorization before use; indicates that the extended preauthorization was canceled manually.
+
+            - `CANCEL_REQUESTED` – The cancellation of the extended preauthorization has been requested but not yet processed.
+
+            - `EXPIRED` – The hold period on the preauthorized funds has ended without it being used.
+
+            - `VALIDATED` – Indicates that the preauthorized funds were captured.
+
+            - `FAILED` – The pay-in against the preauthorization has failed, but a retry may be possible.'
+      required:
+      - PaymentStatus
+      title: CancelAnExtendedPreauthorizationRequest
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    PreauthorizedPayInResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+      title: PreauthorizedPayInResponseCreditedFunds
+    PreauthorizedPayInResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the debited funds.
+      title: PreauthorizedPayInResponseDebitedFunds
+    PreauthorizationResponseRemainingFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the remaining preauthorized funds.
+      title: PreauthorizationResponseRemainingFunds
+    ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorization:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the preauthorization.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        AuthorId:
+          type: string
+          description: The unique identifier of the user at the source of the transaction. In a conversion, both the debited and credited wallets are owned by the author.
+        DebitedFunds:
+          $ref: '#/components/schemas/ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorizationDebitedFunds'
+          description: Information about the preauthorized funds.
+        RemainingFunds:
+          $ref: '#/components/schemas/ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorizationRemainingFunds'
+          description: Information about the remaining preauthorized funds.
+        AuthorizationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time successful authorization occurred. If authorization failed, the value is `null`.
+        Status:
+          $ref: '#/components/schemas/AuthorizationStatus'
+        PaymentStatus:
+          type: string
+          description: '**Returned values:** `WAITING`, `CANCELED`, `CANCEL_REQUESTED`, `EXPIRED`, `VALIDATED`, `FAILED`
+
+
+            The payment status of the extended preauthorization object:
+
+            - `WAITING` – The extended preauthorization can be used: the preauthorized funds can be captured (if `Status` is `SUCCEEDED`) or the preauthorization can be canceled manually.
+
+            - `CANCELED` – Value to pass to manually cancel the extended preauthorization before use; indicates that the extended preauthorization was canceled manually.
+
+            - `CANCEL_REQUESTED` – The cancellation of the extended preauthorization has been requested but not yet processed.
+
+            - `EXPIRED` – The hold period on the preauthorized funds has ended without it being used.
+
+            - `VALIDATED` – Indicates that the preauthorized funds were captured.
+
+            - `FAILED` – The pay-in against the preauthorization has failed, but a retry may be possible.'
+        ExpirationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the hold period ends and the preauthorized funds are released. At the expiration date, the preauthorization's `PaymentStatus` changes to `EXPIRED` if no captures were made or `VALIDATED` if at least one capture was made.
+        PayInId:
+          type: string
+          description: The unique identifier of the first preauthorized pay-in made against the preauthorization.
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        SecureMode:
+          type: string
+          description: '**Returned values:** `DEFAULT`, `FORCE`, `NO_CHOICE`
+
+
+            The mode applied for the 3DS2 protocol for CB, Visa, and Mastercard. The options are:
+
+            - `DEFAULT` – Requests an exemption to strong customer authentication (SCA), and thus a frictionless payment experience, if allowed by your Mangopay contract and accepted by the issuer.
+
+            - `FORCE` – Requests SCA.
+
+            - `NO_CHOICE` – Leaves the choice to the issuer whether to allow for a frictionless payment experience or to enforce SCA.'
+        CardId:
+          type: string
+          description: The unique identifier of the Card object, which is returned after updating the Card Registration object with the `RegistrationData`.
+        SecureModeReturnURL:
+          type: string
+          description: The URL to which users are automatically returned after 3DS2 if it is triggered (i.e., if the `SecureModeNeeded` parameter is set to `true`).
+        SecureModeNeeded:
+          type: boolean
+          description: Whether or not the `SecureMode` was used.
+        PaymentType:
+          type: string
+          description: '**Returned values:** `CARD`
+
+
+            The payment type of the preauthorization.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `DIRECT`
+
+
+            The execution type of the preauthorization.'
+        StatementDescriptor:
+          type: string
+          description: Custom description to appear on the user's bank statement along with the platform name. Different banks may show more or less information. See the <a href="/bank-statements">Customizing bank statement references</a> article for details.
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): DE, EN, ES, FR, IT, NL, PL, PT.
+
+
+            The language in which the payment page is to be displayed.'
+        SecurityInfo:
+          $ref: '#/components/schemas/AVSResult'
+        MultiCapture:
+          type: boolean
+          description: '**Default value:** true
+
+
+            Whether multiple captures are activated for the preauthorization.'
+        BrowserInfo:
+          $ref: '#/components/schemas/BrowserInfo'
+        Billing:
+          $ref: '#/components/schemas/Billing_DefaultsShippingUser_Response'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        Requested3DSVersion:
+          type: string
+          description: '**Returned values:** `V1`, `V2_1`
+
+
+            The 3DS protocol version to be applied to the transaction.'
+        Applied3DSVersion:
+          type: string
+          description: '**Returned values:** `V1`, `V2_1`
+
+
+            The 3DS protocol version applied to the transaction.'
+        PreferredCardNetwork:
+          type: string
+          description: '**Returned values:** `VISA`, `MASTERCARD`, `CB`, `MAESTRO`
+
+
+            The card network to use, as chosen by the cardholder, in case of <a href="/guides/payment-methods/card/co-branded">co-branded cards</a>.'
+        CardInfo:
+          $ref: '#/components/schemas/CardInfo'
+      description: The preauthorization created by the platform.
+      title: ListPreauthorizationsForACardResponseArrayPreauthorizationsItemsPreauthorization
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    BrowserInfo:
+      type: object
+      properties:
+        AcceptHeader:
+          type: string
+          description: The exact content of the HTTP accept headers as sent to the platform from the end user's browser.
+        JavaEnabled:
+          type: boolean
+          description: Whether or not the end user's browser has the ability to execute Java.
+        Language:
+          type: string
+          description: 'Format: Two-letter language code (ISO 639-1 alpha-2) followed by two-letter country code (ISO 3166-1 alpha-2), separated by a hyphen (example: `en-US`; pattern:`^[a-zA-Z]{2}(-[a-zA-Z]{2})?$`)
+
+
+            The language of the browser.'
+        ColorDepth:
+          type: integer
+          description: The value representing the depth of the screen's color palette for displaying images, in bits per pixel.
+        ScreenHeight:
+          type: integer
+          description: The height of the screen in pixels.
+        ScreenWidth:
+          type: integer
+          description: The width of the screen in pixels.
+        TimeZoneOffset:
+          type: integer
+          description: The difference in minutes between the browser's timezone and UTC.
+        UserAgent:
+          type: string
+          description: The exact content of the HTTP User-Agent header.
+        JavascriptEnabled:
+          type: boolean
+          description: Whether or not the end user's browser has the ability to execute JavaScript.
+      required:
+      - AcceptHeader
+      - JavaEnabled
+      - Language
+      - ColorDepth
+      - ScreenHeight
+      - ScreenWidth
+      - TimeZoneOffset
+      - UserAgent
+      - JavascriptEnabled
+      description: Information about the browser used by the end user (author) to perform the payment.
+      title: BrowserInfo
+    PreferredCardNetwork:
+      type: string
+      description: '**Allowed values:** `VISA`, `MASTERCARD`, `CB`, `MAESTRO`
+
+
+        The card network to use, as chosen by the cardholder, in case of <a href="/guides/payment-methods/card/co-branded">co-branded cards</a>.'
+      title: PreferredCardNetwork
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    CancelOrValidateAPreauthorizationResponseRemainingFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the remaining preauthorized funds.
+      title: CancelOrValidateAPreauthorizationResponseRemainingFunds
+    TransactionType:
+      type: string
+      description: '**Returned values:** `PAYIN`, `TRANSFER`, `CONVERSION`, `PAYOUT`
+
+
+        The type of the transaction.'
+      title: TransactionType
+    CardInfo:
+      type: object
+      properties:
+        BIN:
+          type: string
+          description: The bank identification number (BIN) of the card.
+        IssuingBank:
+          type: string
+          description: The name of the bank that issued the card.
+        IssuerCountryCode:
+          type: string
+          description: The country code of the card issuer.
+        Type:
+          type: string
+          description: The type of card (for example, `CREDIT` or `DEBIT`).
+        SubType:
+          type:
+          - string
+          - 'null'
+          description: The sub-type of the card, if available.
+        Brand:
+          type: string
+          description: The card brand (for example, `VISA` or `MASTERCARD`).
+      description: Information about the card used for the transaction. If the information or data is not available, `null` is returned.
+      title: CardInfo
+    CancelOrValidateAPreauthorizationResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the preauthorized funds.
+      title: CancelOrValidateAPreauthorizationResponseDebitedFunds
+    ListPreauthorizationsForACardResponse:
+      type: object
+      properties:
+        Array (Preauthorizations):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListPreauthorizationsForACardResponseArrayPreauthorizationsItems'
+          description: The list of preauthorizations created by the platform.
+      title: ListPreauthorizationsForACardResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

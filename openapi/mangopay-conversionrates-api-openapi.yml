@@ -1,0 +1,152 @@
+openapi: 3.2.0
+info:
+  title: Reference Conversion Rates API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: conversionRates
+paths:
+  /v2.01/{ClientId}/conversions/rate/{DebitedCurrency}/{CreditedCurrency}:
+    get:
+      operationId: conversionRates_view_conversion_rate
+      summary: View an indicative Conversion Rate
+      description: '**Note – Rate is not guaranteed**
+
+
+        The rate returned by the API is indicative of the rate offered by Mangopay, but it is not a guaranteed rate. For quoted conversions, the rate is guaranteed by the quote. For instant conversions, the rate is displayed in the response.
+
+
+        View an indicative Conversion Rate
+
+
+        Learn more about FX **→**'
+      tags:
+      - conversionRates
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: DebitedCurrency
+        in: path
+        description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+          The sell currency (the currency of the debited wallet during a conversion).'
+        required: true
+        schema:
+          type: string
+      - name: CreditedCurrency
+        in: path
+        description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+          The buy currency (the currency of the credited wallet during a conversion).'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewAnIndicativeConversionRateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ViewAnIndicativeConversionRateResponse:
+      type: object
+      properties:
+        DebitedCurrency:
+          type: string
+          description: '**Returned values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The sell currency (the currency of the debited wallet during a conversion).'
+        CreditedCurrency:
+          type: string
+          description: '**Returned values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The buy currency (the currency of the credited wallet during a conversion).'
+        ClientRate:
+          type: number
+          format: double
+          description: "Max. 7 decimal places\n\nThe rate including Mangopay's markup, indicative of the rate invoiced during the billing cycle: `ClientRate` = `MarketRate` * (1 - markup). \n\nThe `ClientRate` fluctuates in line with the `MarketRate`."
+        MarketRate:
+          type: number
+          format: double
+          description: 'Max. 7 decimal places
+
+
+            The rate used to convert funds during a conversion: (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.
+
+
+            The market rate fluctuates in line with FX market dynamics and is common to all platforms for the currency pair.'
+        MarketRateDate:
+          type: integer
+          description: The date and time at which the market rate was retrieved.
+      title: ViewAnIndicativeConversionRateResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

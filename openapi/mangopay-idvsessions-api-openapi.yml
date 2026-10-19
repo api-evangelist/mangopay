@@ -1,0 +1,606 @@
+openapi: 3.2.0
+info:
+  title: Reference Idv Sessions API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: idvSessions
+paths:
+  /v2.01/{ClientId}/users/{UserId}/identity-verifications:
+    post:
+      operationId: idvSessions_create_idv_session
+      summary: Create an IDV Session
+      description: 'Initiate a hosted KYC/KYB session and obtain a unique URL for the hosted frontend experience.
+
+
+        By default, the returned `HostedUrl` must be completed and submitted within 7 days of creation. If the session contains a liveness step and that step has been started (the QR code was generated), the session instead expires 1 hour after the liveness step started.
+
+
+        The steps presented to the user depend on their User type: Natural, Soletrader, and Business and Organization (or Business - Legacy / Organization - Legacy).
+
+        If the user already has an IDV Session with a `Status` of `PENDING`, that existing session is returned instead of creating a new one.
+
+
+        Read more about hosted KYC/KYB **→**'
+      tags:
+      - idvSessions
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAnIDVSessionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIDVSessionRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: idvSessions_list_idv_sessions_user
+      summary: List IDV Sessions for a User
+      description: 'Retrieve key details of all hosted KYC/KYB sessions attempted for a user. To view the full details of a specific session, including checks and verified data, use GET View an IDV Session.
+
+
+        Read more about hosted KYC/KYB **→**'
+      tags:
+      - idvSessions
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIDVSessionsForAUserResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/identity-verifications/{IdvSessionId}:
+    get:
+      operationId: idvSessions_view_idv_session
+      summary: View an IDV Session
+      description: 'See details of a hosted KYC/KYB session, outcome of checks, and verified data. For a Business User on the multi-session PSC flow, this also returns the `PSCs` array with each declared PSC''s own status and hosted link.
+
+
+        Read more about hosted KYC/KYB **→**'
+      tags:
+      - idvSessions
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IdvSessionId
+        in: path
+        description: The unique identifier of the IDV Session.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewAnIDVSessionResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/identity-verifications/{IdvSessionId}/pscs/{PscId}/retry:
+    put:
+      operationId: idvSessions_retry_psc_session
+      summary: Retry a PSC Session
+      description: 'Retry a PSC Session based on its `Id`. Send an empty body (`{}`) to use the existing details declared for the individual and only retry the liveness check, or else send updated details in the request body.
+
+
+        If the PSC''s `Status` is `PENDING_VALIDATION`, the existing session link is returned. If the PSC''s `Status` is `VALIDATED` or `REJECTED`, a new session link is generated. A PSC whose `Status` is `ABANDONED` cannot be retried. To add a missing PSC, contact Mangopay via the Dashboard, who will create the new PSC and provide you with a session link.
+
+
+        Read more about the multi-session PSC flow **→**'
+      tags:
+      - idvSessions
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IdvSessionId
+        in: path
+        description: The unique identifier of the IDV Session.
+        required: true
+        schema:
+          type: string
+      - name: PscId
+        in: path
+        description: The unique identifier of the PSC.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetryPscSessionResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetryPscSessionRequest'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    CreateAnIDVSessionResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        HostedUrl:
+          type: string
+          description: The URL to redirect the user to for the hosted identity verification session.
+        Status:
+          $ref: '#/components/schemas/IdvSessionStatus'
+        ReturnUrl:
+          type: string
+          description: The URL to which the user is returned after the hosted identity verification session, regardless of the outcome.
+      title: CreateAnIDVSessionResponse
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    ViewAnIDVSessionResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        HostedUrl:
+          type: string
+          description: The URL to redirect the user to for the hosted identity verification session.
+        ReturnUrl:
+          type: string
+          description: The URL to which the user is returned after the hosted identity verification session, regardless of the outcome.
+        Status:
+          $ref: '#/components/schemas/IdvSessionStatus'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        LastUpdate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the session was last updated.
+        Checks:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ViewAnIdvSessionResponseChecksItems'
+          description: 'The checks performed automatically during the session.
+
+
+            This array is empty when `Status` is `PENDING` and may contain any number of objects depending on the outcome.'
+        PSCs:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ViewAnIdvSessionResponsePsCsItems'
+          description: 'The list of persons of significant control (PSCs) declared during the session.
+
+
+            Only returned if the multi-session PSC flow is activated for `BUSINESS` and `ORGANIZATION` Legal Users.
+
+
+            This array is empty or `null` when not applicable.'
+      title: ViewAnIDVSessionResponse
+    ListIDVSessionsForAUserResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          $ref: '#/components/schemas/IdvSessionStatus'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        LastUpdate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the session was last updated.
+      title: ListIDVSessionsForAUserResponse
+    ViewAnIdvSessionResponseChecksItemsDataItems:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: 'The type of the data.
+
+
+            For a Natural user:
+
+
+            * `FIRST_NAME`
+
+            * `LAST_NAME`
+
+            * `BIRTHDATE`
+
+
+            For a Legal user:
+
+
+            * `COMPANY_NAME`
+
+            * `COMPANY_NUMBER`
+
+            * `LEGAL_REPRESENTATIVE_FIRST_NAME`
+
+            * `LEGAL_REPRESENTATIVE_LAST_NAME`
+
+            * `LEGAL_REPRESENTATIVE_BIRTHDATE`'
+        Value:
+          type:
+          - string
+          - 'null'
+          description: The value of the data. The value may be `null` or an empty string if data extraction was not possible but the check was still carried out.
+      title: ViewAnIdvSessionResponseChecksItemsDataItems
+    RetryPscSessionResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the PSC.
+        FirstName:
+          type: string
+          description: The first name of the PSC.
+        LastName:
+          type: string
+          description: The last name of the PSC.
+        Email:
+          type: string
+          description: The email address of the PSC.
+        DateOfBirth:
+          type: integer
+          description: Unix timestamp (UTC) of the date of birth of the PSC.
+        Country:
+          type: string
+          description: The country of the PSC (ISO 3166-1 alpha-2 format).
+        Nationality:
+          type: string
+          description: The nationality of the PSC (ISO 3166-1 alpha-2 format).
+        PscType:
+          type: string
+          description: 'The type of the PSC:
+
+            - `LEGAL_REP` – The PSC is a legal representative only.
+
+            - `LEGAL_REP_AND_UBO` – The PSC is both a legal representative and a beneficial owner.
+
+            - `UBO` – The PSC is a beneficial owner only.'
+        Status:
+          type: string
+          description: 'The status of the PSC session:
+
+            - `PENDING_VALIDATION` – The PSC session link has been generated and is awaiting completion.
+
+            - `VALIDATED` – The PSC session was validated.
+
+            - `REJECTED` – One or more checks failed, or the PSC did not complete the verification within the allowed timeframe. By default, the PSC Session expires 7 days after its `CreationDate`, but if the PSC''s liveness step has been started (the QR code was generated), it expires 1 hour after the liveness step started instead.
+
+            - `ABANDONED` – The PSC session was abandoned by Mangopay, for example if it was a duplicate of another declared PSC.'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ValidationDate:
+          type:
+          - integer
+          - 'null'
+          description: Unix timestamp (UTC) of the date and time the PSC session was validated. Returns `null` if not yet validated.
+        HostedUrl:
+          type: string
+          description: The URL to redirect the PSC to for the hosted verification session.
+      title: RetryPscSessionResponse
+    ViewAnIdvSessionResponsePsCsItemsDataItems:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: 'The type of the data, depending on the `PSC_TYPE` declared in the session.
+
+
+            Individual:
+
+            - `FIRST_NAME`
+
+            - `LAST_NAME`
+
+            - `PSC_TYPE`
+
+
+            Business:
+
+            - `PSC_LEGAL_REPRESENTATIVE_FIRST_NAME`
+
+            - `PSC_LEGAL_REPRESENTATIVE_LAST_NAME`
+
+            - `BUSINESS_PSC_NAME`
+
+            - `PSC_TYPE`'
+        Value:
+          type:
+          - string
+          - 'null'
+          description: The value of the data.
+      title: ViewAnIdvSessionResponsePsCsItemsDataItems
+    IdvSessionStatus:
+      type: string
+      description: 'The status of the overall IDV Session:
+
+        - `PENDING` – Session created. The `HostedUrl` is valid for completion, regardless of whether the user has started or submitted the session.
+
+        - `REVIEW` – One or more automated checks was neither successful nor refused, so the session was sent for manual review by Mangopay''s teams. This temporary state is only applicable to Legal users and can transition to `REFUSED` or `VALIDATED`.
+
+        - `VALIDATED` – - The session was validated and the User became KYC/KYB verified (indicated by the User object''s `KYCLevel`). When the `Status` changes to `VALIDATED`, the [verified data](/guides/users/verification/hosted/natural#verified-data) in `Checks.Data` is used to replace existing data in the User object.
+
+        - `REFUSED` – The session was refused and the User is not KYC/KYB verified. The `Checks.CheckStatus` shows which checks were `REFUSED` and the `Checks.Reasons` shows the [refused reason types](/guides/users/verification/hosted/refusals) and comment (which is custom text in the case of manual review for Legal users).
+
+        - `EXPIRED` – The IDV Session expired and can no longer be used. By default, this happens 7 days after the `CreationDate`. However, if the IDV Session contains the liveness step and that step has been started (the QR code was generated), the session instead expires 1 hour after the liveness step started. The IDV Session contains the liveness step for Natural users, Soletrader users, and Business/Organization users on the legacy integrated flow. In the multi-session PSC flow, the main IDV Session never contains the liveness step (so it always follows the 7-day rule) – the liveness check is performed in each PSC Session instead, which follows the same 7-day/1-hour rule independently.
+
+        - `OUT_OF_DATE` – The IDV Session is not valid because the user''s KYC/KYB verification status was [downgraded](/guides/users/verification/downgrade) by Mangopay.'
+      title: IdvSessionStatus
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    RetryPscSessionRequest:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the PSC.
+        LastName:
+          type: string
+          description: The last name of the PSC.
+        Email:
+          type: string
+          description: The email address of the PSC.
+        DateOfBirth:
+          type: integer
+          description: Unix timestamp (UTC) of the date of birth of the PSC.
+      title: RetryPscSessionRequest
+    CreateAnIDVSessionRequest:
+      type: object
+      properties:
+        ReturnUrl:
+          type: string
+          description: 'Max. length: 500
+
+
+            The URL to which the user is returned after the hosted identity verification session, regardless of the outcome.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        SessionLanguage:
+          type: string
+          description: '**Allowed values:** `de-DE`, `en-US`, `es-ES`, `fr-FR`, `it-IT`, `nl-NL`, `pt-PT`, `zh-Hans-CN`
+
+
+            The initial language of the hosted identity verification session. If not sent, then the session takes the language of the user''s browser (if supported), otherwise English. The user can change the language in the session.
+
+
+            This parameter is not returned in the API response, but it adds the `lng` query parameter to the `HostedUrl` value.'
+      required:
+      - ReturnUrl
+      title: CreateAnIDVSessionRequest
+    ViewAnIdvSessionResponseChecksItems:
+      type: object
+      properties:
+        CheckId:
+          type: string
+          description: The unique identifier of the verification check.
+        Type:
+          type: string
+          description: 'Type of check carried out during the session depending on the user type:
+
+
+            * `IDENTITY_DOCUMENT_VERIFICATION` - Verifies the authenticity of the identity document, the liveness of the selfie, and that the selfie matches the identity document photo.
+
+            * `IDV_AGE_CHECK` - Checks whether the individual on the identity document meets the minimum age requirement for Mangopay users (age 18).
+
+            * `BUSINESS_VERIFICATION` - Looks up the business details entered by the user during the session in the national registry to find a match.
+
+            * `IDV_NAME_MATCH_CHECK` - Checks whether the first name, last name and date of birth of the identity document match the `FirstName`, `LastName`, and `Birthday` of the Natural user object or `LegalRepresentative` of the Legal user object.
+
+            * `BUSINESS_NAME_MATCH` - Checks whether the name on the identity document is present in the name of the registered sole proprietor in the relevant national registry.
+
+            * `BUSINESS_INSIGHTS_MATCH` - Checks whether the name on the identity document matches one of the directors listed in the national registry, and whether the PSC data declared in the session is coherent with the PSC data in the registry.
+
+            * `PSC_ROLE_CHECK` - For Business, Organization, and Partnership Users, ensures the PSC form declares at least one UBO and at least one legal representative (a single PSC can hold both roles). Performed on every session, regardless of the business registry lookup outcome.
+
+            * `PSC_CONSISTENCY_CHECK` - For Business, Organization, and Partnership Users, compares the PSC form against the business registry data and checks that any business-type PSC''s ownership structure is adequately documented. Only performed if the business registry lookup found a match.
+
+
+            For information on which checks are performed for which user type and in which cases, see the dedicated guides: [Natural](/guides/users/verification/hosted/natural), [Soletrader](/guides/users/verification/hosted/soletrader), [Business and Organization](/guides/users/verification/hosted/business).'
+        CheckStatus:
+          type: string
+          description: '**Returned values:** `VALIDATED`, `REFUSED`
+
+
+            The status of the verification check.'
+        Reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIdvSessionResponseChecksItemsReasonsItems'
+          description: The reasons that the check was refused, which may be returned if `CheckStatus` was `REFUSED` (depending on the check type).
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the check was created.
+        LastUpdate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the check was last updated.
+        Data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIdvSessionResponseChecksItemsDataItems'
+          description: 'The data extracted and verified during the check.
+
+
+            This array may be empty if no data was extracted or is not applicable for the check.'
+      title: ViewAnIdvSessionResponseChecksItems
+    ViewAnIdvSessionResponseChecksItemsReasonsItems:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: The type of the reason. For more details, see [refusals](/guides/users/verification/hosted/refusals).
+        Value:
+          type: string
+          description: The explanation of the reason. If the refusal was automatic, this is a preset string. For Legal users, if the refusal follows a manual review, this is a custom explanation from the person who conducted the review.
+      title: ViewAnIdvSessionResponseChecksItemsReasonsItems
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ViewAnIdvSessionResponsePsCsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the PSC.
+        Status:
+          type: string
+          description: 'The status of the PSC verification:
+
+            - `PENDING_VALIDATION` – The PSC verification is ongoing.
+
+            - `VALIDATED` – The PSC was validated.
+
+            - `REJECTED` – One or more checks failed, or the PSC did not complete the verification within the allowed timeframe. By default, the PSC Session expires 7 days after the PSC''s `CreationDate`, but if the PSC''s liveness step has been started (the QR code was generated), it expires 1 hour after the liveness step started instead.
+
+            - `ABANDONED` – The PSC verification was abandoned by Mangopay, for example if it was a duplicate of another declared PSC.'
+        HostedUrl:
+          type: string
+          description: The URL to redirect the PSC to for the hosted verification session.
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the PSC was created.
+        LastUpdate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the PSC was last updated.
+        Data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIdvSessionResponsePsCsItemsDataItems'
+          description: The data associated with the PSC.
+      title: ViewAnIdvSessionResponsePsCsItems
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

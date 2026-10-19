@@ -1,0 +1,1375 @@
+openapi: 3.2.0
+info:
+  title: Reference Bank Accounts API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: bankAccounts
+paths:
+  /v2.01/{ClientId}/users/{UserId}/bankaccounts/iban:
+    post:
+      operationId: bankAccounts_create_iban_bank_account
+      summary: Create an IBAN Bank Account
+      description: '**Caution - Payouts refused to Bank Accounts created after April 30, 2026**
+
+
+        Bank Account objects created after April 30, 2026, will not be usable for payouts. External accounts must be registered using the Recipient endpoints and authenticated using SCA.
+
+
+        Payouts to Bank Accounts created after May 1, 2026, will fail with the `ResultCode` 121018. To resolve this, register the external account using POST Create a Recipient and retry the payout.
+
+
+        **Note – Replaced by Recipients feature**
+
+
+        The Bank Account object and endpoints have been replaced by the Recipients feature, which all platforms should integrate instead.
+
+
+        Legacy active Bank Accounts (`Active` is `true`) have been migrated to the new feature and their data is retrievable via the GET View a Recipient endpoint using the same `BankAccountId`. Read more about legacy bank account migration.
+
+
+        **Note – Only for countries that use IBAN**
+
+
+        Only use the IBAN type for accounts registered in countries that use IBAN and aren''t GB, US, or CA (for which you should use the dedicated type).
+
+
+        Create an IBAN Bank Account'
+      tags:
+      - bankAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the User (natural or legal) who owns the bank account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBANBankAccountResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIBANBankAccountRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/bankaccounts/us:
+    post:
+      operationId: bankAccounts_create_us_bank_account
+      summary: Create a US Bank Account
+      description: '**Caution - Payouts refused to Bank Accounts created after April 30, 2026**
+
+
+        Bank Account objects created after April 30, 2026, will not be usable for payouts. External accounts must be registered using the Recipient endpoints and authenticated using SCA.
+
+
+        Payouts to Bank Accounts created after May 1, 2026, will fail with the `ResultCode` 121018. To resolve this, register the external account using POST Create a Recipient and retry the payout.
+
+
+        **Note – Replaced by Recipients feature**
+
+
+        The Bank Account object and endpoints have been replaced by the Recipients feature, which all platforms should integrate instead.
+
+
+        Legacy active Bank Accounts (`Active` is `true`) have been migrated to the new feature and their data is retrievable via the GET View a Recipient endpoint using the same `BankAccountId`. Read more about legacy bank account migration.
+
+
+        Create a US Bank Account'
+      tags:
+      - bankAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the User (natural or legal) who owns the bank account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAUSBankAccountResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAUSBankAccountRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/bankaccounts/ca:
+    post:
+      operationId: bankAccounts_create_ca_bank_account
+      summary: Create a CA Bank Account
+      description: '**Caution - Payouts refused to Bank Accounts created after April 30, 2026**
+
+
+        Bank Account objects created after April 30, 2026, will not be usable for payouts. External accounts must be registered using the Recipient endpoints and authenticated using SCA.
+
+
+        Payouts to Bank Accounts created after May 1, 2026, will fail with the `ResultCode` 121018. To resolve this, register the external account using POST Create a Recipient and retry the payout.
+
+
+        **Note – Replaced by Recipients feature**
+
+
+        The Bank Account object and endpoints have been replaced by the Recipients feature, which all platforms should integrate instead.
+
+
+        Legacy active Bank Accounts (`Active` is `true`) have been migrated to the new feature and their data is retrievable via the GET View a Recipient endpoint using the same `BankAccountId`. Read more about legacy bank account migration.
+
+
+        Create a CA Bank Account'
+      tags:
+      - bankAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the User (natural or legal) who owns the bank account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateACABankAccountResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateACABankAccountRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/bankaccounts/gb:
+    post:
+      operationId: bankAccounts_create_gb_bank_account
+      summary: Create a GB Bank Account
+      description: '**Caution - Payouts refused to Bank Accounts created after April 30, 2026**
+
+
+        Bank Account objects created after April 30, 2026, will not be usable for payouts. External accounts must be registered using the Recipient endpoints and authenticated using SCA.
+
+
+        Payouts to Bank Accounts created after May 1, 2026, will fail with the `ResultCode` 121018. To resolve this, register the external account using POST Create a Recipient and retry the payout.
+
+
+        **Note – Replaced by Recipients feature**
+
+
+        The Bank Account object and endpoints have been replaced by the Recipients feature, which all platforms should integrate instead.
+
+
+        Legacy active Bank Accounts (`Active` is `true`) have been migrated to the new feature and their data is retrievable via the GET View a Recipient endpoint using the same `BankAccountId`. Read more about legacy bank account migration.
+
+
+        Create a GB Bank Account'
+      tags:
+      - bankAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the User (natural or legal) who owns the bank account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAGBBankAccountResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAGBBankAccountRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/bankaccounts/other:
+    post:
+      operationId: bankAccounts_create_other_bank_account
+      summary: Create an OTHER Bank Account
+      description: '**Caution - Payouts refused to Bank Accounts created after April 30, 2026**
+
+
+        Bank Account objects created after April 30, 2026, will not be usable for payouts. External accounts must be registered using the Recipient endpoints and authenticated using SCA.
+
+
+        Payouts to Bank Accounts created after May 1, 2026, will fail with the `ResultCode` 121018. To resolve this, register the external account using POST Create a Recipient and retry the payout.
+
+
+        **Note – Replaced by Recipients feature**
+
+
+        The Bank Account object and endpoints have been replaced by the Recipients feature, which all platforms should integrate instead.
+
+
+        Legacy active Bank Accounts (`Active` is `true`) have been migrated to the new feature and their data is retrievable via the GET View a Recipient endpoint using the same `BankAccountId`. Read more about legacy bank account migration.
+
+
+        **Note – Only for countries that don''t use IBAN**
+
+
+        Only use the OTHER type if the account is registered in a country that doesn''t use IBAN and isn''t GB, US, or CA (for which you should use the dedicated type).
+
+
+        **Note – Additional information may be required**
+
+
+        OTHER-type bank accounts may require additional information depending on the country. Additional precisions per country (if applicable), are given below.
+
+
+        For accounts registered in:
+
+        * Australia – Provide the BIC in the `BIC` field. In the `IBAN` field, combine the 6-digit Bank State Branch (BSB) number and the account number.
+
+
+        Create an OTHER Bank Account'
+      tags:
+      - bankAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the User (natural or legal) who owns the bank account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAnOTHERBankAccountResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnOTHERBankAccountRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/bankaccounts/{BankAccountId}:
+    put:
+      operationId: bankAccounts_deactivate_bank_account
+      summary: Deactivate a Bank Account
+      description: '**Caution - Payouts refused to Bank Accounts created after April 30, 2026**
+
+
+        Bank Account objects created after April 30, 2026, will not be usable for payouts. External accounts must be registered using the Recipient endpoints and authenticated using SCA.
+
+
+        Payouts to Bank Accounts created after May 1, 2026, will fail with the `ResultCode` 121018. To resolve this, register the external account using POST Create a Recipient and retry the payout.
+
+
+        **Note – Replaced by Recipients feature**
+
+
+        The Bank Account object and endpoints have been replaced by the Recipients feature, which all platforms should integrate instead.
+
+
+        Legacy active Bank Accounts (`Active` is `true`) have been migrated to the new feature and their data is retrievable via the GET View a Recipient endpoint using the same `BankAccountId`. Read more about legacy bank account migration.
+
+
+        Deactivate a Bank Account'
+      tags:
+      - bankAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the User (natural or legal) who owns the bank account.
+        required: true
+        schema:
+          type: string
+      - name: BankAccountId
+        in: path
+        description: The unique identifier of the bank account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBANBankAccountResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeactivateABankingAliasRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: bankAccounts_view_bank_account
+      summary: View a Bank Account
+      description: '**Caution - Payouts refused to Bank Accounts created after April 30, 2026**
+
+
+        Bank Account objects created after April 30, 2026, will not be usable for payouts. External accounts must be registered using the Recipient endpoints and authenticated using SCA.
+
+
+        Payouts to Bank Accounts created after May 1, 2026, will fail with the `ResultCode` 121018. To resolve this, register the external account using POST Create a Recipient and retry the payout.
+
+
+        **Note – Replaced by Recipients feature**
+
+
+        The Bank Account object and endpoints have been replaced by the Recipients feature, which all platforms should integrate instead.
+
+
+        Legacy active Bank Accounts (`Active` is `true`) have been migrated to the new feature and their data is retrievable via the GET View a Recipient endpoint using the same `BankAccountId`. Read more about legacy bank account migration.
+
+
+        View a Bank Account'
+      tags:
+      - bankAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: BankAccountId
+        in: path
+        description: The unique identifier of the bank account.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewABankAccountResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/bankaccounts:
+    get:
+      operationId: bankAccounts_list_bank_accounts_user
+      summary: List Bank Accounts for a User
+      description: '**Caution - Payouts refused to Bank Accounts created after April 30, 2026**
+
+
+        Bank Account objects created after April 30, 2026, will not be usable for payouts. External accounts must be registered using the Recipient endpoints and authenticated using SCA.
+
+
+        Payouts to Bank Accounts created after May 1, 2026, will fail with the `ResultCode` 121018. To resolve this, register the external account using POST Create a Recipient and retry the payout.
+
+
+        **Note – Replaced by Recipients feature**
+
+
+        The Bank Account object and endpoints have been replaced by the Recipients feature, which all platforms should integrate instead.
+
+
+        Legacy active Bank Accounts (`Active` is `true`) have been migrated to the new feature and their data is retrievable via the GET View a Recipient endpoint using the same `BankAccountId`. Read more about legacy bank account migration.
+
+
+        **Note**
+
+
+        The returned parameters may vary depending on the encountered bank account types.
+
+
+        List Bank Accounts for a User'
+      tags:
+      - bankAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the User (natural or legal) who owns the bank account.
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: Sort
+        in: query
+        description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+          **Default value:** `CreationDate:ASC`
+
+
+          Indicates the direction in which to sort the list.'
+        required: false
+        schema:
+          type: string
+      - name: Active
+        in: query
+        description: Whether or not the Bank Account is active. Mangopay automatically sets this parameter to `false` if the bank account is closed or does not exist anymore.
+        required: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBankAccountsForAUserResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ListBankAccountsForAUserResponseArrayBankAccountsItemsObjectBankAccounts:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address'
+        OwnerName:
+          type: string
+          description: The owner of the banking alias, which is set automatically by Mangopay since September 15, 2025 ([read more](/guides/vop/payins#banking-alias-categorization)). If the User owning the attached wallet has `UserCategory` of `OWNER` and the `KYCLevel` of `REGULAR`, then the `OwnerName` is set to the `FirstName` and `LastName` values for a [Natural User](/api-reference/users/natural-user-object-sca) or the `Name` value for a [Legal User](/api-reference/users/legal-user-object-sca). In this case, the `VirtualAccountPurpose` in the API response is `USER_OWNED`. If the User is not KYC verified and an `OWNER`, then the `OwnerName` is set to “MGP `PlatformTradingName`" in standard cases, or else “Mangopay” for Marketplace Payment Extension (MPE) workflows. In this case, the `VirtualAccountPurpose` in the API response is `COLLECTION`. **Caution:** Your platform must ensure that you use the `OwnerName` returned in the API response.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        IBAN:
+          type: string
+          description: The IBAN (international bank account number) for the bank account.
+        AccountNumber:
+          type: string
+          description: The unique set of digits of the bank account.
+        BIC:
+          type: string
+          description: 'The BIC (international identifier of the bank) for IBAN or OTHER-type bank accounts.
+
+
+            The BIC can have one of the two following formats:
+
+            - BIC8 – 8-character BIC (AAAABBCC)
+
+            - BIC11 – 11-character BIC (AAAABBCCDDD)
+
+
+            In which:
+
+            - AAAA represents the bank code: 4 characters defining the bank
+
+            - BB represents the country code: 2 characters forming the country ISO code (ISO 3166 format)
+
+            - CC represents the location code: 2 localization characters (alphabetical or numeric) to distinguish banks from the same country
+
+            - DDD represents the branch code: 3 characters used to define the branch of the bank (sometimes replaced with XXX)'
+        ABA:
+          type: string
+          description: The American Banking Association (ABA) routing number for US-type bank accounts.
+        DepositAccountType:
+          type: string
+          description: '**Returned values:** `CHECKING`, `SAVINGS`
+
+
+            The deposit type for US-type bank accounts.'
+        InstitutionNumber:
+          type: string
+          description: The 3-digit number assigned to Canadian financial institutions, for CA-type bank accounts.
+        BranchCode:
+          type: string
+          description: The 5-digit number assigned to branches of Canadian financial institutions, for CA-type bank accounts.
+        BankName:
+          type: string
+          description: The name of the Canadian bank for CA-type bank accounts.
+        SortCode:
+          type: string
+          description: The 6-digit sort code, assigned to UK financial institutions, for GB-type bank accounts.
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country in which the bank account is registered.'
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        Type:
+          type: string
+          description: '**Returned values:** `IBAN`, `US`, `CA`, `GB`, `OTHER`
+
+
+            The type of the bank account, indicating the country where the real-life account is registered
+
+            The values are:
+
+            - `IBAN` – For accounts registered in countries that use IBAN
+
+            - `US` – For accounts registered in the United States
+
+            - `CA` – For accounts registered in Canada
+
+            - `GB` – For accounts registered in the United Kingdom
+
+            - `OTHER` – For accounts registered in countries that do not use IBAN (and are not US, CA, GB)'
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Active:
+          type: boolean
+          description: Whether or not the Bank Account is active. Mangopay automatically sets this parameter to `false` if the bank account is closed or does not exist anymore.
+      description: The Bank Account object created by the platform.
+      title: ListBankAccountsForAUserResponseArrayBankAccountsItemsObjectBankAccounts
+    DeactivateABankingAliasRequest:
+      type: object
+      properties:
+        Active:
+          type: boolean
+          description: 'Whether or not the banking alias is active.
+
+
+            **Caution:** Setting this value to `false` is irreversible.'
+      required:
+      - Active
+      title: DeactivateABankingAliasRequest
+    ListBankAccountsForAUserResponse:
+      type: object
+      properties:
+        Array (Bank Accounts):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListBankAccountsForAUserResponseArrayBankAccountsItems'
+          description: The list of Bank Accounts objects created by the platform. Returned parameters can vary depending on the bank account `Type`.
+      title: ListBankAccountsForAUserResponse
+    IBANBankAccountResponse:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address'
+        IBAN:
+          type: string
+          description: 'Max. length: 34 characters
+
+
+            The IBAN (international bank account number) of the bank account. It follows the CCDDBBAN format in which: - CC represents the country code (ISO 3166-1 alpha 2) - DD represents two check digits used by banking systems to avoid simple errors - BBAN stands for the Basic Bank Account Number which is up to 30 alphanumeric characters that are country-specific. Note: You will need a valid IBAN (i.e., existing in real life) when testing on a Sandbox account even if no actual payout will be processed.'
+        BIC:
+          type: string
+          description: 'The BIC (international identifier of the bank) for IBAN or OTHER-type bank accounts.
+
+
+            The BIC can have one of the two following formats:
+
+            - BIC8 – 8-character BIC (AAAABBCC)
+
+            - BIC11 – 11-character BIC (AAAABBCCDDD)
+
+
+            In which:
+
+            - AAAA represents the bank code: 4 characters defining the bank
+
+            - BB represents the country code: 2 characters forming the country ISO code (ISO 3166 format)
+
+            - CC represents the location code: 2 localization characters (alphabetical or numeric) to distinguish banks from the same country
+
+            - DDD represents the branch code: 3 characters used to define the branch of the bank (sometimes replaced with XXX)'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Type:
+          type: string
+          description: '**Returned values:** `IBAN`, `US`, `CA`, `GB`, `OTHER`
+
+
+            The type of the bank account, indicating the country where the real-life account is registered
+
+            The values are:
+
+            - `IBAN` – For accounts registered in countries that use IBAN
+
+            - `US` – For accounts registered in the United States
+
+            - `CA` – For accounts registered in Canada
+
+            - `GB` – For accounts registered in the United Kingdom
+
+            - `OTHER` – For accounts registered in countries that do not use IBAN (and are not US, CA, GB)'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Active:
+          type: boolean
+          description: Whether or not the Bank Account is active. Mangopay automatically sets this parameter to `false` if the bank account is closed or does not exist anymore.
+      title: IBANBankAccountResponse
+    CreateAnOTHERBankAccountRequest:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address_PlatformHeadquarters'
+        AccountNumber:
+          type: string
+          description: 'Max. length 35, min. length 5; alphanumeric characters only.
+
+
+            The unique number of the bank account.'
+        BIC:
+          type: string
+          description: 'The BIC (international identifier of the bank) for IBAN or OTHER-type bank accounts.
+
+
+            The BIC can have one of the two following formats:
+
+            - BIC8 – 8-character BIC (AAAABBCC)
+
+            - BIC11 – 11-character BIC (AAAABBCCDDD)
+
+
+            In which:
+
+            - AAAA represents the bank code: 4 characters defining the bank
+
+            - BB represents the country code: 2 characters forming the country ISO code (ISO 3166 format)
+
+            - CC represents the location code: 2 localization characters (alphabetical or numeric) to distinguish banks from the same country
+
+            - DDD represents the branch code: 3 characters used to define the branch of the bank (sometimes replaced with XXX)'
+        Country:
+          type: string
+          description: The country in which the bank account is registered.
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - OwnerAddress
+      - AccountNumber
+      - BIC
+      - Country
+      - OwnerName
+      title: CreateAnOTHERBankAccountRequest
+    CreateAUSBankAccountRequest:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address_PlatformHeadquarters'
+        AccountNumber:
+          type: string
+          description: 'Format: Digits only
+
+
+            The unique set of digits of the bank account.'
+        ABA:
+          type: string
+          description: 'Length: 9 characters
+
+
+            The American Banking Association (ABA) routing number for US-type bank accounts.'
+        DepositAccountType:
+          type: string
+          description: '**Allowed values:** `CHECKING`, `SAVINGS`
+
+
+            The deposit type for US-type bank accounts.'
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - OwnerAddress
+      - AccountNumber
+      - ABA
+      - OwnerName
+      title: CreateAUSBankAccountRequest
+    ViewABankAccountResponse:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address'
+        IBAN:
+          type: string
+          description: 'Max. length: 34 characters
+
+
+            The IBAN (international bank account number) of the bank account. It follows the CCDDBBAN format in which: - CC represents the country code (ISO 3166-1 alpha 2) - DD represents two check digits used by banking systems to avoid simple errors - BBAN stands for the Basic Bank Account Number which is up to 30 alphanumeric characters that are country-specific. Note: You will need a valid IBAN (i.e., existing in real life) when testing on a Sandbox account even if no actual payout will be processed.'
+        BIC:
+          type: string
+          description: 'The BIC (international identifier of the bank) for IBAN or OTHER-type bank accounts.
+
+
+            The BIC can have one of the two following formats:
+
+            - BIC8 – 8-character BIC (AAAABBCC)
+
+            - BIC11 – 11-character BIC (AAAABBCCDDD)
+
+
+            In which:
+
+            - AAAA represents the bank code: 4 characters defining the bank
+
+            - BB represents the country code: 2 characters forming the country ISO code (ISO 3166 format)
+
+            - CC represents the location code: 2 localization characters (alphabetical or numeric) to distinguish banks from the same country
+
+            - DDD represents the branch code: 3 characters used to define the branch of the bank (sometimes replaced with XXX)'
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Type:
+          type: string
+          description: '**Returned values:** `IBAN`, `US`, `CA`, `GB`, `OTHER`
+
+
+            The type of the bank account, indicating the country where the real-life account is registered
+
+            The values are:
+
+            - `IBAN` – For accounts registered in countries that use IBAN
+
+            - `US` – For accounts registered in the United States
+
+            - `CA` – For accounts registered in Canada
+
+            - `GB` – For accounts registered in the United Kingdom
+
+            - `OTHER` – For accounts registered in countries that do not use IBAN (and are not US, CA, GB)'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Active:
+          type: boolean
+          description: Whether or not the Bank Account is active. Mangopay automatically sets this parameter to `false` if the bank account is closed or does not exist anymore.
+        AccountNumber:
+          type: string
+          description: 'Length: 8 digits
+
+
+            The unique set of digits of the bank account.'
+        SortCode:
+          type: string
+          description: The 6-digit sort code, assigned to UK financial institutions, for GB-type bank accounts.
+      title: ViewABankAccountResponse
+    CreateACABankAccountRequest:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address_PlatformHeadquarters'
+        AccountNumber:
+          type: string
+          description: 'Format: Digits only
+
+
+            The unique number of the bank account (between 7 to 35 digits).'
+        InstitutionNumber:
+          type: string
+          description: 'Length: 3 digits
+
+
+            The 3-digit number assigned to Canadian financial institutions, for CA-type bank accounts.'
+        BranchCode:
+          type: string
+          description: 'Length: 5 digits
+
+
+            The 5-digit number assigned to branches of Canadian financial institutions, for CA-type bank accounts.'
+        BankName:
+          type: string
+          description: 'Max. length: 50 characters (letters and digits only)
+
+
+            The name of the Canadian bank for CA-type bank accounts.'
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - OwnerAddress
+      - AccountNumber
+      - InstitutionNumber
+      - BranchCode
+      - BankName
+      - OwnerName
+      title: CreateACABankAccountRequest
+    Address:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The postal address.
+      title: Address
+    Address_PlatformHeadquarters:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'Required if `HeadquarterAddress` is sent.
+
+
+            The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: The address of the platform operator's headquarters. This parameter must be provided for the platform's payouts to be processed.
+      title: Address_PlatformHeadquarters
+    CreateACABankAccountResponse:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address'
+        AccountNumber:
+          type: string
+          description: 'Format: Digits only
+
+
+            The unique number of the bank account (between 7 to 35 digits).'
+        InstitutionNumber:
+          type: string
+          description: 'Length: 3 digits
+
+
+            The 3-digit number assigned to Canadian financial institutions, for CA-type bank accounts.'
+        BranchCode:
+          type: string
+          description: 'Length: 5 digits
+
+
+            The 5-digit number assigned to branches of Canadian financial institutions, for CA-type bank accounts.'
+        BankName:
+          type: string
+          description: 'Max. length: 50 characters (letters and digits only)
+
+
+            The name of the Canadian bank for CA-type bank accounts.'
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Type:
+          type: string
+          description: '**Returned values:** `IBAN`, `US`, `CA`, `GB`, `OTHER`
+
+
+            The type of the bank account, indicating the country where the real-life account is registered
+
+            The values are:
+
+            - `IBAN` – For accounts registered in countries that use IBAN
+
+            - `US` – For accounts registered in the United States
+
+            - `CA` – For accounts registered in Canada
+
+            - `GB` – For accounts registered in the United Kingdom
+
+            - `OTHER` – For accounts registered in countries that do not use IBAN (and are not US, CA, GB)'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Active:
+          type: boolean
+          description: Whether or not the Bank Account is active. Mangopay automatically sets this parameter to `false` if the bank account is closed or does not exist anymore.
+      title: CreateACABankAccountResponse
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    CreateAUSBankAccountResponse:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address'
+        AccountNumber:
+          type: string
+          description: 'Format: Digits only
+
+
+            The unique set of digits of the bank account.'
+        ABA:
+          type: string
+          description: 'Length: 9 characters
+
+
+            The American Banking Association (ABA) routing number for US-type bank accounts.'
+        DepositAccountType:
+          type: string
+          description: '**Returned values:** `CHECKING`, `SAVINGS`
+
+
+            The deposit type for US-type bank accounts.'
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Type:
+          type: string
+          description: '**Returned values:** `IBAN`, `US`, `CA`, `GB`, `OTHER`
+
+
+            The type of the bank account, indicating the country where the real-life account is registered
+
+            The values are:
+
+            - `IBAN` – For accounts registered in countries that use IBAN
+
+            - `US` – For accounts registered in the United States
+
+            - `CA` – For accounts registered in Canada
+
+            - `GB` – For accounts registered in the United Kingdom
+
+            - `OTHER` – For accounts registered in countries that do not use IBAN (and are not US, CA, GB)'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Active:
+          type: boolean
+          description: Whether or not the Bank Account is active. Mangopay automatically sets this parameter to `false` if the bank account is closed or does not exist anymore.
+      title: CreateAUSBankAccountResponse
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    CreateAGBBankAccountResponse:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address'
+        AccountNumber:
+          type: string
+          description: 'Length: 8 digits
+
+
+            The unique set of digits of the bank account.'
+        SortCode:
+          type: string
+          description: The 6-digit sort code, assigned to UK financial institutions, for GB-type bank accounts.
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Type:
+          type: string
+          description: '**Returned values:** `IBAN`, `US`, `CA`, `GB`, `OTHER`
+
+
+            The type of the bank account, indicating the country where the real-life account is registered
+
+            The values are:
+
+            - `IBAN` – For accounts registered in countries that use IBAN
+
+            - `US` – For accounts registered in the United States
+
+            - `CA` – For accounts registered in Canada
+
+            - `GB` – For accounts registered in the United Kingdom
+
+            - `OTHER` – For accounts registered in countries that do not use IBAN (and are not US, CA, GB)'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Active:
+          type: boolean
+          description: Whether or not the Bank Account is active. Mangopay automatically sets this parameter to `false` if the bank account is closed or does not exist anymore.
+      title: CreateAGBBankAccountResponse
+    CreateAGBBankAccountRequest:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address_PlatformHeadquarters'
+        AccountNumber:
+          type: string
+          description: 'Length: 8 digits
+
+
+            The unique set of digits of the bank account.'
+        SortCode:
+          type: string
+          description: The 6-digit sort code, assigned to UK financial institutions, for GB-type bank accounts.
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - OwnerAddress
+      - AccountNumber
+      - SortCode
+      - OwnerName
+      title: CreateAGBBankAccountRequest
+    ListBankAccountsForAUserResponseArrayBankAccountsItems:
+      type: object
+      properties:
+        Object (Bank Accounts):
+          $ref: '#/components/schemas/ListBankAccountsForAUserResponseArrayBankAccountsItemsObjectBankAccounts'
+          description: The Bank Account object created by the platform.
+      title: ListBankAccountsForAUserResponseArrayBankAccountsItems
+    CreateAnOTHERBankAccountResponse:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address'
+        AccountNumber:
+          type: string
+          description: 'Max. length 35, min. length 5; alphanumeric characters only.
+
+
+            The unique number of the bank account.'
+        BIC:
+          type: string
+          description: 'The BIC (international identifier of the bank) for IBAN or OTHER-type bank accounts.
+
+
+            The BIC can have one of the two following formats:
+
+            - BIC8 – 8-character BIC (AAAABBCC)
+
+            - BIC11 – 11-character BIC (AAAABBCCDDD)
+
+
+            In which:
+
+            - AAAA represents the bank code: 4 characters defining the bank
+
+            - BB represents the country code: 2 characters forming the country ISO code (ISO 3166 format)
+
+            - CC represents the location code: 2 localization characters (alphabetical or numeric) to distinguish banks from the same country
+
+            - DDD represents the branch code: 3 characters used to define the branch of the bank (sometimes replaced with XXX)'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country in which the bank account is registered.'
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Type:
+          type: string
+          description: '**Returned values:** `IBAN`, `US`, `CA`, `GB`, `OTHER`
+
+
+            The type of the bank account, indicating the country where the real-life account is registered
+
+            The values are:
+
+            - `IBAN` – For accounts registered in countries that use IBAN
+
+            - `US` – For accounts registered in the United States
+
+            - `CA` – For accounts registered in Canada
+
+            - `GB` – For accounts registered in the United Kingdom
+
+            - `OTHER` – For accounts registered in countries that do not use IBAN (and are not US, CA, GB)'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Active:
+          type: boolean
+          description: Whether or not the Bank Account is active. Mangopay automatically sets this parameter to `false` if the bank account is closed or does not exist anymore.
+      title: CreateAnOTHERBankAccountResponse
+    CreateAnIBANBankAccountRequest:
+      type: object
+      properties:
+        OwnerAddress:
+          $ref: '#/components/schemas/Address_PlatformHeadquarters'
+        IBAN:
+          type: string
+          description: 'Max. length: 34 characters
+
+
+            The IBAN (international bank account number) of the bank account. It follows the CCDDBBAN format in which: - CC represents the country code (ISO 3166-1 alpha 2) - DD represents two check digits used by banking systems to avoid simple errors - BBAN stands for the Basic Bank Account Number which is up to 30 alphanumeric characters that are country-specific. Note: You will need a valid IBAN (i.e., existing in real life) when testing on a Sandbox account even if no actual payout will be processed.'
+        BIC:
+          type: string
+          description: 'The BIC (international identifier of the bank) for IBAN or OTHER-type bank accounts.
+
+
+            The BIC can have one of the two following formats:
+
+            - BIC8 – 8-character BIC (AAAABBCC)
+
+            - BIC11 – 11-character BIC (AAAABBCCDDD)
+
+
+            In which:
+
+            - AAAA represents the bank code: 4 characters defining the bank
+
+            - BB represents the country code: 2 characters forming the country ISO code (ISO 3166 format)
+
+            - CC represents the location code: 2 localization characters (alphabetical or numeric) to distinguish banks from the same country
+
+            - DDD represents the branch code: 3 characters used to define the branch of the bank (sometimes replaced with XXX)
+
+
+            **Note:** On IBAN-type bank accounts, the full 11-character version (not using XXX) may be required for the BIC to be accepted as valid. Alternatively, this optional field can be omitted.'
+        OwnerName:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The full name of the owner of the bank account. (Format: FirstName LastName)'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - OwnerAddress
+      - IBAN
+      - OwnerName
+      title: CreateAnIBANBankAccountRequest
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

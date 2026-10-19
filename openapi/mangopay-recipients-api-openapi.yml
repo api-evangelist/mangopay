@@ -1,279 +1,2599 @@
 openapi: 3.2.0
 info:
-  title: Mangopay REST Recipients API
-  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
-  version: '2.01'
-  contact:
-    name: Mangopay Support
-    url: https://hub.mangopay.com
+  title: Reference Recipients API
+  version: 1.0.0
 servers:
-- url: https://api.mangopay.com/v2.01/{clientId}
-  description: Production
-  variables:
-    clientId:
-      default: your-client-id
-      description: Your Mangopay Client ID
-- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+- url: https://api.sandbox.mangopay.com
   description: Sandbox
-  variables:
-    clientId:
-      default: your-client-id
-      description: Your Mangopay Client ID
-security:
-- OAuth2: []
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
 tags:
 - name: Recipients
 paths:
-  /users/{userId}/recipients:
-    post:
-      tags:
-      - Recipients
-      summary: Create a Business Recipient - MATCH
-      operationId: post_users_userId_recipients
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            example:
-              DisplayName: EuroCorp EUR FR account
-              PayoutMethodType: LocalBankTransfer
-              RecipientType: Business
-              Currency: EUR
-              Country: FR
-              Tag: Created using the Mangopay API Postman collection
-              RecipientScope: PAYOUT
-              BusinessRecipient:
-                BusinessName: EuroCorp
-                Address:
-                  AddressLine1: 6 rue de la Cité
-                  AddressLine2: Appartement 3
-                  City: Paris
-                  Region: île-de-France
-                  PostalCode: '75003'
-                  Country: FR
-              LocalBankTransfer:
-                EUR:
-                  IBAN: FR7630001007941234567890185
+  /v2.01/{ClientId}/recipients/schema:
     get:
-      tags:
-      - Recipients
-      summary: List Recipients for a User
-      operationId: get_users_userId_recipients
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /recipients/payout-methods:
-    get:
-      tags:
-      - Recipients
-      summary: View payout methods
-      operationId: get_recipients_payout_methods
-      parameters:
-      - name: Currency
-        in: query
-        required: false
-        schema:
-          type: string
-        description: ''
-      - name: Country
-        in: query
-        required: false
-        schema:
-          type: string
-        description: ''
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /recipients/schema:
-    get:
-      tags:
-      - Recipients
+      operationId: recipients_view_recipient_schema
       summary: View the schema for a Recipient
-      operationId: get_recipients_schema
+      description: Fetch the data requirements for a given currency, payout method type, and recipient type
+      tags:
+      - Recipients
       parameters:
-      - name: Currency
-        in: query
-        required: false
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
         schema:
           type: string
-        description: ''
-      - name: Country
-        in: query
-        required: false
-        schema:
-          type: string
-        description: ''
       - name: PayoutMethodType
         in: query
-        required: false
+        description: '**Allowed values:** `LocalBankTransfer`, `InternationalBankTransfer`
+
+
+          The payout method.'
+        required: true
         schema:
           type: string
-        description: LocalBankTransfer | InternationalBankTransfer
+      - name: Currency
+        in: query
+        description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> of a <a href="/guides/currencies" target="_blank">supported currency</a>: `AED`, `AUD`, `CAD`, `CHF`, `CNH`, `CZK`, `DKK`, `EUR`, `GBP`, `HKD`, `HUF`, `ILS`, `JPY`, `MXN`, `NOK`, `NZD`, `PLN`, `RON`, `SAR`, `SEK`, `SGD`, `TRY`, `USD`, `ZAR`
+
+
+          The currency of the recipient.'
+        required: true
+        schema:
+          type: string
+      - name: Country
+        in: query
+        description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+          The destination country of the payout method.'
+        required: true
+        schema:
+          type: string
       - name: RecipientType
         in: query
+        description: '**Allowed values:** `Individual`, `Business`
+
+
+          The recipient type:
+
+          - `Individual` – An account held by a natural person
+
+          - `Business` – An account held by a legal entity'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewTheSchemaForARecipientResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/recipients/validate:
+    post:
+      operationId: recipients_validate_recipient_data
+      summary: Validate data for a Recipient
+      description: 'Check that the user''s Recipient data is valid before creation
+
+
+        A 200 HTTP response code indicates the request is valid against the schema. No response body is returned.'
+      tags:
+      - Recipients
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipients_validate_recipient_data_Response_200'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateDataForARecipientRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/recipients:
+    post:
+      operationId: recipients_create_recipient
+      summary: Create a Recipient
+      description: 'Register a bank account for local or international payouts.
+
+
+        **Caution – Fetch schema and validate data before creation**
+
+
+        Before using this endpoint to register a Recipient for a user, for the given currency, payout method, and recipient type combination, always:
+
+        - Fetch the schema dynamically using GET View the schema for a Recipient
+
+        - Check that the user''s data is valid using POST Validate data for a Recipient
+
+
+        **Note – SCA triggered by this endpoint**
+
+
+        Registering a bank account as a Recipient always requires the user to authenticate using SCA on a Mangopay-hosted webpage, unless your platform is using a proxy and user consent.
+
+
+        To let the user complete the SCA session, your platform needs to retrieve the returned `PendingUserAction.RedirectUrl`, add an encoded `returnUrl` query parameter, and redirect the user. Read more about how to redirect them in the SCA session guide.
+
+
+        If SCA is not successfully completed, the Recipient `Status` becomes `CANCELED` and you need to create a new Recipient to try again.
+
+
+        In Sandbox, you can bypass SCA by including the word `accept` in the `Email` value of the Natural User or the `LegalRepresentative.Email` value of the Legal User – for example `accept@example.com` or `john.doe+accept@example.com`.
+
+
+        Recipient creation is asynchronous, meaning that this endpoint returns the `Status` as `PENDING` regardless of whether SCA is required (when `RecipientScope` is `PAYOUT`) or not. In all cases, your integration should rely on the `RECIPIENT_ACTIVE` webhook to know when the recipient is `ACTIVE`.
+
+
+        Verification of Payee (VOP) impacts SEPA local schemes, which means Recipients with `Currency` value `EUR` and `PayoutMethodType` value `LocalBankTransfer`. Read more **→**'
+      tags:
+      - Recipients
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipientResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateARecipientRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: recipients_list_recipients_user
+      summary: List Recipients for a User
+      description: '**Note – Endpoint returns filtered list by default**
+
+
+        By default, this endpoint returns only recipients with the `RecipientScope` value of `PAYOUT`. Specify `ALL` to retrieve both `PAYIN` and `PAYOUT` recipients, or `PAYIN` to retrieve only pay-in recipients.
+
+
+        By default, results are sorted by `CreationDate` in descending order.
+
+
+        List recipients created for a UserId'
+      tags:
+      - Recipients
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: Sort
+        in: query
+        description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+          **Default value:** `CreationDate:DESC`
+
+
+          Indicates the direction in which to sort the list.'
         required: false
         schema:
           type: string
-        description: Individual | Business
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /users/{userId}/recipients/validate:
-    post:
-      tags:
-      - Recipients
-      summary: Validate data for a Recipient (GBP, GB, local, individual)
-      operationId: post_users_userId_recipients_validate
-      parameters:
-      - name: userId
-        in: path
-        required: true
+      - name: RecipientScope
+        in: query
+        description: '**Possible values:** `ALL`, `PAYOUT`, `PAYIN`
+
+
+          **Default value:** `PAYOUT`
+
+
+          By default, this endpoint returns only recipients with the `RecipientScope` value of `PAYOUT`.
+
+
+          Specify `ALL` to retrieve both `PAYIN` and `PAYOUT` recipients, or `PAYIN` to retrieve only pay-in recipients.
+
+
+          Read more about [recipient scopes in the guide](/guides/sca/recipients#recipient-scopes).'
+        required: false
         schema:
           type: string
       responses:
         '200':
           description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            example:
-              DisplayName: Alex Smith GBP account
-              PayoutMethodType: LocalBankTransfer
-              RecipientType: Individual
-              Currency: GBP
-              Country: GB
-              Tag: Created using the Mangopay API Postman collection
-              RecipientScope: PAYOUT
-              IndividualRecipient:
-                FirstName: Alex
-                LastName: Smith
-                Address:
-                  AddressLine1: 10 Kingsway
-                  City: London
-                  PostalCode: WC2B 6LH
-                  Country: GB
-              LocalBankTransfer:
-                GBP:
-                  SortCode: '200000'
-                  AccountNumber: '55779911'
-  /recipients/{recipientId}:
-    get:
-      tags:
-      - Recipients
-      summary: View a Recipient
-      operationId: get_recipients_recipientId
-      parameters:
-      - name: recipientId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListRecipientsForAUserResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/recipients/{RecipientId}:
     put:
+      operationId: recipients_deactivate_recipient
+      summary: Deactivate a Recipient
+      description: Permanently disable a Recipient
       tags:
       - Recipients
-      summary: Deactivate a Recipient
-      operationId: put_recipients_recipientId
       parameters:
-      - name: recipientId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: RecipientId
+        in: path
+        description: The unique identifier of the Recipient or legacy Bank Account (the legacy `BankAccountId` value can be used on this endpoint).
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeactivateARecipientResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              type: object
-            example:
-              Status: DEACTIVATED
+              $ref: '#/components/schemas/DeactivateARecipientRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: recipients_view_recipient
+      summary: View a Recipient
+      description: 'Fetch a Recipient or legacy Bank Account based on its ID
+
+
+        Verification of Payee (VOP) impacts SEPA local schemes, which means Recipients with `Currency` value `EUR` and `PayoutMethodType` value `LocalBankTransfer`. Read more **→**'
+      tags:
+      - Recipients
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: RecipientId
+        in: path
+        description: The unique identifier of the Recipient or legacy Bank Account (the legacy `BankAccountId` value can be used on this endpoint).
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipientResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/recipients/payout-methods:
+    get:
+      operationId: recipients_view_payout_methods
+      summary: View payout methods
+      description: See payout methods available to your platform by currency and country
+      tags:
+      - Recipients
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: Currency
+        in: query
+        description: '**Possible values:** `AED`, `AUD`, `CAD`, `CHF`, `CNH`, `CZK`, `DKK`, `EUR`, `GBP`, `HKD`, `HUF`, `ILS`, `JPY`, `MXN`, `NOK`, `NZD`, `PLN`, `RON`, `SAR`, `SEK`, `SGD`, `TRY`, `USD`, `ZAR`
+
+
+          The currency of the payout method.'
+        required: true
+        schema:
+          type: string
+      - name: Country
+        in: query
+        description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+          The destination country of the payout method.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewPayoutMethodsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
 components:
+  schemas:
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf12Ron:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `RON` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf12Ron
+    Tag_Recipient:
+      type:
+      - string
+      - 'null'
+      description: 'Max. length: 255 (pattern: `^.{0,255}$`)
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.
+
+
+        This value cannot be edited once created.'
+      title: Tag_Recipient
+    LocalBankTransfer_USD:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: 'Format: 8–12 alphanumeric characters (pattern: `^[0-9a-zA-Z]{8,12}$`).
+
+
+            The account number of the US account.'
+        ABA:
+          type: string
+          description: 'Format: 9 digits (pattern: `^\d{9}$`).
+
+
+            The ABA routing number of the US account.'
+        FFC:
+          type: string
+          description: 'Format: 8-12 digits then `FFC` then a space then a string of characters up to 140 total length (pattern: `^(?=.{0,140}$)[0-9]{8,12}/FFC [0-9a-zA-Z/\-?:().,''+ ]+$`).
+
+
+            FFC transfer information for the US account.'
+      description: Local bank transfer details for `Currency` value `USD`.
+      title: LocalBankTransfer_USD
+    RecipientVerificationPayeeSuggestedName:
+      type:
+      - string
+      - 'null'
+      description: The name returned by the check in case of a `CLOSE_MATCH` result, which can be used to re-register the Recipient. This property is not returned on the check performed on a Payout request, even if the result is `CLOSE_MATCH`.
+      title: RecipientVerificationPayeeSuggestedName
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf2Chf:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `CHF` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf2Chf
+    ViewTheSchemaForARecipientResponseLocalBankTransfer15:
+      type: object
+      properties:
+        TRY:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf15Try'
+          description: The schema of the `TRY` property.
+      required:
+      - TRY
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer15
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf5Eur:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `EUR` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf5Eur
+    LocalBankTransfer_SGD:
+      type: object
+      properties:
+        BankCode:
+          type: string
+          description: 'Format: 3–4 numeric digits (pattern: `^\d{3,4}$`).
+
+
+            The bank code of the Singaporean account.'
+        AccountNumber:
+          type: string
+          description: 'Format: 6–34 alphanumeric characters (pattern: `^[0-9a-zA-Z]{6,34}$`).
+
+
+            The account number of the Singaporean account.'
+        BIC:
+          type: string
+          description: 'Format: 8 or 11 alphanumeric characters.
+
+
+            The BIC of the Singaporean account.'
+      description: Local bank transfer details for `Currency` value `SGD`.
+      title: LocalBankTransfer_SGD
+    CreateARecipientRequest:
+      oneOf:
+      - $ref: '#/components/schemas/CreateInternationalIndividualRecipientRequest'
+      - $ref: '#/components/schemas/CreateInternationalBusinessRecipientRequest'
+      - $ref: '#/components/schemas/CreateLocalIndividualRecipientRequest'
+      - $ref: '#/components/schemas/CreateLocalBusinessRecipientRequest'
+      title: CreateARecipientRequest
+    DataFormatField:
+      type: object
+      properties:
+        Required:
+          type: boolean
+          description: Whether the field is required or not.
+        MaxLength:
+          type: integer
+          description: The maximum length of the string.
+        Pattern:
+          type: string
+          description: The regex describing the accepted value of the string.
+        Label:
+          type: string
+          description: A label that platforms can use when displaying or requesting the field to the end user.
+        EndUserDisplay:
+          type: string
+          description: '**Possible values:** `Show`, `Hide`
+
+
+            Recommendation on whether to show or hide the field (and `Label`) to the end user.'
+      description: Field metadata returned by [GET View the schema for a Recipient](/api-reference/recipients/view-recipient-schema).
+      title: DataFormatField
+    ViewTheSchemaForARecipientResponseIndividualRecipient:
+      type: object
+      properties:
+        FirstName:
+          $ref: '#/components/schemas/DataFormatField'
+        LastName:
+          $ref: '#/components/schemas/DataFormatField'
+        Address:
+          $ref: '#/components/schemas/Address_Recipient_Schema'
+      description: The schema of the `IndividualRecipient` property.
+      title: ViewTheSchemaForARecipientResponseIndividualRecipient
+    recipients_validate_recipient_data_Response_200:
+      type: object
+      properties: {}
+      description: Empty response body
+      title: recipients_validate_recipient_data_Response_200
+    RecipientVerificationCheck:
+      type:
+      - string
+      - 'null'
+      description: '**Possible values:** `MATCH`, `CLOSE_MATCH`, `NO_MATCH`, `MATCH_NOT_POSSIBLE`
+
+
+        The result of the VOP check:
+
+        - `MATCH` – The account is valid and the account name matches the IBAN.
+
+        - `CLOSE_MATCH` – The account is valid but the name doesn''t match exactly.
+
+        - `NO_MATCH` – This account likely belongs to a different owner.
+
+        - `MATCH_NOT_POSSIBLE` – The check could not be completed.'
+      title: RecipientVerificationCheck
+    CreateInternationalIndividualRecipientRequest:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Request'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Request'
+        PayoutMethodType:
+          type: string
+          description: '**Allowed values:** `InternationalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `InternationalBankTransfer` – The account can receive non-local currencies via SWIFT or else uses local rails for local currencies by default.
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` (e.g. `EUR` to a SEPA country, `GBP` to a UK account, `PLN` to a Polish IBAN, etc.)'
+        RecipientType:
+          type: string
+          description: '**Allowed values:** `Individual`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        IndividualRecipient:
+          $ref: '#/components/schemas/IndividualRecipient_Request'
+        InternationalBankTransfer:
+          $ref: '#/components/schemas/InternationalBankTransfer_Request'
+      required:
+      - DisplayName
+      - Currency
+      - Country
+      - PayoutMethodType
+      - RecipientType
+      - IndividualRecipient
+      - InternationalBankTransfer
+      description: Request body for creating a Recipient where `PayoutMethodType` is `InternationalBankTransfer` and `RecipientType` is `Individual`.
+      title: CreateInternationalIndividualRecipientRequest
+    ViewTheSchemaForARecipientResponseLocalBankTransfer14:
+      type: object
+      properties:
+        SGD:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf14Sgd'
+          description: The schema of the `SGD` property.
+      required:
+      - SGD
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer14
+    RecipientVerificationOfPayee:
+      type: object
+      properties:
+        RecipientVerificationId:
+          $ref: '#/components/schemas/RecipientVerificationId'
+        RecipientVerificationCheck:
+          $ref: '#/components/schemas/RecipientVerificationCheck'
+        RecipientVerificationMessage:
+          $ref: '#/components/schemas/RecipientVerificationMessage'
+        RecipientVerificationPayeeSuggestedName:
+          $ref: '#/components/schemas/RecipientVerificationPayeeSuggestedName'
+      description: 'Information about the [Verification of Payee (VOP)](/guides/vop) check
+
+        performed on the Recipient. Because VOP only applies to SEPA local
+
+        schemes, this object is returned `null` if the Recipient''s `Currency`
+
+        is not `EUR` or its `PayoutMethodType` is not `LocalBankTransfer`.'
+      title: RecipientVerificationOfPayee
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf15Try:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+        BeneficiaryIdentificationValue:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `TRY` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf15Try
+    InternationalBankTransfer_Request:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: 'Format: The format returned by the [schema](/api-reference/recipients/view-recipient-schema) endpoint depending on the `Currency` and `Country`.
+
+
+            The account number of the account. For IBAN countries, the `AccountNumber` format is the local IBAN one. For other countries, the format depends on the `Country` and should be retrieved from the [GET View the schema for a Recipient](/api-reference/recipients/view-recipient-schema) endpoint.'
+        BIC:
+          type: string
+          description: 'Format: The format returned by the [schema](/api-reference/recipients/view-recipient-schema) endpoint depending on the `Currency` and `Country`.
+
+
+            The BIC of the account. For countries that don''t use IBAN, the `BIC` is required. For countries that use IBAN, this field is ignored because the BIC is generated automatically from the IBAN and returned in the response.'
+      required:
+      - AccountNumber
+      description: 'The account details if `PayoutMethodType` is `InternationalBankTransfer`.
+
+
+        Only one of `InternationalBankTransfer` or `LocalBankTransfer` is required.
+
+
+        The `InternationalBankTransfer` depends on the `Currency` and `Country`.'
+      title: InternationalBankTransfer_Request
+    ViewTheSchemaForARecipientResponseLocalBankTransfer10:
+      type: object
+      properties:
+        NOK:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf10Nok'
+          description: The schema of the `NOK` property.
+      required:
+      - NOK
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer10
+    LocalBankTransfer_CAD:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: 'Format: 7–35 digits (pattern: `^\d{7,35}$`).
+
+
+            The account number of the Canadian account.'
+        InstitutionNumber:
+          type: string
+          description: 'Format: 3 digits (pattern: `^\d{3}$`).
+
+
+            The institution number of the Canadian account.'
+        BranchCode:
+          type: string
+          description: 'Format: 5 digits (pattern: `^\d{5}$`).
+
+
+            The branch code of the Canadian account.'
+        BankName:
+          type: string
+          description: 'Length: 1–50.
+
+
+            The bank name of the Canadian account.'
+      description: Local bank transfer details for `Currency` value `CAD`.
+      title: LocalBankTransfer_CAD
+    ViewTheSchemaForARecipientResponse:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DataFormatField'
+        Currency:
+          $ref: '#/components/schemas/DataFormatField_AllowedValues'
+        Country:
+          $ref: '#/components/schemas/DataFormatField_AllowedValues'
+        RecipientType:
+          $ref: '#/components/schemas/DataFormatField_AllowedValues'
+        PayoutMethodType:
+          $ref: '#/components/schemas/DataFormatField_AllowedValues'
+        Tag:
+          $ref: '#/components/schemas/DataFormatField'
+        RecipientScope:
+          $ref: '#/components/schemas/DataFormatField_AllowedValues'
+        IndividualRecipient:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseIndividualRecipient'
+          description: The schema of the `IndividualRecipient` property.
+        BusinessRecipient:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseBusinessRecipient'
+          description: The schema of the `BusinessRecipient` property.
+        InternationalBankTransfer:
+          $ref: '#/components/schemas/InternationalBankTransfer_RecipientSchema'
+        LocalBankTransfer:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer'
+          description: The schema of the `LocalBankTransfer` property.
+      title: ViewTheSchemaForARecipientResponse
+    LocalBankTransfer_MXN_Request:
+      type: object
+      properties:
+        Clabe:
+          type: string
+          description: 'Format: exactly 18 numeric digits (pattern: `^\d{18}$`).
+
+
+            The CLABE (Clave Bancaria Estandarizada) of the Mexican account.'
+        BIC:
+          type: string
+          description: 'Format: 8 or 11 alphanumeric characters.
+
+
+            The BIC of the Mexican account.'
+      required:
+      - Clabe
+      - BIC
+      description: Local bank transfer details for `Currency` value `MXN`.
+      title: LocalBankTransfer_MXN_Request
+    LocalBankTransfer_GBP:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: 'Format: 8 digits (pattern: `^\d{8}$`).
+
+
+            The account number of the UK account.'
+        SortCode:
+          type: string
+          description: 'Format: 6 digits (pattern: `^\d{6}$`).
+
+
+            The sort code of the UK account.'
+      description: Local bank transfer details for `Currency` value `GBP`.
+      title: LocalBankTransfer_GBP
+    ListRecipientsForAUserResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/RecipientListItem'
+      title: ListRecipientsForAUserResponse
+    ViewTheSchemaForARecipientResponseLocalBankTransfer2:
+      type: object
+      properties:
+        CHF:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf2Chf'
+          description: The schema of the `CHF` property.
+      required:
+      - CHF
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer2
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf6Gbp:
+      type: object
+      properties:
+        AccountNumber:
+          $ref: '#/components/schemas/FieldMetadata'
+        SortCode:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `GBP` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf6Gbp
+    Country_Recipient:
+      type: string
+      description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+        The destination country of the payout method.'
+      title: Country_Recipient
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf0Aud:
+      type: object
+      properties:
+        BSB:
+          $ref: '#/components/schemas/FieldMetadata'
+        AccountNumber:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `AUD` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf0Aud
+    DisplayName_Recipient_Response:
+      type:
+      - string
+      - 'null'
+      description: 'Length: 1–50; cannot contain: `&,''/` (pattern:`^(?!.*[&,''/]).{1,50}$`)
+
+
+        A user-friendly name to identify the account. This value cannot be changed once the recipient is created.'
+      title: DisplayName_Recipient_Response
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf11Pln:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `PLN` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf11Pln
+    ViewTheSchemaForARecipientResponseLocalBankTransfer11:
+      type: object
+      properties:
+        PLN:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf11Pln'
+          description: The schema of the `PLN` property.
+      required:
+      - PLN
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer11
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf13Sek:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `SEK` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf13Sek
+    Currency_Recipient:
+      type: string
+      description: '**Possible values:** `AED`, `AUD`, `CAD`, `CHF`, `CNH`, `CZK`, `DKK`, `EUR`, `GBP`, `HKD`, `HUF`, `ILS`, `JPY`, `MXN`, `NOK`, `NZD`, `PLN`, `RON`, `SAR`, `SEK`, `SGD`, `TRY`, `USD`, `ZAR`
+
+
+        The currency of the recipient.'
+      title: Currency_Recipient
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf9Mxn:
+      type: object
+      properties:
+        Clabe:
+          $ref: '#/components/schemas/FieldMetadata'
+        BIC:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `MXN` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf9Mxn
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ValidateLocalIndividualRecipientRequest:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Request'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        PayoutMethodType:
+          type: string
+          description: '**Allowed values:** `LocalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `InternationalBankTransfer` – The account can receive non-local currencies via SWIFT or else uses local rails for local currencies by default.
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` (e.g. `EUR` to a SEPA country, `GBP` to a UK account, `PLN` to a Polish IBAN, etc.)'
+        RecipientType:
+          type: string
+          description: '**Allowed values:** `Individual`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        IndividualRecipient:
+          $ref: '#/components/schemas/IndividualRecipient_Request'
+        LocalBankTransfer:
+          $ref: '#/components/schemas/LocalBankTransfer_Request'
+      required:
+      - DisplayName
+      - Currency
+      - Country
+      - PayoutMethodType
+      - RecipientType
+      - IndividualRecipient
+      - LocalBankTransfer
+      description: Request body for creating a Recipient where `PayoutMethodType` is `LocalBankTransfer` and `RecipientType` is `Individual`.
+      title: ValidateLocalIndividualRecipientRequest
+    RecipientResponse:
+      oneOf:
+      - $ref: '#/components/schemas/CreateInternationalIndividualRecipientResponse'
+      - $ref: '#/components/schemas/CreateInternationalBusinessRecipientResponse'
+      - $ref: '#/components/schemas/CreateLocalIndividualRecipientResponse'
+      - $ref: '#/components/schemas/CreateLocalBusinessRecipientResponse'
+      title: RecipientResponse
+    ViewTheSchemaForARecipientResponseLocalBankTransfer9:
+      type: object
+      properties:
+        MXN:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf9Mxn'
+          description: The schema of the `MXN` property.
+      required:
+      - MXN
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer9
+    RecipientScope_Recipient_Response:
+      type: string
+      description: '**Returned values:** `PAYIN`, `PAYOUT`
+
+
+        The scope of the recipient:
+
+        - `PAYOUT` – Usable for payouts and in pay-in use cases. A `PAYOUT` recipient can only be created by a user with the `UserCategory` `OWNER` and requires SCA.
+
+        - `PAYIN` - Not usable for payouts but only usable for pay-in use cases, such as direct debit and refunds using payouts. A `PAYIN` recipient can be created by a user with the `UserCategory` `PAYER` or `OWNER`, and does not require SCA.
+
+
+        Both `PAYIN` and `PAYOUT` scopes can be created for either `InternationalBankTransfer` or `LocalBankTransfer`, and for either `IndividualRecipient` or `BusinessRecipient`, and for any `Currency`.'
+      title: RecipientScope_Recipient_Response
+    CreateLocalBusinessRecipientResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          $ref: '#/components/schemas/Status_Recipient_Response'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Response'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Response'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Response'
+        RecipientVerificationOfPayee:
+          oneOf:
+          - $ref: '#/components/schemas/RecipientVerificationOfPayee'
+          - type: 'null'
+          description: Information about the [Verification of Payee (VOP)](/guides/vop) check performed on the Recipient. Because VOP only applies to SEPA local schemes, this object is returned `null` if the Recipient's `Currency` is not `EUR` or its `PayoutMethodType` is not `LocalBankTransfer`.
+        PayoutMethodType:
+          type: string
+          description: '**Returned values:** `LocalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` via the [domestic payment rail](/guides/payouts#payout-rails) (e.g. `EUR` via a SEPA local scheme to a SEPA country, `GBP` via FPS to a `GB` account, `USD` via ACH to a `US` account, etc). Payouts in non-local currencies return an error.
+
+            - `InternationalBankTransfer` – The account can receive both non-local currencies via SWIFT and also local currency via domestic rails.'
+        RecipientType:
+          type: string
+          description: '**Returned values:** `Business`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        BusinessRecipient:
+          $ref: '#/components/schemas/BusinessRecipient_Response'
+        LocalBankTransfer:
+          $ref: '#/components/schemas/LocalBankTransferDetails'
+        PendingUserAction:
+          oneOf:
+          - $ref: '#/components/schemas/PendingUserAction'
+          - type: 'null'
+          description: SCA redirect information returned when registering an `OWNER` Recipient on creation. Returned `null` for `PAYIN`-scope recipients that don't trigger SCA. Omitted when viewing a recipient.
+      description: Response body for a Recipient where `PayoutMethodType` is `LocalBankTransfer` and `RecipientType` is `Business`.
+      title: CreateLocalBusinessRecipientResponse
+    LocalBankTransfer_AUD:
+      type: object
+      properties:
+        BSB:
+          type: string
+          description: 'Format: 6 digits, optionally with a hyphen after the first 3 (pattern: `^\d{3}-?\d{3}$`).
+
+
+            The BSB (Bank State Branch) number of the Australian account.'
+        AccountNumber:
+          type: string
+          description: 'Format: 5–10 numeric digits (pattern: `^\d{5,10}$`).
+
+
+            The account number of the Australian account.'
+      description: Local bank transfer details for `Currency` value `AUD`.
+      title: LocalBankTransfer_AUD
+    Status_Recipient_Response:
+      type: string
+      description: '**Returned values:** `PENDING`, `CANCELED`, `ACTIVE`, `DEACTIVATED`
+
+
+        The status of the recipient:
+
+        - `PENDING` – For `PAYOUT` scope recipients, the user must complete SCA before the recipient can become `ACTIVE`. For `PAYIN` scope recipients, the recipient creation is in progress.
+
+        - `CANCELED` – SCA was not successfully completed and the recipient creation request was canceled. To retry, create another recipient to retrieve another `PendingUserAction.RedirectUrl`. The `CANCELED` status does not apply if `RecipientScope` is `PAYIN`.
+
+        - `ACTIVE` – Recipient creation was successful (including SCA if `RecipientScope` is `PAYOUT`) and the recipient is ready to be used for payouts.
+
+        - `DEACTIVATED` – The recipient has been permanently deactivated and can no longer be used.'
+      title: Status_Recipient_Response
+    LocalBankTransfer_TRY_Request:
+      type: object
+      properties:
+        IBAN:
+          type: string
+          description: 'Format: 26 alphanumeric characters, starting with `TR` (pattern: `^TR[a-zA-Z0-9]{24}$`).
+
+
+            The IBAN of the Turkish account.'
+        BeneficiaryIdentificationValue:
+          type: string
+          description: 'Format: 10–11 alphanumeric characters (pattern: `^[a-zA-Z0-9]{10,11}$`).
+
+
+            Optional if the Recipient''s `RecipientType` is `Individual`; required if `Business`.
+
+
+            The Turkish national identification number (for an individual beneficiary) or tax identification number (for a business beneficiary).'
+      required:
+      - IBAN
+      description: Local bank transfer details for `Currency` value `TRY`.
+      title: LocalBankTransfer_TRY_Request
+    Address_Recipient:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: 'Length: 1–255; cannot contain: `()/` (Pattern: `^(?!.*[()/]).{1,255}$`)
+
+
+            The first line of the address.'
+        AddressLine2:
+          type:
+          - string
+          - 'null'
+          description: 'Length: 1–255; cannot contain: `()/` (Pattern: `^(?!.*[()/]).{1,255}$`)
+
+
+            The second line of the address. Parameter only returned if sent.'
+        City:
+          type: string
+          description: 'Length: 1-80; cannot contain: `&,.:_''` (pattern: `^(?!.*[&,.:_]).{1,80}$`)
+
+
+            The city of the address.'
+        Region:
+          type:
+          - string
+          - 'null'
+          description: 'Length: 1–10; cannot contain: `&,.:_''-/` (pattern: `^(?!.*[&,.:_/]).{1,50}$`)
+
+
+            The region of the address. Parameter only returned if sent.'
+        PostalCode:
+          type: string
+          description: 'Length: 1–10; cannot contain: `()&,.:_''/` (pattern: `^(?!.*[()&,.:_''/]).{1,10}$`)
+
+
+            The postal code of the address.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: Information about the address.
+      title: Address_Recipient
+    BusinessRecipient_Response:
+      type: object
+      properties:
+        BusinessName:
+          type: string
+          description: 'Length: 1–255; cannot contain: `(),.:/` (Pattern: `^(?!.*[(),.:/]).{1,255}$`)
+
+
+            The name of the business account holder.'
+        Address:
+          $ref: '#/components/schemas/Address_Recipient'
+      description: The account holder if the `RecipientType` is `Business`.
+      title: BusinessRecipient_Response
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf10Nok:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `NOK` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf10Nok
+    Address_Recipient_Schema:
+      type: object
+      properties:
+        AddressLine1:
+          $ref: '#/components/schemas/DataFormatField'
+        AddressLine2:
+          $ref: '#/components/schemas/DataFormatField'
+        City:
+          $ref: '#/components/schemas/DataFormatField'
+        Country:
+          $ref: '#/components/schemas/DataFormatField'
+        Region:
+          $ref: '#/components/schemas/DataFormatField'
+        PostalCode:
+          $ref: '#/components/schemas/DataFormatField'
+      description: The schema of the `Address` object.
+      title: Address_Recipient_Schema
+    ViewTheSchemaForARecipientResponseLocalBankTransfer13:
+      type: object
+      properties:
+        SEK:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf13Sek'
+          description: The schema of the `SEK` property.
+      required:
+      - SEK
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer13
+    CreateLocalBusinessRecipientRequest:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Request'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Request'
+        PayoutMethodType:
+          type: string
+          description: '**Allowed values:** `LocalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `InternationalBankTransfer` – The account can receive non-local currencies via SWIFT or else uses local rails for local currencies by default.
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` (e.g. `EUR` to a SEPA country, `GBP` to a UK account, `PLN` to a Polish IBAN, etc.)'
+        RecipientType:
+          type: string
+          description: '**Allowed values:** `Business`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        BusinessRecipient:
+          $ref: '#/components/schemas/BusinessRecipient_Request'
+        LocalBankTransfer:
+          $ref: '#/components/schemas/LocalBankTransfer_Request'
+      required:
+      - DisplayName
+      - Currency
+      - Country
+      - PayoutMethodType
+      - RecipientType
+      - BusinessRecipient
+      - LocalBankTransfer
+      description: Request body for creating a Recipient where `PayoutMethodType` is `LocalBankTransfer` and `RecipientType` is `Business`.
+      title: CreateLocalBusinessRecipientRequest
+    InternationalBankTransfer_Response:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: The account number of the account.
+        BIC:
+          type: string
+          description: The BIC of the account. For IBAN countries, the returned `BIC` is generated from the IBAN.
+      description: The account details if `PayoutMethodType` is `InternationalBankTransfer`.
+      title: InternationalBankTransfer_Response
+    LocalBankTransfer_TRY:
+      type: object
+      properties:
+        IBAN:
+          type: string
+          description: 'Format: 26 alphanumeric characters, starting with `TR` (pattern: `^TR[a-zA-Z0-9]{24}$`).
+
+
+            The IBAN of the Turkish account.'
+        BeneficiaryIdentificationValue:
+          type: string
+          description: 'Format: 10–11 alphanumeric characters (pattern: `^[a-zA-Z0-9]{10,11}$`).
+
+
+            Optional if the Recipient''s `RecipientType` is `Individual`; required if `Business`.
+
+
+            The Turkish national identification number (for an individual beneficiary) or tax identification number (for a business beneficiary).'
+      description: Local bank transfer details for `Currency` value `TRY`.
+      title: LocalBankTransfer_TRY
+    IndividualRecipient_Request:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Length: 1–255; cannot contain: `()&,.:_/` (Pattern: `^(?!.*[()&,.:_/]).{1,255}$`)
+
+
+            The first name of the individual account holder.'
+        LastName:
+          type: string
+          description: 'Length: 1–255; cannot contain: `()&,.:_/` (Pattern: `^(?!.*[()&,.:_/]).{1,255}$`)
+
+
+            The last name of the individual account holder.'
+        Address:
+          $ref: '#/components/schemas/Address_Recipient_Request'
+      required:
+      - FirstName
+      - LastName
+      - Address
+      description: 'The account holder if the `RecipientType` is `Individual`.
+
+
+        Only one of `IndividualRecipient` or `BusinessRecipient` is required.'
+      title: IndividualRecipient_Request
+    LocalBankTransfer_USD_Request:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: 'Format: 8–12 alphanumeric characters (pattern: `^[0-9a-zA-Z]{8,12}$`).
+
+
+            The account number of the US account.'
+        ABA:
+          type: string
+          description: 'Format: 9 digits (pattern: `^\d{9}$`).
+
+
+            The ABA routing number of the US account.'
+        FFC:
+          type: string
+          description: 'Format: 8-12 digits then `FFC` then a space then a string of characters up to 140 total length (pattern: `^(?=.{0,140}$)[0-9]{8,12}/FFC [0-9a-zA-Z/\-?:().,''+ ]+$`).
+
+
+            FFC transfer information for the US account.'
+      required:
+      - AccountNumber
+      - ABA
+      description: Local bank transfer details for `Currency` value `USD`.
+      title: LocalBankTransfer_USD_Request
+    PendingUserAction:
+      type: object
+      properties:
+        RedirectUrl:
+          type: string
+          description: 'The URL to which to redirect the user to perform strong customer authentication (SCA) via a Mangopay-hosted webpage. This value is a variable and should not be hardcoded.
+
+
+            The SCA session link expires 10 minutes after it''s generated.
+
+
+            **Caution:** Before redirecting the user on this URL, you must add the query parameter `ReturnUrl`  with the percent-encoded URL to which you want the SCA session to return the user after authentication (whether successful or not).
+
+
+            For more details, see [How to redirect a user for an SCA session](/guides/sca/session#how-to-redirect-a-user-for-sca).'
+      description: Object containing the `RedirectUrl` needed for SCA redirection if triggered by the API call (otherwise returned `null`).
+      title: PendingUserAction
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf1Cad:
+      type: object
+      properties:
+        AccountNumber:
+          $ref: '#/components/schemas/FieldMetadata'
+        InstitutionNumber:
+          $ref: '#/components/schemas/FieldMetadata'
+        BranchCode:
+          $ref: '#/components/schemas/FieldMetadata'
+        BankName:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `CAD` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf1Cad
+    LocalBankTransfer_HKD:
+      type: object
+      properties:
+        BankCode:
+          type: string
+          description: 'Format: exactly 3 characters (pattern: `^.{3}$`).
+
+
+            The bank code of the Hong Kong account.'
+        BranchCode:
+          type: string
+          description: 'Format: exactly 3 characters (pattern: `^.{3}$`).
+
+
+            The branch code of the Hong Kong account.'
+        AccountNumber:
+          type: string
+          description: 'Format: 6–9 numeric digits (pattern: `^\d{6,9}$`).
+
+
+            The account number of the Hong Kong account.'
+        BIC:
+          type: string
+          description: 'Format: 8 or 11 alphanumeric characters.
+
+
+            The BIC of the Hong Kong account.'
+      description: Local bank transfer details for `Currency` value `HKD`.
+      title: LocalBankTransfer_HKD
+    DataFormatField_AllowedValues:
+      type: object
+      properties:
+        AllowedValues:
+          type: array
+          items:
+            type: string
+          description: The allowed values of the string.
+        Required:
+          type: boolean
+          description: Whether the field is required or not.
+        MaxLength:
+          type: integer
+          description: The maximum length of the string.
+        MinLength:
+          type: integer
+          description: The minimum length of the string.
+        Pattern:
+          type: string
+          description: The regex describing the accepted value of the string.
+        Label:
+          type: string
+          description: A label that platforms can use when displaying or requesting the field to the end user.
+        EndUserDisplay:
+          type: string
+          description: '**Possible values:** `Show`, `Hide`
+
+
+            Recommendation on whether to show or hide the field (and `Label`) to the end user.'
+      description: Field metadata returned by [GET View the schema for a Recipient](/api-reference/recipients/view-recipient-schema), including allowed values.
+      title: DataFormatField_AllowedValues
+    RecipientListItem:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Response'
+        PayoutMethodType:
+          $ref: '#/components/schemas/PayoutMethodType_Recipient_Response'
+        RecipientType:
+          $ref: '#/components/schemas/RecipientType_Recipient_Response'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        Status:
+          $ref: '#/components/schemas/Status_Recipient_Response'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Response'
+      title: RecipientListItem
+    LocalBankTransfer_IBAN_Request:
+      type: object
+      properties:
+        IBAN:
+          type: string
+          description: 'Format: A valid IBAN (pattern: `^[a-zA-Z]{2}\d{2}\s*(\w{4}\s*){2,7}\w{1,4}\s*$`).
+
+
+            The IBAN of the account.'
+      required:
+      - IBAN
+      description: Local bank transfer details for IBAN-based currencies (`CHF`, `CZK`, `DKK`, `EUR`, `HUF`, `NOK`, `PLN`, `RON`, `SEK`).
+      title: LocalBankTransfer_IBAN_Request
+    FieldMetadata:
+      type: object
+      properties:
+        Required:
+          type: boolean
+          description: Whether the field is required or not.
+        MaxLength:
+          type: integer
+          description: The maximum length of the string.
+        MinLength:
+          type: integer
+          description: The minimum length of the string.
+        Pattern:
+          type: string
+          description: The regex describing the accepted value of the string.
+        Label:
+          type: string
+          description: A label that platforms can use when displaying or requesting the field to the end user.
+        EndUserDisplay:
+          type: string
+          description: '**Possible values:** `Show`, `Hide`
+
+
+            Recommendation on whether to show or hide the field (and `Label`) to the end user.'
+      description: Field metadata returned by [GET View the schema for a Recipient](/api-reference/recipients/view-recipient-schema), including length constraints.
+      title: FieldMetadata
+    LocalBankTransferDetails:
+      type: object
+      properties:
+        AUD:
+          $ref: '#/components/schemas/LocalBankTransfer_AUD'
+        CAD:
+          $ref: '#/components/schemas/LocalBankTransfer_CAD'
+        CHF:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        CZK:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        DKK:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        EUR:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        GBP:
+          $ref: '#/components/schemas/LocalBankTransfer_GBP'
+        HKD:
+          $ref: '#/components/schemas/LocalBankTransfer_HKD'
+        HUF:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        MXN:
+          $ref: '#/components/schemas/LocalBankTransfer_MXN'
+        NOK:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        PLN:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        RON:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        SEK:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN'
+        SGD:
+          $ref: '#/components/schemas/LocalBankTransfer_SGD'
+        TRY:
+          $ref: '#/components/schemas/LocalBankTransfer_TRY'
+        USD:
+          $ref: '#/components/schemas/LocalBankTransfer_USD'
+      description: 'The account details if `PayoutMethodType` is `LocalBankTransfer`, depending on the `Currency`. One of:'
+      title: LocalBankTransferDetails
+    PayoutMethodType_Recipient_Response:
+      type: string
+      description: '**Returned values:** `InternationalBankTransfer`, `LocalBankTransfer`
+
+
+        The payout method of the recipient:
+
+        - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` via the [domestic payment rail](/guides/payouts#payout-rails) (e.g. `EUR` via a SEPA local scheme to a SEPA country, `GBP` via FPS to a `GB` account, `USD` via ACH to a `US` account, etc). Payouts in non-local currencies return an error.
+
+        - `InternationalBankTransfer` – The account can receive both non-local currencies via SWIFT and also local currency via domestic rails.'
+      title: PayoutMethodType_Recipient_Response
+    IndividualRecipient_Response:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: 'Length: 1–255; cannot contain: `()&,.:_/` (Pattern: `^(?!.*[()&,.:_/]).{1,255}$`)
+
+
+            The first name of the individual account holder.'
+        LastName:
+          type: string
+          description: 'Length: 1–255; cannot contain: `()&,.:_/` (Pattern: `^(?!.*[()&,.:_/]).{1,255}$`)
+
+
+            The last name of the individual account holder.'
+        Address:
+          $ref: '#/components/schemas/Address_Recipient'
+      description: The account holder if the `RecipientType` is `Individual`.
+      title: IndividualRecipient_Response
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf16Usd:
+      type: object
+      properties:
+        AccountNumber:
+          $ref: '#/components/schemas/FieldMetadata'
+        ABA:
+          $ref: '#/components/schemas/FieldMetadata'
+        FFC:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `USD` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf16Usd
+    LocalBankTransfer_IBAN:
+      type: object
+      properties:
+        IBAN:
+          type: string
+          description: 'Format: A valid IBAN (pattern: `^[a-zA-Z]{2}\d{2}\s*(\w{4}\s*){2,7}\w{1,4}\s*$`).
+
+
+            The IBAN of the account.'
+        BIC:
+          type: string
+          description: The BIC of the account. For IBAN countries, the returned `BIC` is generated from the IBAN.
+      description: Local bank transfer details for IBAN-based currencies (`CHF`, `CZK`, `DKK`, `EUR`, `HUF`, `NOK`, `PLN`, `RON`, `SEK`).
+      title: LocalBankTransfer_IBAN
+    ViewTheSchemaForARecipientResponseLocalBankTransfer5:
+      type: object
+      properties:
+        EUR:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf5Eur'
+          description: The schema of the `EUR` property.
+      required:
+      - EUR
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer5
+    LocalBankTransfer_CAD_Request:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: 'Format: 7–35 digits (pattern: `^\d{7,35}$`).
+
+
+            The account number of the Canadian account.'
+        InstitutionNumber:
+          type: string
+          description: 'Format: 3 digits (pattern: `^\d{3}$`).
+
+
+            The institution number of the Canadian account.'
+        BranchCode:
+          type: string
+          description: 'Format: 5 digits (pattern: `^\d{5}$`).
+
+
+            The branch code of the Canadian account.'
+        BankName:
+          type: string
+          description: 'Length: 1–50.
+
+
+            The bank name of the Canadian account.'
+      required:
+      - AccountNumber
+      - InstitutionNumber
+      - BranchCode
+      - BankName
+      description: Local bank transfer details for `Currency` value `CAD`.
+      title: LocalBankTransfer_CAD_Request
+    CreateInternationalBusinessRecipientRequest:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Request'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Request'
+        PayoutMethodType:
+          type: string
+          description: '**Allowed values:** `InternationalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `InternationalBankTransfer` – The account can receive non-local currencies via SWIFT or else uses local rails for local currencies by default.
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` (e.g. `EUR` to a SEPA country, `GBP` to a UK account, `PLN` to a Polish IBAN, etc.)'
+        RecipientType:
+          type: string
+          description: '**Allowed values:** `Business`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        BusinessRecipient:
+          $ref: '#/components/schemas/BusinessRecipient_Request'
+        InternationalBankTransfer:
+          $ref: '#/components/schemas/InternationalBankTransfer_Request'
+      required:
+      - DisplayName
+      - Currency
+      - Country
+      - PayoutMethodType
+      - RecipientType
+      - BusinessRecipient
+      - InternationalBankTransfer
+      description: Request body for creating a Recipient where `PayoutMethodType` is `InternationalBankTransfer` and `RecipientType` is `Business`.
+      title: CreateInternationalBusinessRecipientRequest
+    LocalBankTransfer_HKD_Request:
+      type: object
+      properties:
+        BankCode:
+          type: string
+          description: 'Format: exactly 3 characters (pattern: `^.{3}$`).
+
+
+            The bank code of the Hong Kong account.'
+        BranchCode:
+          type: string
+          description: 'Format: exactly 3 characters (pattern: `^.{3}$`).
+
+
+            The branch code of the Hong Kong account.'
+        AccountNumber:
+          type: string
+          description: 'Format: 6–9 numeric digits (pattern: `^\d{6,9}$`).
+
+
+            The account number of the Hong Kong account.'
+        BIC:
+          type: string
+          description: 'Format: 8 or 11 alphanumeric characters.
+
+
+            The BIC of the Hong Kong account.'
+      required:
+      - BankCode
+      - BranchCode
+      - AccountNumber
+      - BIC
+      description: Local bank transfer details for `Currency` value `HKD`.
+      title: LocalBankTransfer_HKD_Request
+    RecipientType_Recipient_Response:
+      type: string
+      description: '**Returned values:** `Individual`, `Business`
+
+
+        The recipient type:
+
+        - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+        - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+      title: RecipientType_Recipient_Response
+    LocalBankTransfer_SGD_Request:
+      type: object
+      properties:
+        BankCode:
+          type: string
+          description: 'Format: 3–4 numeric digits (pattern: `^\d{3,4}$`).
+
+
+            The bank code of the Singaporean account.'
+        AccountNumber:
+          type: string
+          description: 'Format: 6–34 alphanumeric characters (pattern: `^[0-9a-zA-Z]{6,34}$`).
+
+
+            The account number of the Singaporean account.'
+        BIC:
+          type: string
+          description: 'Format: 8 or 11 alphanumeric characters.
+
+
+            The BIC of the Singaporean account.'
+      required:
+      - BankCode
+      - AccountNumber
+      - BIC
+      description: Local bank transfer details for `Currency` value `SGD`.
+      title: LocalBankTransfer_SGD_Request
+    InternationalBankTransfer_RecipientSchema:
+      type: object
+      properties:
+        AccountNumber:
+          $ref: '#/components/schemas/FieldMetadata'
+        BIC:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `InternationalBankTransfer` property.
+      title: InternationalBankTransfer_RecipientSchema
+    CreateLocalIndividualRecipientRequest:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Request'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Request'
+        PayoutMethodType:
+          type: string
+          description: '**Allowed values:** `LocalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `InternationalBankTransfer` – The account can receive non-local currencies via SWIFT or else uses local rails for local currencies by default.
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` (e.g. `EUR` to a SEPA country, `GBP` to a UK account, `PLN` to a Polish IBAN, etc.)'
+        RecipientType:
+          type: string
+          description: '**Allowed values:** `Individual`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        IndividualRecipient:
+          $ref: '#/components/schemas/IndividualRecipient_Request'
+        LocalBankTransfer:
+          $ref: '#/components/schemas/LocalBankTransfer_Request'
+      required:
+      - DisplayName
+      - Currency
+      - Country
+      - PayoutMethodType
+      - RecipientType
+      - IndividualRecipient
+      - LocalBankTransfer
+      description: Request body for creating a Recipient where `PayoutMethodType` is `LocalBankTransfer` and `RecipientType` is `Individual`.
+      title: CreateLocalIndividualRecipientRequest
+    ViewTheSchemaForARecipientResponseBusinessRecipient:
+      type: object
+      properties:
+        BusinessName:
+          $ref: '#/components/schemas/DataFormatField'
+        Address:
+          $ref: '#/components/schemas/Address_Recipient_Schema'
+      description: The schema of the `BusinessRecipient` property.
+      title: ViewTheSchemaForARecipientResponseBusinessRecipient
+    Address_Recipient_Request:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: 'Length: 1–255; cannot contain: `()/` (Pattern: `^(?!.*[()/]).{1,255}$`)
+
+
+            The first line of the address.'
+        AddressLine2:
+          type: string
+          description: 'Length: 1–255; cannot contain: `()/` (Pattern: `^(?!.*[()/]).{1,255}$`)
+
+
+            The second line of the address.'
+        City:
+          type: string
+          description: 'Length: 1-80; cannot contain: `&,.:_''` (pattern: `^(?!.*[&,.:_]).{1,80}$`)
+
+
+            The city of the address.'
+        Region:
+          type: string
+          description: 'Length: 1–10; cannot contain: `&,.:_''-/` (pattern: `^(?!.*[&,.:_/]).{1,50}$`)
+
+
+            Required for `Country` values: `MX`, `US`, `CA`
+
+
+            The region of the address.'
+        PostalCode:
+          type: string
+          description: 'Length: 1–10; cannot contain: `()&,.:_''/` (pattern: `^(?!.*[()&,.:_''/]).{1,10}$`)
+
+
+
+            The postal code of the address.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: Information about the address.
+      title: Address_Recipient_Request
+    ViewTheSchemaForARecipientResponseLocalBankTransfer0:
+      type: object
+      properties:
+        AUD:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf0Aud'
+          description: The schema of the `AUD` property.
+      required:
+      - AUD
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer0
+    LocalBankTransfer_Request:
+      type: object
+      properties:
+        AUD:
+          $ref: '#/components/schemas/LocalBankTransfer_AUD_Request'
+        CAD:
+          $ref: '#/components/schemas/LocalBankTransfer_CAD_Request'
+        CHF:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        CZK:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        DKK:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        EUR:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        GBP:
+          $ref: '#/components/schemas/LocalBankTransfer_GBP_Request'
+        HKD:
+          $ref: '#/components/schemas/LocalBankTransfer_HKD_Request'
+        HUF:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        MXN:
+          $ref: '#/components/schemas/LocalBankTransfer_MXN_Request'
+        NOK:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        PLN:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        RON:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        SEK:
+          $ref: '#/components/schemas/LocalBankTransfer_IBAN_Request'
+        SGD:
+          $ref: '#/components/schemas/LocalBankTransfer_SGD_Request'
+        TRY:
+          $ref: '#/components/schemas/LocalBankTransfer_TRY_Request'
+        USD:
+          $ref: '#/components/schemas/LocalBankTransfer_USD_Request'
+      description: The account details if `PayoutMethodType` is `LocalBankTransfer`, depending on the `Currency`. Exactly one currency property must be set, matching the request `Currency` value.
+      title: LocalBankTransfer_Request
+    DisplayName_Recipient_Request:
+      type: string
+      description: 'Length: 1–50; cannot contain: `&,''/` (pattern:`^(?!.*[&,''/]).{1,50}$`)
+
+
+        A user-friendly name to identify the account. This value cannot be changed once the recipient is created.'
+      title: DisplayName_Recipient_Request
+    ViewTheSchemaForARecipientResponseLocalBankTransfer16:
+      type: object
+      properties:
+        USD:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf16Usd'
+          description: The schema of the `USD` property.
+      required:
+      - USD
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer16
+    ViewTheSchemaForARecipientResponseLocalBankTransfer3:
+      type: object
+      properties:
+        CZK:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf3Czk'
+          description: The schema of the `CZK` property.
+      required:
+      - CZK
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer3
+    ScaContext_Recipient_Request:
+      type: string
+      description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+        **Default value:** `USER_PRESENT`
+
+
+        The SCA context of the request, which is **required** if the user''s `UserCategory` is `OWNER`:
+
+        - `USER_PRESENT` – The user is taking the SCA-triggering action of registering an external account as a Recipient. The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session.
+
+        - `USER_NOT_PRESENT` – The platform is taking the action under proxy from the user and the user has previously given consent to Mangopay (via the SCA hosted experience) to allow the action. If the user has not given (or has revoked) their consent, then `USER_NOT_PRESENT` returns a 403 error.
+
+
+        Read more about [managing proxy and user consent](/guides/sca/proxy-management) **&rarr;**'
+      title: ScaContext_Recipient_Request
+    ValidateInternationalIndividualRecipientRequest:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Request'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        PayoutMethodType:
+          type: string
+          description: '**Allowed values:** `InternationalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `InternationalBankTransfer` – The account can receive non-local currencies via SWIFT or else uses local rails for local currencies by default.
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` (e.g. `EUR` to a SEPA country, `GBP` to a UK account, `PLN` to a Polish IBAN, etc.)'
+        RecipientType:
+          type: string
+          description: '**Allowed values:** `Individual`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        IndividualRecipient:
+          $ref: '#/components/schemas/IndividualRecipient_Request'
+        InternationalBankTransfer:
+          $ref: '#/components/schemas/InternationalBankTransfer_Request'
+      required:
+      - DisplayName
+      - Currency
+      - Country
+      - PayoutMethodType
+      - RecipientType
+      - IndividualRecipient
+      - InternationalBankTransfer
+      description: Request body for creating a Recipient where `PayoutMethodType` is `InternationalBankTransfer` and `RecipientType` is `Individual`.
+      title: ValidateInternationalIndividualRecipientRequest
+    ViewTheSchemaForARecipientResponseLocalBankTransfer4:
+      type: object
+      properties:
+        DKK:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf4Dkk'
+          description: The schema of the `DKK` property.
+      required:
+      - DKK
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer4
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf7Hkd:
+      type: object
+      properties:
+        BankCode:
+          $ref: '#/components/schemas/FieldMetadata'
+        BranchCode:
+          $ref: '#/components/schemas/FieldMetadata'
+        AccountNumber:
+          $ref: '#/components/schemas/FieldMetadata'
+        BIC:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `HKD` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf7Hkd
+    BusinessRecipient_Request:
+      type: object
+      properties:
+        BusinessName:
+          type: string
+          description: 'Length: 1–255; cannot contain: `(),.:/` (Pattern: `^(?!.*[(),.:/]).{1,255}$`)
+
+
+            The name of the business account holder.'
+        Address:
+          $ref: '#/components/schemas/Address_Recipient_Request'
+      required:
+      - BusinessName
+      - Address
+      description: 'The account holder if the `RecipientType` is `Business`.
+
+
+        Only one of `IndividualRecipient` or `BusinessRecipient` is required.'
+      title: BusinessRecipient_Request
+    CreateInternationalBusinessRecipientResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          $ref: '#/components/schemas/Status_Recipient_Response'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Response'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Response'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Response'
+        RecipientVerificationOfPayee:
+          oneOf:
+          - $ref: '#/components/schemas/RecipientVerificationOfPayee'
+          - type: 'null'
+          description: Information about the [Verification of Payee (VOP)](/guides/vop) check performed on the Recipient. Because VOP only applies to SEPA local schemes, this object is returned `null` if the Recipient's `Currency` is not `EUR` or its `PayoutMethodType` is not `LocalBankTransfer`.
+        PayoutMethodType:
+          type: string
+          description: '**Returned values:** `InternationalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` via the [domestic payment rail](/guides/payouts#payout-rails) (e.g. `EUR` via a SEPA local scheme to a SEPA country, `GBP` via FPS to a `GB` account, `USD` via ACH to a `US` account, etc). Payouts in non-local currencies return an error.
+
+            - `InternationalBankTransfer` – The account can receive both non-local currencies via SWIFT and also local currency via domestic rails.'
+        RecipientType:
+          type: string
+          description: '**Returned values:** `Business`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        BusinessRecipient:
+          $ref: '#/components/schemas/BusinessRecipient_Response'
+        InternationalBankTransfer:
+          $ref: '#/components/schemas/InternationalBankTransfer_Response'
+        PendingUserAction:
+          oneOf:
+          - $ref: '#/components/schemas/PendingUserAction'
+          - type: 'null'
+          description: SCA redirect information returned when registering an `OWNER` Recipient on creation. Returned `null` for `PAYIN`-scope recipients that don't trigger SCA. Omitted when viewing a recipient.
+      description: 'Response body for a Recipient where `PayoutMethodType` is
+
+        `InternationalBankTransfer` and `RecipientType` is `Business`.'
+      title: CreateInternationalBusinessRecipientResponse
+    RecipientVerificationId:
+      type:
+      - string
+      - 'null'
+      description: The unique identifier of the VOP check. This value may be `null` if the check could not be performed.
+      title: RecipientVerificationId
+    ViewTheSchemaForARecipientResponseLocalBankTransfer1:
+      type: object
+      properties:
+        CAD:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf1Cad'
+          description: The schema of the `CAD` property.
+      required:
+      - CAD
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer1
+    LocalBankTransfer_MXN:
+      type: object
+      properties:
+        Clabe:
+          type: string
+          description: 'Format: exactly 18 numeric digits (pattern: `^\d{18}$`).
+
+
+            The CLABE (Clave Bancaria Estandarizada) of the Mexican account.'
+        BIC:
+          type: string
+          description: 'Format: 8 or 11 alphanumeric characters.
+
+
+            The BIC of the Mexican account.'
+      description: Local bank transfer details for `Currency` value `MXN`.
+      title: LocalBankTransfer_MXN
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf3Czk:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `CZK` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf3Czk
+    DeactivateARecipientResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          $ref: '#/components/schemas/Status_Recipient_Response'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Response'
+        PayoutMethodType:
+          $ref: '#/components/schemas/PayoutMethodType_Recipient_Response'
+        RecipientType:
+          $ref: '#/components/schemas/RecipientType_Recipient_Response'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Response'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Response'
+        IndividualRecipient:
+          $ref: '#/components/schemas/IndividualRecipient_Response'
+        BusinessRecipient:
+          $ref: '#/components/schemas/BusinessRecipient_Response'
+        InternationalBankTransfer:
+          $ref: '#/components/schemas/InternationalBankTransfer_Response'
+        LocalBankTransfer:
+          $ref: '#/components/schemas/LocalBankTransferDetails'
+        PendingUserAction:
+          oneOf:
+          - $ref: '#/components/schemas/PendingUserAction'
+          - type: 'null'
+          description: Object containing the `RedirectUrl` needed for SCA redirection if triggered by the API call (otherwise returned `null`).
+      title: DeactivateARecipientResponse
+    CreateLocalIndividualRecipientResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          $ref: '#/components/schemas/Status_Recipient_Response'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Response'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Response'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Response'
+        RecipientVerificationOfPayee:
+          oneOf:
+          - $ref: '#/components/schemas/RecipientVerificationOfPayee'
+          - type: 'null'
+          description: Information about the [Verification of Payee (VOP)](/guides/vop) check performed on the Recipient. Because VOP only applies to SEPA local schemes, this object is returned `null` if the Recipient's `Currency` is not `EUR` or its `PayoutMethodType` is not `LocalBankTransfer`.
+        PayoutMethodType:
+          type: string
+          description: '**Returned values:** `LocalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` via the [domestic payment rail](/guides/payouts#payout-rails) (e.g. `EUR` via a SEPA local scheme to a SEPA country, `GBP` via FPS to a `GB` account, `USD` via ACH to a `US` account, etc). Payouts in non-local currencies return an error.
+
+            - `InternationalBankTransfer` – The account can receive both non-local currencies via SWIFT and also local currency via domestic rails.'
+        RecipientType:
+          type: string
+          description: '**Returned values:** `Individual`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        IndividualRecipient:
+          $ref: '#/components/schemas/IndividualRecipient_Response'
+        LocalBankTransfer:
+          $ref: '#/components/schemas/LocalBankTransferDetails'
+        PendingUserAction:
+          oneOf:
+          - $ref: '#/components/schemas/PendingUserAction'
+          - type: 'null'
+          description: SCA redirect information returned when registering an `OWNER` Recipient on creation. Returned `null` for `PAYIN`-scope recipients that don't trigger SCA. Omitted when viewing a recipient.
+      description: Response body for a Recipient where `PayoutMethodType` is `LocalBankTransfer` and `RecipientType` is `Individual`.
+      title: CreateLocalIndividualRecipientResponse
+    LocalBankTransfer_AUD_Request:
+      type: object
+      properties:
+        BSB:
+          type: string
+          description: 'Format: 6 digits, optionally with a hyphen after the first 3 (pattern: `^\d{3}-?\d{3}$`).
+
+
+            The BSB (Bank State Branch) number of the Australian account.'
+        AccountNumber:
+          type: string
+          description: 'Format: 5–10 numeric digits (pattern: `^\d{5,10}$`).
+
+
+            The account number of the Australian account.'
+      required:
+      - BSB
+      - AccountNumber
+      description: Local bank transfer details for `Currency` value `AUD`.
+      title: LocalBankTransfer_AUD_Request
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf8Huf:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `HUF` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf8Huf
+    ViewTheSchemaForARecipientResponseLocalBankTransfer:
+      oneOf:
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer0'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer1'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer2'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer3'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer4'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer5'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer6'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer7'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer8'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer9'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer10'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer11'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer12'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer13'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer14'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer15'
+      - $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransfer16'
+      description: The schema of the `LocalBankTransfer` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf4Dkk:
+      type: object
+      properties:
+        IBAN:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `DKK` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf4Dkk
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    ViewTheSchemaForARecipientResponseLocalBankTransfer6:
+      type: object
+      properties:
+        GBP:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf6Gbp'
+          description: The schema of the `GBP` property.
+      required:
+      - GBP
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer6
+    CreateInternationalIndividualRecipientResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Status:
+          $ref: '#/components/schemas/Status_Recipient_Response'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Response'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Response'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        ScaContext:
+          $ref: '#/components/schemas/ScaContext_Recipient_Response'
+        RecipientVerificationOfPayee:
+          oneOf:
+          - $ref: '#/components/schemas/RecipientVerificationOfPayee'
+          - type: 'null'
+          description: Information about the [Verification of Payee (VOP)](/guides/vop) check performed on the Recipient. Because VOP only applies to SEPA local schemes, this object is returned `null` if the Recipient's `Currency` is not `EUR` or its `PayoutMethodType` is not `LocalBankTransfer`.
+        PayoutMethodType:
+          type: string
+          description: '**Returned values:** `InternationalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` via the [domestic payment rail](/guides/payouts#payout-rails) (e.g. `EUR` via a SEPA local scheme to a SEPA country, `GBP` via FPS to a `GB` account, `USD` via ACH to a `US` account, etc). Payouts in non-local currencies return an error.
+
+            - `InternationalBankTransfer` – The account can receive both non-local currencies via SWIFT and also local currency via domestic rails.'
+        RecipientType:
+          type: string
+          description: '**Returned values:** `Individual`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        IndividualRecipient:
+          $ref: '#/components/schemas/IndividualRecipient_Response'
+        InternationalBankTransfer:
+          $ref: '#/components/schemas/InternationalBankTransfer_Response'
+        PendingUserAction:
+          oneOf:
+          - $ref: '#/components/schemas/PendingUserAction'
+          - type: 'null'
+          description: SCA redirect information returned when registering an `OWNER` Recipient on creation. Returned `null` for `PAYIN`-scope recipients that don't trigger SCA. Omitted when viewing a recipient.
+      description: Response body for a Recipient where `PayoutMethodType` is `InternationalBankTransfer` and `RecipientType` is `Individual`.
+      title: CreateInternationalIndividualRecipientResponse
+    ScaContext_Recipient_Response:
+      type: string
+      description: '**Returned values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+        The SCA context provided in the create request. Returned in the create response and when viewing the recipient if a `ScaContext` value was sent when the recipient was registered. Omitted otherwise.'
+      title: ScaContext_Recipient_Response
+    ValidateLocalBusinessRecipientRequest:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Request'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        PayoutMethodType:
+          type: string
+          description: '**Allowed values:** `LocalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `InternationalBankTransfer` – The account can receive non-local currencies via SWIFT or else uses local rails for local currencies by default.
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` (e.g. `EUR` to a SEPA country, `GBP` to a UK account, `PLN` to a Polish IBAN, etc.)'
+        RecipientType:
+          type: string
+          description: '**Allowed values:** `Business`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        BusinessRecipient:
+          $ref: '#/components/schemas/BusinessRecipient_Request'
+        LocalBankTransfer:
+          $ref: '#/components/schemas/LocalBankTransfer_Request'
+      required:
+      - DisplayName
+      - Currency
+      - Country
+      - PayoutMethodType
+      - RecipientType
+      - BusinessRecipient
+      - LocalBankTransfer
+      description: Request body for creating a Recipient where `PayoutMethodType` is `LocalBankTransfer` and `RecipientType` is `Business`.
+      title: ValidateLocalBusinessRecipientRequest
+    ValidateInternationalBusinessRecipientRequest:
+      type: object
+      properties:
+        DisplayName:
+          $ref: '#/components/schemas/DisplayName_Recipient_Request'
+        Currency:
+          $ref: '#/components/schemas/Currency_Recipient'
+        Country:
+          $ref: '#/components/schemas/Country_Recipient'
+        RecipientScope:
+          $ref: '#/components/schemas/RecipientScope_Recipient_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag_Recipient'
+        PayoutMethodType:
+          type: string
+          description: '**Allowed values:** `InternationalBankTransfer`
+
+
+            The payout method of the recipient:
+
+            - `InternationalBankTransfer` – The account can receive non-local currencies via SWIFT or else uses local rails for local currencies by default.
+
+            - `LocalBankTransfer` – The account can **only** receive the corresponding local `Currency` for the `Country` (e.g. `EUR` to a SEPA country, `GBP` to a UK account, `PLN` to a Polish IBAN, etc.)'
+        RecipientType:
+          type: string
+          description: '**Allowed values:** `Business`
+
+
+            The recipient type:
+
+            - `Individual` – An account held by a natural person, requiring the `IndividualRecipient` property.
+
+            - `Business` – An account held by a legal entity, requiring the `BusinessRecipient` property.'
+        BusinessRecipient:
+          $ref: '#/components/schemas/BusinessRecipient_Request'
+        InternationalBankTransfer:
+          $ref: '#/components/schemas/InternationalBankTransfer_Request'
+      required:
+      - DisplayName
+      - Currency
+      - Country
+      - PayoutMethodType
+      - RecipientType
+      - BusinessRecipient
+      - InternationalBankTransfer
+      description: Request body for creating a Recipient where `PayoutMethodType` is `InternationalBankTransfer` and `RecipientType` is `Business`.
+      title: ValidateInternationalBusinessRecipientRequest
+    ViewTheSchemaForARecipientResponseLocalBankTransfer7:
+      type: object
+      properties:
+        HKD:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf7Hkd'
+          description: The schema of the `HKD` property.
+      required:
+      - HKD
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer7
+    RecipientScope_Recipient_Request:
+      type: string
+      description: '**Possible values:** `PAYIN`, `PAYOUT`
+
+
+        **Default value:** `PAYOUT`
+
+
+        The scope of the recipient:
+
+        - `PAYOUT` – Usable for payouts and in pay-in use cases. A `PAYOUT` recipient can only be created by a user with the `UserCategory` `OWNER` and requires SCA. You need to use the returned `PendingUserAction.RedirectUrl` value, adding your encoded `returnUrl` as a query parameter, to redirect the user to the [hosted SCA session](/guides/sca/session) so they can complete the necessary steps.
+
+        - `PAYIN` - Not usable for payouts but only usable for pay-in use cases, such as direct debit and refunds using payouts. A `PAYIN` recipient can be created by a user with the `UserCategory` `PAYER` or `OWNER`, and does not require SCA.'
+      title: RecipientScope_Recipient_Request
+    ViewTheSchemaForARecipientResponseLocalBankTransferOneOf14Sgd:
+      type: object
+      properties:
+        BankCode:
+          $ref: '#/components/schemas/FieldMetadata'
+        AccountNumber:
+          $ref: '#/components/schemas/FieldMetadata'
+        BIC:
+          $ref: '#/components/schemas/FieldMetadata'
+      description: The schema of the `SGD` property.
+      title: ViewTheSchemaForARecipientResponseLocalBankTransferOneOf14Sgd
+    ValidateDataForARecipientRequest:
+      oneOf:
+      - $ref: '#/components/schemas/ValidateInternationalIndividualRecipientRequest'
+      - $ref: '#/components/schemas/ValidateInternationalBusinessRecipientRequest'
+      - $ref: '#/components/schemas/ValidateLocalIndividualRecipientRequest'
+      - $ref: '#/components/schemas/ValidateLocalBusinessRecipientRequest'
+      title: ValidateDataForARecipientRequest
+    RecipientVerificationMessage:
+      type:
+      - string
+      - 'null'
+      description: 'A human-readable message describing the result of the `RecipientVerificationCheck`:
+
+        - If `MATCH`, then `Account name fully matches account identifier.`
+
+        - If `CLOSE_MATCH`, then `Account name partially matches account identifier. Name returned by check: {Name}. Payment made to this account may not reach its intended counterparty.`
+
+        - If `NO_MATCH`, then `Account name does not matches account identifier. Payment made to this account may not reach its intended counterparty.`
+
+        - If `MATCH_NOT_POSSIBLE`, then `Account name does not matches account identifier. Payment made to this account may not reach its intended counterparty.`'
+      title: RecipientVerificationMessage
+    ViewPayoutMethodsResponse:
+      type: object
+      properties:
+        AvailablePayoutMethods:
+          type: array
+          items:
+            type: string
+          description: '**Possible values:** `LocalBankTransfer`, `InternationalBankTransfer`
+
+
+            The payout methods available for the currency and country combination.'
+      title: ViewPayoutMethodsResponse
+    ViewTheSchemaForARecipientResponseLocalBankTransfer12:
+      type: object
+      properties:
+        RON:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf12Ron'
+          description: The schema of the `RON` property.
+      required:
+      - RON
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer12
+    ViewTheSchemaForARecipientResponseLocalBankTransfer8:
+      type: object
+      properties:
+        HUF:
+          $ref: '#/components/schemas/ViewTheSchemaForARecipientResponseLocalBankTransferOneOf8Huf'
+          description: The schema of the `HUF` property.
+      required:
+      - HUF
+      title: ViewTheSchemaForARecipientResponseLocalBankTransfer8
+    DeactivateARecipientRequest:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Allowed values:** `DEACTIVATED`
+
+
+            The status of the recipient:
+
+            - `DEACTIVATED` – Value to send to permanently disable the recipient so it can no longer be used. The Recipient must be `ACTIVE` to be deactivated.'
+      required:
+      - Status
+      title: DeactivateARecipientRequest
+    LocalBankTransfer_GBP_Request:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: 'Format: 8 digits (pattern: `^\d{8}$`).
+
+
+            The account number of the UK account.'
+        SortCode:
+          type: string
+          description: 'Format: 6 digits (pattern: `^\d{6}$`).
+
+
+            The sort code of the UK account.'
+      required:
+      - AccountNumber
+      - SortCode
+      description: Local bank transfer details for `Currency` value `GBP`.
+      title: LocalBankTransfer_GBP_Request
   securitySchemes:
-    OAuth2:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
-          scopes: {}
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

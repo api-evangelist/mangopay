@@ -1,0 +1,2391 @@
+openapi: 3.2.0
+info:
+  title: Reference Intents API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Intents
+paths:
+  /v3.0/{ClientId}/payins/intents/external-providers:
+    get:
+      operationId: intents_list_intent_external_providers
+      summary: List Intent external providers
+      description: 'Retrieve the list of third-party PSP names supported by Echo for:
+
+        - The `ExternalData.ExternalProviderName` property of the Intent object
+
+        - The `ExternalProviderName` property of Mangopay''s settlement file format
+
+
+        **Note – Check values to use for your integration**
+
+
+        This endpoint returns the descriptive name for each provider. The rendering of the value you need to use as the `ExternalProviderName` in your integration is listed in the supported providers page.'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIntentExternalProvidersResponse'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents:
+    post:
+      operationId: intents_create_intent
+      summary: Create an Intent
+      description: 'Declare a transaction authorization processed by a third-party PSP
+
+
+        This endpoint allows you to declare a payment authorized by a third-party PSP. Once `AUTHORIZED` (as shown by the `Status` in the response), the Intent''s `LineItems` can be:
+
+        - Captured using POST Create an Intent Capture
+
+        - Canceled using POST Cancel an Intent
+
+
+        In a mixed-basket flow, you can also use this endpoint to add `LineItems` to an existing Intent by sending the same `ExternalData.ExternalProviderReference` as the existing Intent.
+
+
+        In a hybrid flow, where the `ExternalProviderName` is `Mangopay`, you can define the `LineItems.SplitOriginWalletId` in the Intent, otherwise it must be defined on POST Create an Intent Split.'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIntentRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: intents_list_intents
+      summary: List all Intents
+      description: Retrieve a paginated list of Intents, with optional filters for provider, currency, date range, and status.
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: Status
+        in: query
+        description: '**Allowed values:** `AUTHORIZED`, `CAPTURED`, `PARTIALLY_CAPTURED`, `REFUNDED`, `REFUND_REVERSED`, `DISPUTED`, `DISPUTED_WON`, `DISPUTED_LOST`, `DEFENDED`, `CANCELLED`
+
+
+          The status of the Intent. You can filter on multiple values by separating them with a comma.'
+        required: false
+        schema:
+          type: string
+      - name: ExternalProviderName
+        in: query
+        description: The third-party PSP name to filter by.
+        required: false
+        schema:
+          type: string
+      - name: Currency
+        in: query
+        description: The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> of the currency to filter by.
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllIntentsResponse'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/cancel:
+    post:
+      operationId: intents_cancel_intent
+      summary: Cancel an Intent
+      description: 'Cancel all or part of an authorized Intent
+
+
+        You can use this endpoint to cancel all or part of an Intent **before** it has been captured. You can only call this endpoint if the Intent has the `Status` of `AUTHORIZED`. You cannot cancel an Intent if it has been captured in part (`PARTIALLY_CAPTURED`) or full (`CAPTURED`).'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelAnIntentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelAnIntentRequest'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/captures:
+    post:
+      operationId: intents_create_intent_capture
+      summary: Create an Intent Capture
+      description: 'Declare the full or partial capture of an authorization processed by a third-party PSP
+
+
+        You can use this endpoint in three capture scenarios requiring three difference request bodies.'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentCaptureResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIntentCaptureRequest'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/refunds:
+    post:
+      operationId: intents_create_intent_refund
+      summary: Create an Intent Refund
+      description: Declare the full or partial refund of a payment processed by a third-party PSP, represented by an Intent Refund.
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentRefundResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIntentRefundRequest'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/refunds/{RefundId}/reverse:
+    post:
+      operationId: intents_reverse_intent_refund
+      summary: Reverse an Intent Refund
+      description: 'Declare the reversal of a refund processed by a third-party PSP
+
+
+        This endpoint allows you to reverse an Intent Refund in full or in part if the refund processed by the third-party PSP was not successful and the funds were returned to the platform.
+
+
+        This endpoint effectively changes the Intent Refund `Status` to `REFUND_REVERSED` and re-calculates the `RefundedAmount` of the `LineItem`.
+
+
+        You can only reverse the same amount that was refunded.'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      - name: RefundId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentRefundResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIntentRefundRequest'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/capture/{CaptureId}/disputes:
+    post:
+      operationId: intents_create_intent_dispute
+      summary: Create an Intent Dispute
+      description: Declare the full or partial dispute of a payment processed by a third-party PSP, represented by an Intent Dispute.
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      - name: CaptureId
+        in: path
+        description: The unique identifier of the Capture being disputed.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentDisputeResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIntentDisputeRequest'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/capture/{CaptureId}/disputes/{DisputeId}/decision:
+    put:
+      operationId: intents_update_intent_dispute
+      summary: Update an Intent Dispute
+      description: 'Track the outcome of a dispute processed by a third-party PSP.
+
+
+        This endpoint allows you to track the outcome of an Intent Dispute by sending the `Decision` value. In the Intent object, the decision is reflected in the `Disputes.Status` value'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      - name: CaptureId
+        in: path
+        description: The unique identifier of the Capture being disputed.
+        required: true
+        schema:
+          type: string
+      - name: DisputeId
+        in: path
+        description: The unique identifier of the Intent Dispute.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAnIntentDisputeResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAnIntentDisputeRequest'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}:
+    get:
+      operationId: intents_view_intent
+      summary: View an Intent
+      description: Retrieve the declaration of a transaction processed by a third-party PSP
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewAnIntentResponse'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/splits:
+    post:
+      operationId: intents_create_intent_split
+      summary: Create an Intent Split
+      description: 'Create a transfer to the wallet of the seller of an Intent line item.
+
+
+        Once the Intent is `PARTIALLY_CAPTURED` or `CAPTURED`, you can create Splits to set up the transfers to the seller wallet(s).'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentSplitsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIntentSplitRequest'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/splits/{SplitId}:
+    put:
+      operationId: intents_update_intent_split
+      summary: Update an Intent Split
+      description: '**Note – Split Status values that allow modification**
+
+
+        To modify a split, its `Status` must be:
+
+        - `CREATED`
+
+        - `PENDING_FUNDS_RECEPTION`
+
+        - `AVAILABLE`
+
+        - `FAILED `
+
+
+        Modify a Split before execution.'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      - name: SplitId
+        in: path
+        description: The unique identifier of the Split.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentSplitsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIntentSplitRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: intents_view_intent_split
+      summary: View an Intent Split
+      description: Retrieve details of a Split of an Intent.
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: SplitId
+        in: path
+        description: The unique identifier of the Split.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentSplitResponse'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/splits/{SplitId}/execute:
+    post:
+      operationId: intents_execute_intent_split
+      summary: Execute an Intent Split
+      description: 'Release the funds of a Split to the wallet of the seller of the Intent line item.
+
+
+        Once the Intent funds have been settled (in a Settlement) and the funds have been received on the platform''s technical wallet, the Split status becomes `AVAILABLE`, meaning you can use this endpoint to execute the transfer of funds to the Seller''s wallet.'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      - name: SplitId
+        in: path
+        description: The unique identifier of the Split.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentSplitResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/{IntentId}/splits/{SplitId}/reverse:
+    post:
+      operationId: intents_reverse_intent_split
+      summary: Reverse an Intent Split
+      description: 'Cancel an unexecuted Split
+
+
+        Reversing a Split effectively cancels it, and can only be done when it has the `Status` of `AVAILABLE` or `REJECTED`.'
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IntentId
+        in: path
+        description: The unique identifier of the Intent.
+        required: true
+        schema:
+          type: string
+      - name: SplitId
+        in: path
+        description: The unique identifier of the Split.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntentSplitResponse'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/splits:
+    get:
+      operationId: intents_list_intent_splits
+      summary: List all Intent Splits
+      description: Retrieve a paginated list of splits across all intents, with optional filters for provider, currency, date range, and status.
+      tags:
+      - Intents
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: Status
+        in: query
+        description: '**Allowed values:** `CREATED`, `PENDING_FUNDS_RECEPTION`, `AVAILABLE`, `PENDING`, `COMPLETED`, `REJECTED`, `FAILED`, `REVERSED`, `REFUND_SPLIT_PENDING`, `REFUND_SPLIT_REJECTED`, `REFUND_SPLIT_COMPLETED`
+
+
+          The status of the Split. You can filter on multiple values by separating them with a comma.'
+        required: false
+        schema:
+          type: string
+      - name: ExternalProviderName
+        in: query
+        description: The third-party PSP name of the parent intent to filter by.
+        required: false
+        schema:
+          type: string
+      - name: Currency
+        in: query
+        description: The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> of the currency to filter by.
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllSplitsResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ListAllIntentsResponseItemsExternalData:
+      type: object
+      properties:
+        ExternalProcessingDate:
+          type: integer
+          description: The date the PSP processed the transaction.
+        ExternalProviderReference:
+          type: string
+          description: The unique reference of the transaction from the PSP.
+        ExternalProviderName:
+          type: string
+          description: The supported third-party PSP processing the transaction.
+        ExternalProviderPaymentMethod:
+          type: string
+          description: The payment method used for the transaction.
+      title: ListAllIntentsResponseItemsExternalData
+    CreateAnIntentSplitRequestSplitsItems:
+      type: object
+      properties:
+        LineItemId:
+          type: string
+          description: The unique identifier of the line item.
+        SplitAmount:
+          type: integer
+          description: 'The amount to transfer to the seller''s `WalledId`.
+
+
+            The sum of the `SplitAmount` values of all `Splits` must be lower than or equal to the `AvailableAmountToSplit` of the Intent.'
+        FeesAmount:
+          type: integer
+          description: 'The amount of fees.
+
+
+            The sum of the `FeesAmount` values of all `Splits` must be lower than or equal to the `PlatformFeesAmount` of the Intent.'
+        TransferDate:
+          type: integer
+          description: The future date when the funds are to be automatically transferred to the seller's wallet.
+        Description:
+          type: string
+          description: The description of the Split.
+        SplitOriginWalletId:
+          type: string
+          description: 'The unique identifier of the wallet from which the split will be debited.
+
+
+            This parameter is required for Intents where `ExternalProviderName` is `Mangopay`. If it is not defined in the Intent it must be defined at Split creation.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - LineItemId
+      - SplitAmount
+      title: CreateAnIntentSplitRequestSplitsItems
+    ViewAnIntentResponseDisputesItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Dispute.
+        Amount:
+          type: integer
+          description: The amount of the Dispute.
+        Status:
+          type: string
+          description: 'The status of the Intent Dispute:
+
+            - `NEEDS_RESPONSE` – The outcome of the dispute has not been declared by the platform.
+
+            - `DEFENDED` – The dispute is being defended and the funds may have been returned to the platform temporarily, but they are not expected on the technical wallet.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform and the funds are expected on the technical wallet.
+
+            - `DISPUTED_LOST` – The dispute was ruled against the platform and the funds were returned to the user.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseDisputesItemsLineItemsItems'
+          description: Information about the line items in the Dispute.
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Dispute was created.
+        ExecutionDate:
+          type: integer
+          description: The date at which the object was successfully moved to `DISPUTED`.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: ViewAnIntentResponseDisputesItems
+    ViewAnIntentResponseCapturesItemsLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item.
+        Amount:
+          type: integer
+          description: The amount of the line item.
+      title: ViewAnIntentResponseCapturesItemsLineItemsItems
+    ListAllSplitsResponseItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Split.
+        IntentId:
+          type: string
+          description: The unique identifier of the parent Intent.
+        LineItemId:
+          type: string
+          description: The unique identifier of the line item.
+        SellerId:
+          type: string
+          description: The unique identifier of the seller of the line item.
+        WalletId:
+          type: string
+          description: The unique identifier of the wallet to credit the seller's funds.
+        SplitAmount:
+          type: integer
+          description: The amount to transfer to the seller's wallet.
+        FeesAmount:
+          type: integer
+          description: The amount of fees.
+        TransferDate:
+          type: integer
+          description: The future date when the funds are to be automatically transferred to the seller's wallet.
+        Description:
+          type: string
+          description: The description of the Split.
+        Status:
+          type: string
+          description: 'The status of the Split:
+
+            - `CREATED` – The Split was successfully declared via the API but it is not yet confirmed whether the funds for the parent Intent are available.
+
+            - `PENDING_FUNDS_RECEPTION` – The Split is linked to an Intent that has been reconciled with a settlement file. The system is waiting for the funds to be confirmed in the technical wallet.
+
+            - `AVAILABLE` – The funds for the parent Intent have been received and confirmed. The Split is ready to be executed.
+
+            - `PENDING` – The Split execution has been initiated and is being processed.
+
+            - `COMPLETED` – The transfer was successful and the funds have been moved to the seller''s wallet.
+
+            - `REJECTED` – The Split execution failed immediately due to a synchronous error (e.g. invalid wallet ID). The platform can retry execution or reverse the Split.
+
+            - `FAILED` – The Split execution was initiated but the transfer failed due to an asynchronous error (e.g. insufficient funds in the source wallet). A new Split must be created to retry.
+
+            - `REVERSED` – The Split was canceled by the platform while in `AVAILABLE` or `REJECTED` status.
+
+            - `REFUND_SPLIT_PENDING` – A refund has been declared on the parent Intent and the refund of this Split is pending.
+
+            - `REFUND_SPLIT_REJECTED` – The refund of this Split was rejected.
+
+            - `REFUND_SPLIT_COMPLETED` – The refund of this Split was completed successfully.'
+      title: ListAllSplitsResponseItems
+    IntentRefundResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the intent.
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent, which must equal the sum of the total amounts of all `LineItems`.
+        AvailableAmountToSplit:
+          type: integer
+          description: The remaining amount of the Intent that can be split and transferred to the sellers' wallets.
+        UnfundedAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        Status:
+          type: string
+          description: 'The status of the Intent, as declared by the platform through Intent Captures, Refunds (and reversals), or Disputes (and decisions). Where partial actions occur, the top-level Intent `Status` may differ from the `Status` of Intent `LineItems`.
+
+
+            Intent `Status` values:
+
+            - `AUTHORIZED` – The Intent `Amount` was authorized for acquisition by the PSP and can be captured or canceled.
+
+            - `PARTIALLY_CAPTURED` – Part of the Intent `Amount` from one or more `LineItems` was captured. The other parts are either still available for capture or cancel.
+
+            - `CAPTURED` – All of the Intent `Amount` was captured. Part of it may have been subsequently refunded or disputed.
+
+            - `CANCELLED` – All of the Intent `Amount` was canceled.
+
+            - `REFUNDED` – All of the `CapturedAmount` of all `LineItems` was refunded.
+
+            - `REFUND_REVERSED` – The refund could not be completed and the funds were returned to the platform.
+
+            - `DISPUTED` – All of the `CapturedAmount` of all `LineItems` was disputed.
+
+            - `DEFENDED` – The dispute is being defended by the platform.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform.
+
+            - `DISPUTED_LOST` – The dispute was resolved against the platform.'
+        NextActions:
+          type: string
+          description: The possible next actions on the intent.
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference'
+        Buyer:
+          $ref: '#/components/schemas/BuyerId'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdTotalLineItemAmountCapturedAmount'
+          description: Information about the line items included in the intent action.
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExecutionDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Intent moved to `AUTHORIZED`.
+        Refund:
+          $ref: '#/components/schemas/Id_IntentRefund'
+      title: IntentRefundResponse
+    IntentResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the intent.
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent, which must equal the sum of the total amounts of all `LineItems`.
+        AvailableAmountToSplit:
+          type: integer
+          description: The remaining amount of the Intent that can be split and transferred to the sellers' wallets.
+        UnfundedAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        Status:
+          type: string
+          description: 'The status of the Intent, as declared by the platform through Intent Captures, Refunds (and reversals), or Disputes (and decisions). Where partial actions occur, the top-level Intent `Status` may differ from the `Status` of Intent `LineItems`.
+
+
+            Intent `Status` values:
+
+            - `AUTHORIZED` – The Intent `Amount` was authorized for acquisition by the PSP and can be captured or canceled.
+
+            - `PARTIALLY_CAPTURED` – Part of the Intent `Amount` from one or more `LineItems` was captured. The other parts are either still available for capture or cancel.
+
+            - `CAPTURED` – All of the Intent `Amount` was captured. Part of it may have been subsequently refunded or disputed.
+
+            - `CANCELLED` – All of the Intent `Amount` was canceled.
+
+            - `REFUNDED` – All of the `CapturedAmount` of all `LineItems` was refunded.
+
+            - `REFUND_REVERSED` – The refund could not be completed and the funds were returned to the platform.
+
+            - `DISPUTED` – All of the `CapturedAmount` of all `LineItems` was disputed.
+
+            - `DEFENDED` – The dispute is being defended by the platform.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform.
+
+            - `DISPUTED_LOST` – The dispute was resolved against the platform.'
+        NextActions:
+          type: string
+          description: The possible next actions on the intent.
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference'
+        Buyer:
+          $ref: '#/components/schemas/BuyerId'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItems_Intent'
+          description: "Information about the items purchased in the transaction. A maximum of 100 line items can be created per Intent.\n\nThe sum of all line item amounts must equal the Intent `Amount` value. The total for each line items is calculated as ((`UnitAmount` x `Quantity`) - `DiscountAmount`), which is shown in the `TotalLineItemAmount` returned. The `TaxAmount` is indicative and included in the `UnitAmount`. \n\nThe sum of all line item `Seller.FeesAmount` values must equal the Intent `PlatformFeesAmount` value."
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExecutionDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Intent moved to `AUTHORIZED`.
+      title: IntentResponse
+    LineItemsIntentShippingAddress:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: The region of the address.
+        PostalCode:
+          type: string
+          description: The postal code of the address.
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The shipping address.
+      title: LineItemsIntentShippingAddress
+    ViewAnIntentResponseRefundsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Refund.
+        Amount:
+          type: integer
+          description: The amount of the Refund.
+        Status:
+          type: string
+          description: 'The status of the Intent Refund:
+
+            - `REFUNDED` – The funds were subject to a refund are not expected on the technical wallet.
+
+            - `REFUND_REVERSED` – The refund could not be completed: the funds were returned to the platform and are expected on the technical wallet.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseRefundsItemsLineItemsItems'
+          description: Information about the line items in the Refund.
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Refund was created.
+        ExecutionDate:
+          type: integer
+          description: The date at which the object was successfully moved to `REFUNDED`.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: ViewAnIntentResponseRefundsItems
+    ListIntentExternalProvidersResponse:
+      type: array
+      items:
+        type: string
+      description: The list of third-party PSP names supported as `ExternalData.ExternalProviderName` values on the Intent object.
+      title: ListIntentExternalProvidersResponse
+    ViewAnIntentResponseRefundsItemsLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item.
+        Amount:
+          type: integer
+          description: The amount of the line item.
+      title: ViewAnIntentResponseRefundsItemsLineItemsItems
+    CancelAnIntentRequest:
+      type: object
+      properties:
+        Amount:
+          type: integer
+          description: The amount of the cancellation, required for a partial cancellation. The cancellation `Amount` must equal the sum of its line items.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        ExternalData:
+          $ref: '#/components/schemas/CancelAnIntentRequestExternalData'
+          description: Information about the cancellation processed by the third-party PSP.
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancelAnIntentRequestLineItemsItems'
+          description: Information about the items canceled, required for a partial cancellation.
+      title: CancelAnIntentRequest
+    ExternalProcessingDateExternalProviderReferenceExternalMerchantReference2:
+      type: object
+      properties:
+        ExternalProcessingDate:
+          type: integer
+          description: The date at which the transaction authorization was created.
+        ExternalProviderReference:
+          type: string
+          description: The unique identifier of the transaction at the provider level.
+        ExternalMerchantReference:
+          type: string
+          description: The unique identifier of the transaction at the merchant level.
+        ExternalProviderName:
+          type: string
+          description: 'The [supported third-party PSP](/api-reference/echo/supported-providers) processing the transaction.
+
+
+            **Note:** The uppercase value is expected. The API returns the sentence-case value.'
+        ExternalProviderPaymentMethod:
+          type: string
+          description: One of the [supported payment methods](/api-reference/echo/supported-payment-methods) used to process the transaction.
+      required:
+      - ExternalProcessingDate
+      - ExternalProviderReference
+      - ExternalProviderName
+      description: Information about the transaction authorization processed by the third-party PSP.
+      title: ExternalProcessingDateExternalProviderReferenceExternalMerchantReference2
+    Id_IntentCancel:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Cancel.
+      description: Information about the Cancel.
+      title: Id_IntentCancel
+    IdTotalLineItemAmountCapturedAmount:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item in Mangopay's ecosystem.
+        TotalLineItemAmount:
+          type: integer
+          description: The total amount of the line item calculated as ((`UnitAmount` x `Quantity`) - `DiscountAmount`).
+        CapturedAmount:
+          type: integer
+          description: The item total `CAPTURED` amount
+        RefundedAmount:
+          type: integer
+          description: The item total `REFUNDED` amount
+        DisputedAmount:
+          type: integer
+          description: The item total `DISPUTED` amount.
+        SplitAmount:
+          type: integer
+          description: The item total `COMPLETED` amount.
+        UnfundedSellerAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed for this seller.
+      title: IdTotalLineItemAmountCapturedAmount
+    ViewAnIntentResponseCancelsItemsLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item.
+        Amount:
+          type: integer
+          description: The amount of the line item.
+      title: ViewAnIntentResponseCancelsItemsLineItemsItems
+    Id_IntentDispute:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Dispute.
+      description: Information about the Dispute.
+      title: Id_IntentDispute
+    CreateAnIntentRefundRequestLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item in Mangopay ecosystem.
+        Amount:
+          type: integer
+          description: The amount of the refund. The sum of the Refund's `LineItems.Amount` values must equal the `Amount` of the Refund.
+      required:
+      - Id
+      - Amount
+      title: CreateAnIntentRefundRequestLineItemsItems
+    ListAllSplitsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/ListAllSplitsResponseItems'
+      title: ListAllSplitsResponse
+    IntentCaptureResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the intent.
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent, which must equal the sum of the total amounts of all `LineItems`.
+        AvailableAmountToSplit:
+          type: integer
+          description: The remaining amount of the Intent that can be split and transferred to the sellers' wallets.
+        UnfundedAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        Status:
+          type: string
+          description: 'The status of the Intent, as declared by the platform through Intent Captures, Refunds (and reversals), or Disputes (and decisions). Where partial actions occur, the top-level Intent `Status` may differ from the `Status` of Intent `LineItems`.
+
+
+            Intent `Status` values:
+
+            - `AUTHORIZED` – The Intent `Amount` was authorized for acquisition by the PSP and can be captured or canceled.
+
+            - `PARTIALLY_CAPTURED` – Part of the Intent `Amount` from one or more `LineItems` was captured. The other parts are either still available for capture or cancel.
+
+            - `CAPTURED` – All of the Intent `Amount` was captured. Part of it may have been subsequently refunded or disputed.
+
+            - `CANCELLED` – All of the Intent `Amount` was canceled.
+
+            - `REFUNDED` – All of the `CapturedAmount` of all `LineItems` was refunded.
+
+            - `REFUND_REVERSED` – The refund could not be completed and the funds were returned to the platform.
+
+            - `DISPUTED` – All of the `CapturedAmount` of all `LineItems` was disputed.
+
+            - `DEFENDED` – The dispute is being defended by the platform.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform.
+
+            - `DISPUTED_LOST` – The dispute was resolved against the platform.'
+        NextActions:
+          type: string
+          description: The possible next actions on the intent.
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference'
+        Buyer:
+          $ref: '#/components/schemas/BuyerId'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdTotalLineItemAmountCapturedAmount'
+          description: Information about the line items included in the intent action.
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExecutionDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Intent moved to `AUTHORIZED`.
+        Capture:
+          $ref: '#/components/schemas/Id_IntentCapture'
+      title: IntentCaptureResponse
+    Id_IntentCapture:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Capture.
+      description: Information about the Capture.
+      title: Id_IntentCapture
+    IntentDisputeResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the intent.
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent, which must equal the sum of the total amounts of all `LineItems`.
+        AvailableAmountToSplit:
+          type: integer
+          description: The remaining amount of the Intent that can be split and transferred to the sellers' wallets.
+        UnfundedAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        Status:
+          type: string
+          description: 'The status of the Intent, as declared by the platform through Intent Captures, Refunds (and reversals), or Disputes (and decisions). Where partial actions occur, the top-level Intent `Status` may differ from the `Status` of Intent `LineItems`.
+
+
+            Intent `Status` values:
+
+            - `AUTHORIZED` – The Intent `Amount` was authorized for acquisition by the PSP and can be captured or canceled.
+
+            - `PARTIALLY_CAPTURED` – Part of the Intent `Amount` from one or more `LineItems` was captured. The other parts are either still available for capture or cancel.
+
+            - `CAPTURED` – All of the Intent `Amount` was captured. Part of it may have been subsequently refunded or disputed.
+
+            - `CANCELLED` – All of the Intent `Amount` was canceled.
+
+            - `REFUNDED` – All of the `CapturedAmount` of all `LineItems` was refunded.
+
+            - `REFUND_REVERSED` – The refund could not be completed and the funds were returned to the platform.
+
+            - `DISPUTED` – All of the `CapturedAmount` of all `LineItems` was disputed.
+
+            - `DEFENDED` – The dispute is being defended by the platform.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform.
+
+            - `DISPUTED_LOST` – The dispute was resolved against the platform.'
+        NextActions:
+          type: string
+          description: The possible next actions on the intent.
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference'
+        Buyer:
+          $ref: '#/components/schemas/BuyerId'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdTotalLineItemAmountCapturedAmount'
+          description: Information about the line items included in the intent action.
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExecutionDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Intent moved to `AUTHORIZED`.
+        Dispute:
+          $ref: '#/components/schemas/Id_IntentDispute'
+      title: IntentDisputeResponse
+    ViewAnIntentResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the intent.
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent, which must equal the sum of the total amounts of all `LineItems`.
+        AvailableAmountToSplit:
+          type: integer
+          description: The remaining amount of the Intent that can be split and transferred to the sellers' wallets.
+        UnfundedAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        Status:
+          type: string
+          description: 'The status of the Intent, as declared by the platform through Intent Captures, Refunds (and reversals), or Disputes (and decisions). Where partial actions occur, the top-level Intent `Status` may differ from the `Status` of Intent `LineItems`.
+
+
+            Intent `Status` values:
+
+            - `AUTHORIZED` – The Intent `Amount` was authorized for acquisition by the PSP and can be captured or canceled.
+
+            - `PARTIALLY_CAPTURED` – Part of the Intent `Amount` from one or more `LineItems` was captured. The other parts are either still available for capture or cancel.
+
+            - `CAPTURED` – All of the Intent `Amount` was captured. Part of it may have been subsequently refunded or disputed.
+
+            - `CANCELLED` – All of the Intent `Amount` was canceled.
+
+            - `REFUNDED` – All of the `CapturedAmount` of all `LineItems` was refunded.
+
+            - `REFUND_REVERSED` – The refund could not be completed and the funds were returned to the platform.
+
+            - `DISPUTED` – All of the `CapturedAmount` of all `LineItems` was disputed.
+
+            - `DEFENDED` – The dispute is being defended by the platform.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform.
+
+            - `DISPUTED_LOST` – The dispute was resolved against the platform.'
+        NextActions:
+          type: string
+          description: The possible next actions on the intent.
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference'
+        Buyer:
+          $ref: '#/components/schemas/BuyerId'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItems_Intent'
+          description: "Information about the items purchased in the transaction. A maximum of 100 line items can be created per Intent.\n\nThe sum of all line item amounts must equal the Intent `Amount` value. The total for each line items is calculated as ((`UnitAmount` x `Quantity`) - `DiscountAmount`), which is shown in the `TotalLineItemAmount` returned. The `TaxAmount` is indicative and included in the `UnitAmount`. \n\nThe sum of all line item `Seller.FeesAmount` values must equal the Intent `PlatformFeesAmount` value."
+        Captures:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseCapturesItems'
+          description: Information about the amounts captured against the Intent.
+        Refunds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseRefundsItems'
+          description: Information about the Refunds created against the Intent.
+        Disputes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseDisputesItems'
+          description: Information about the Disputes created against against the Intent.
+        Cancels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseCancelsItems'
+          description: Information about the amounts Canceled in the Intent.
+        Splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseSplitsItems'
+          description: Information about the Splits created against the Intent.
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExecutionDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Intent moved to `AUTHORIZED`.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        SettlementIds:
+          type: array
+          items:
+            type: string
+          description: The unique identifier of the Settlement(s) linked to this Intent, if successfully created by uploading a settlement file to [POST Create a Settlement](/api-reference/settlements/create-settlement).
+      title: ViewAnIntentResponse
+    UpdateAnIntentDisputeResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the intent.
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent, which must equal the sum of the total amounts of all `LineItems`.
+        AvailableAmountToSplit:
+          type: integer
+          description: The remaining amount of the Intent that can be split and transferred to the sellers' wallets.
+        UnfundedAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        Status:
+          type: string
+          description: 'The status of the Intent, as declared by the platform through Intent Captures, Refunds (and reversals), or Disputes (and decisions). Where partial actions occur, the top-level Intent `Status` may differ from the `Status` of Intent `LineItems`.
+
+
+            Intent `Status` values:
+
+            - `AUTHORIZED` – The Intent `Amount` was authorized for acquisition by the PSP and can be captured or canceled.
+
+            - `PARTIALLY_CAPTURED` – Part of the Intent `Amount` from one or more `LineItems` was captured. The other parts are either still available for capture or cancel.
+
+            - `CAPTURED` – All of the Intent `Amount` was captured. Part of it may have been subsequently refunded or disputed.
+
+            - `CANCELLED` – All of the Intent `Amount` was canceled.
+
+            - `REFUNDED` – All of the `CapturedAmount` of all `LineItems` was refunded.
+
+            - `REFUND_REVERSED` – The refund could not be completed and the funds were returned to the platform.
+
+            - `DISPUTED` – All of the `CapturedAmount` of all `LineItems` was disputed.
+
+            - `DEFENDED` – The dispute is being defended by the platform.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform.
+
+            - `DISPUTED_LOST` – The dispute was resolved against the platform.'
+        NextActions:
+          type: string
+          description: The possible next actions on the intent.
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference'
+        Buyer:
+          $ref: '#/components/schemas/BuyerId'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdTotalLineItemAmountCapturedAmount'
+          description: Information about the line items included in the intent action.
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExecutionDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Intent moved to `AUTHORIZED`.
+        Dispute:
+          $ref: '#/components/schemas/Id_IntentDispute'
+        Decision:
+          type: string
+          description: 'The outcome of the Dispute, which can be declared as one of the following values:
+
+            - `DEFENDED`
+
+            - `DISPUTED_WON`
+
+            - `DISPUTED_LOST`'
+      title: UpdateAnIntentDisputeResponse
+    CreateAnIntentSplitRequest:
+      type: object
+      properties:
+        Splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAnIntentSplitRequestSplitsItems'
+          description: The future Splits to create to transfer Intent funds to the line item sellers.
+      title: CreateAnIntentSplitRequest
+    ExternalProcessingDateExternalProviderReferenceExternalMerchantReference:
+      type: object
+      properties:
+        ExternalProcessingDate:
+          type: integer
+          description: The date at which the transaction authorization was created.
+        ExternalProviderReference:
+          type: string
+          description: The unique identifier of the transaction at the provider level.
+        ExternalMerchantReference:
+          type: string
+          description: The unique identifier of the transaction at the merchant level.
+        ExternalProviderName:
+          type: string
+          description: 'The [supported third-party PSP](/api-reference/echo/supported-providers) processing the transaction.
+
+
+            **Note:** The uppercase value is expected. The API returns the sentence-case value.'
+        ExternalProviderPaymentMethod:
+          type: string
+          description: One of the [supported payment methods](/api-reference/echo/supported-payment-methods) used to process the transaction.
+      description: Information about the transaction authorization processed by the third-party PSP.
+      title: ExternalProcessingDateExternalProviderReferenceExternalMerchantReference
+    CreateAnIntentDisputeRequest:
+      type: object
+      properties:
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference2'
+        Amount:
+          type: integer
+          description: The amount of the Dispute, required for a partial dispute. The Dispute `Amount` must equal the sum of the `Amount` values disputed for all line items.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAnIntentDisputeRequestLineItemsItems'
+          description: Information about the amount disputed for each line item, required for a partial dispute.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - ExternalData
+      - Amount
+      - LineItems
+      title: CreateAnIntentDisputeRequest
+    CreateAnIntentRefundRequest:
+      type: object
+      properties:
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference2'
+        Amount:
+          type: integer
+          description: The amount of the Refund, required for a partial refund. The Refund `Amount` must equal the sum of the `Amount` values refunded for all line items.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAnIntentRefundRequestLineItemsItems'
+          description: Information about the amount refunded for each line item, required for a partial refund.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: CreateAnIntentRefundRequest
+    IntentSplitResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Split.
+        LineItemId:
+          type: string
+          description: The unique identifier of the line item.
+        SellerId:
+          type: string
+          description: The unique identifier of the seller of the line item.
+        WalletId:
+          type: string
+          description: The unique identifier of the wallet to credit the seller's funds.
+        SplitAmount:
+          type: integer
+          description: 'The amount to transfer to the seller''s `WalledId`.
+
+
+            The sum of the `SplitAmount` values of all `Splits` must be lower than or equal to the `AvailableAmountToSplit` of the Intent.'
+        FeesAmount:
+          type: integer
+          description: 'The amount of fees.
+
+
+            The sum of the `FeesAmount` values of all `Splits` must be lower than or equal to the `PlatformFeesAmount` of the Intent.'
+        TransferDate:
+          type: integer
+          description: The future date when the funds are to be automatically transferred to the seller's wallet.
+        Description:
+          type: string
+          description: The description of the Split.
+        Status:
+          type: string
+          description: 'The status of the Split:
+
+            - `CREATED` – The Split was successfully declared via the API but it is not yet confirmed whether the funds for the parent Intent are available.
+
+            - `PENDING_FUNDS_RECEPTION` – The Split is linked to an Intent that has been reconciled with a settlement file. The system is waiting for the funds to be confirmed in the technical wallet.
+
+            - `AVAILABLE` – The funds for the parent Intent have been received and confirmed. The Split is ready to be executed.
+
+            - `PENDING` – The Split execution has been initiated and is being processed.
+
+            - `COMPLETED` – The transfer was successful and the funds have been moved to the seller''s wallet.
+
+            - `REJECTED` – The Split execution failed immediately due to a synchronous error (e.g. invalid wallet ID). The platform can retry execution or reverse the Split.
+
+            - `FAILED` – The Split execution was initiated but the transfer failed due to an asynchronous error (e.g. insufficient funds in the source wallet). A new Split must be created to retry.
+
+            - `REVERSED` – The Split was canceled by the platform while in `AVAILABLE` or `REJECTED` status.
+
+            - `REFUND_SPLIT_PENDING` – A refund has been declared on the parent Intent and the refund of this Split is pending.
+
+            - `REFUND_SPLIT_REJECTED` – The refund of this Split was rejected.
+
+            - `REFUND_SPLIT_COMPLETED` – The refund of this Split was completed successfully.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: IntentSplitResponse
+    CancelAnIntentRequestExternalData:
+      type: object
+      properties:
+        ExternalProcessingDate:
+          type: integer
+          description: The date at which the cancellation was created.
+        ExternalProviderReference:
+          type: string
+          description: The unique identifier of the cancellation at the provider level
+        ExternalMerchantReference:
+          type: string
+          description: The unique identifier of the cancellation at the merchant level
+        ExternalProviderName:
+          type: string
+          description: The [supported third-party PSP](/api-reference/echo/supported-providers) processing the transaction.
+        ExternalProviderPaymentMethod:
+          type: string
+          description: One of the [supported payment methods](/api-reference/echo/supported-payment-methods) used to process the cancellation.
+      required:
+      - ExternalProcessingDate
+      description: Information about the cancellation processed by the third-party PSP.
+      title: CancelAnIntentRequestExternalData
+    AuthorIdWalletIdFeesAmount:
+      type: object
+      properties:
+        AuthorId:
+          type: string
+          description: 'The unique identifier of the seller of the line item.
+
+
+            Required if `WalletId` not sent.'
+        WalletId:
+          type: string
+          description: 'The unique identifier of the wallet to credit the seller''s funds.
+
+
+            Required if `AuthorId` not sent.'
+        FeesAmount:
+          type: integer
+          description: The amount of fees that will be diverted to the platform's Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+        TransferDate:
+          type: integer
+          description: The future date when the funds are to be automatically transferred to the seller's wallet.
+      description: Information about the seller of the line item.
+      title: AuthorIdWalletIdFeesAmount
+    ViewAnIntentResponseSplitsItemsLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item.
+        Amount:
+          type: integer
+          description: The amount of the line item.
+      title: ViewAnIntentResponseSplitsItemsLineItemsItems
+    ListAllIntentsResponseItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the intent.
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        Status:
+          type: string
+          description: 'The status of the Intent.
+
+
+            Intent `Status` values:
+
+            - `AUTHORIZED` – The Intent `Amount` was authorized for acquisition by the PSP and can be captured or canceled.
+
+            - `PARTIALLY_CAPTURED` – Part of the Intent `Amount` from one or more `LineItems` was captured.
+
+            - `CAPTURED` – All of the Intent `Amount` was captured.
+
+            - `CANCELLED` – All of the Intent `Amount` was canceled.
+
+            - `REFUNDED` – All of the `CapturedAmount` of all `LineItems` was refunded.
+
+            - `REFUND_REVERSED` – The refund could not be completed and the funds were returned to the platform.
+
+            - `DISPUTED` – All of the `CapturedAmount` of all `LineItems` was disputed.
+
+            - `DEFENDED` – The dispute is being defended by the platform.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform.
+
+            - `DISPUTED_LOST` – The dispute was resolved against the platform.'
+        ExternalData:
+          $ref: '#/components/schemas/ListAllIntentsResponseItemsExternalData'
+        CreationDate:
+          type: integer
+          description: The date and time the Intent was created.
+        ExecutionDate:
+          type:
+          - integer
+          - 'null'
+          description: Unix timestamp (UTC) of the date and time the Intent moved to `AUTHORIZED`.
+      title: ListAllIntentsResponseItems
+    CreateAnIntentCaptureRequestLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item in Mangopay ecosystem.
+        Amount:
+          type: integer
+          description: The amount of the capture. The sum of the Capture's `LineItems.Amount` values must equal the `Amount` of the Capture.
+      required:
+      - Id
+      - Amount
+      title: CreateAnIntentCaptureRequestLineItemsItems
+    CancelAnIntentResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the intent.
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent, which must equal the sum of the total amounts of all `LineItems`.
+        AvailableAmountToSplit:
+          type: integer
+          description: The remaining amount of the Intent that can be split and transferred to the sellers' wallets.
+        UnfundedAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        Status:
+          type: string
+          description: 'The status of the Intent, as declared by the platform through Intent Captures, Refunds (and reversals), or Disputes (and decisions). Where partial actions occur, the top-level Intent `Status` may differ from the `Status` of Intent `LineItems`.
+
+
+            Intent `Status` values:
+
+            - `AUTHORIZED` – The Intent `Amount` was authorized for acquisition by the PSP and can be captured or canceled.
+
+            - `PARTIALLY_CAPTURED` – Part of the Intent `Amount` from one or more `LineItems` was captured. The other parts are either still available for capture or cancel.
+
+            - `CAPTURED` – All of the Intent `Amount` was captured. Part of it may have been subsequently refunded or disputed.
+
+            - `CANCELLED` – All of the Intent `Amount` was canceled.
+
+            - `REFUNDED` – All of the `CapturedAmount` of all `LineItems` was refunded.
+
+            - `REFUND_REVERSED` – The refund could not be completed and the funds were returned to the platform.
+
+            - `DISPUTED` – All of the `CapturedAmount` of all `LineItems` was disputed.
+
+            - `DEFENDED` – The dispute is being defended by the platform.
+
+            - `DISPUTED_WON` – The dispute was resolved in favor of the platform.
+
+            - `DISPUTED_LOST` – The dispute was resolved against the platform.'
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference'
+        Buyer:
+          $ref: '#/components/schemas/BuyerId'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItems_Intent'
+          description: "Information about the items purchased in the transaction. A maximum of 100 line items can be created per Intent.\n\nThe sum of all line item amounts must equal the Intent `Amount` value. The total for each line items is calculated as ((`UnitAmount` x `Quantity`) - `DiscountAmount`), which is shown in the `TotalLineItemAmount` returned. The `TaxAmount` is indicative and included in the `UnitAmount`. \n\nThe sum of all line item `Seller.FeesAmount` values must equal the Intent `PlatformFeesAmount` value."
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExecutionDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Intent moved to `AUTHORIZED`.
+        Cancel:
+          $ref: '#/components/schemas/Id_IntentCancel'
+      title: CancelAnIntentResponse
+    CreateAnIntentRequestLineItemsItems:
+      type: object
+      properties:
+        Seller:
+          $ref: '#/components/schemas/AuthorIdWalletIdFeesAmount'
+        Sku:
+          type: string
+          description: The stock keeping unit (SKU) or other unique identifier of the item.
+        Name:
+          type: string
+          description: The name of the item.
+        Description:
+          type: string
+          description: The description of the item.
+        Quantity:
+          type: integer
+          description: The number of units in the line item.
+        UnitAmount:
+          type: integer
+          description: The cost of each unit, including `TaxAmount` and excluding `DiscountAmount`.
+        TaxAmount:
+          type: integer
+          description: The amount of the `UnitAmount` which is tax.
+        DiscountAmount:
+          type: integer
+          description: The amount of discount applied to the item.
+        Category:
+          type: string
+          description: The category of the item, as defined by the platform.
+        ShippingAddress:
+          $ref: '#/components/schemas/CreateAnIntentRequestLineItemsItemsShippingAddress'
+          description: The shipping address.
+        SplitOriginWalletId:
+          type: string
+          description: 'The unique identifier of the wallet from which the split will be debited.
+
+
+            This parameter is required for Intents where `ExternalProviderName` is `Mangopay`. If it is not defined in the Intent it must be defined at Split creation.'
+      required:
+      - Seller
+      - Sku
+      - Quantity
+      - UnitAmount
+      title: CreateAnIntentRequestLineItemsItems
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    IntentSplitsResponseSplitsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Split.
+        LineItemId:
+          type: string
+          description: The unique identifier of the line item.
+        SellerId:
+          type: string
+          description: The unique identifier of the seller of the line item.
+        WalletId:
+          type: string
+          description: The unique identifier of the wallet to credit the seller's funds.
+        SplitAmount:
+          type: integer
+          description: 'The amount to transfer to the seller''s `WalledId`.
+
+
+            The sum of the `SplitAmount` values of all `Splits` must be lower than or equal to the `AvailableAmountToSplit` of the Intent.'
+        FeesAmount:
+          type: integer
+          description: 'The amount of fees.
+
+
+            The sum of the `FeesAmount` values of all `Splits` must be lower than or equal to the `PlatformFeesAmount` of the Intent.'
+        TransferDate:
+          type: integer
+          description: The future date when the funds are to be automatically transferred to the seller's wallet.
+        Description:
+          type: string
+          description: The description of the Split.
+        Status:
+          type: string
+          description: 'The status of the Split:
+
+            - `CREATED`
+
+            - `PENDING_FUNDS_RECEPTION`
+
+            - `AVAILABLE`
+
+            - `PENDING`
+
+            - `COMPLETED`
+
+            - `REJECTED`
+
+            - `FAILED`
+
+            - `REVERSED`
+
+            - `REFUND_SPLIT_PENDING`
+
+            - `REFUND_SPLIT_REJECTED`
+
+            - `REFUND_SPLIT_COMPLETED`'
+        SplitOriginWalletId:
+          type: string
+          description: 'The unique identifier of the wallet from which the split will be debited.
+
+
+            This parameter is required for Intents where `ExternalProviderName` is `Mangopay`. If it is not defined in the Intent it must be defined at Split creation.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: IntentSplitsResponseSplitsItems
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ViewAnIntentResponseSplitsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Split.
+        Amount:
+          type: integer
+          description: The amount of the Split.
+        Status:
+          type: string
+          description: 'The status of the Split:
+
+            - `CREATED` – The Split was successfully declared via the API but it is not yet confirmed whether the funds for the parent Intent are available.
+
+            - `PENDING_FUNDS_RECEPTION` – The Split is linked to an Intent that has been reconciled with a settlement file. The system is waiting for the funds to be confirmed in the technical wallet.
+
+            - `AVAILABLE` – The funds for the parent Intent have been received and confirmed. The Split is ready to be executed.
+
+            - `PENDING` – The Split execution has been initiated and is being processed.
+
+            - `COMPLETED` – The transfer was successful and the funds have been moved to the seller''s wallet.
+
+            - `REJECTED` – The Split execution failed immediately due to a synchronous error (e.g. invalid wallet ID). The platform can retry execution or reverse the Split.
+
+            - `FAILED` – The Split execution was initiated but the transfer failed due to an asynchronous error (e.g. insufficient funds in the source wallet). A new Split must be created to retry.
+
+            - `REVERSED` – The Split was canceled by the platform while in `AVAILABLE` or `REJECTED` status.
+
+            - `REFUND_SPLIT_PENDING` – A refund has been declared on the parent Intent and the refund of this Split is pending.
+
+            - `REFUND_SPLIT_REJECTED` – The refund of this Split was rejected.
+
+            - `REFUND_SPLIT_COMPLETED` – The refund of this Split was completed successfully.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseSplitsItemsLineItemsItems'
+          description: Information about the line items in the Split.
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Split was created.
+        ExecutionDate:
+          type: integer
+          description: The date at which the Split status became `COMPLETED`.
+      title: ViewAnIntentResponseSplitsItems
+    CreateAnIntentDisputeRequestLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item in Mangopay ecosystem.
+      required:
+      - Id
+      title: CreateAnIntentDisputeRequestLineItemsItems
+    CreateAnIntentCaptureRequest:
+      type: object
+      properties:
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference2'
+        Amount:
+          type: integer
+          description: The amount of the Capture, required for a partial capture. The Capture `Amount` must equal the sum of the `Amount` values captured for all line items.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAnIntentCaptureRequestLineItemsItems'
+          description: Information about the items purchased in the transaction, required for a partial capture.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: CreateAnIntentCaptureRequest
+    ViewAnIntentResponseCapturesItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Capture.
+        Amount:
+          type: integer
+          description: The amount of the Capture.
+        Status:
+          type: string
+          description: 'The status of the Intent Capture:
+
+            - `CAPTURED` – The funds have been acquired by the third-party PSP and are expected on the technical wallet.
+
+            - `SETTLED_NOT_PAID` – The transaction was included in a settlement file successfully uploaded by the platform using the [POST Create a Settlement](/api-reference/settlements/create-settlement) endpoint.
+
+            - `PAID` – The funds were received on the platform''s technical wallet.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseCapturesItemsLineItemsItems'
+          description: Information about the line items in the Capture.
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Capture was created.
+        ExecutionDate:
+          type: integer
+          description: The date at which the object was successfully moved to `CAPTURED`.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: ViewAnIntentResponseCapturesItems
+    BuyerId:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: If it exists, the unique identifier of the Mangopay user making the payment via the third-party PSP. Must be a valid Mangopay `UserId`.
+      description: Information about the buyer.
+      title: BuyerId
+    CreateAnIntentRequest:
+      type: object
+      properties:
+        Amount:
+          type: integer
+          description: The full amount authorized in the Intent, which must equal the sum of the total amounts of all `LineItems`.
+        Currency:
+          type: string
+          description: The currency of the intent.
+        PlatformFeesAmount:
+          type: integer
+          description: 'The amount of fees to be diverted to the platform''s Fees Wallet when the Intent is split. This value can be overridden when the Split is created.
+
+
+            The `PlatformFeesAmount` value must the sum of all line item `Seller.FeesAmount` values.'
+        ExternalData:
+          $ref: '#/components/schemas/ExternalProcessingDateExternalProviderReferenceExternalMerchantReference2'
+        Buyer:
+          $ref: '#/components/schemas/BuyerId'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAnIntentRequestLineItemsItems'
+          description: "Information about the items purchased in the transaction. A maximum of 100 line items can be created per Intent.\n\nThe sum of all line item amounts must equal the Intent `Amount` value. The total for each line items is calculated as ((`UnitAmount` x `Quantity`) - `DiscountAmount`), which is shown in the `TotalLineItemAmount` returned. The `TaxAmount` is indicative and included in the `UnitAmount`. \n\nThe sum of all line item `Seller.FeesAmount` values must equal the Intent `PlatformFeesAmount` value."
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - Amount
+      - Currency
+      - ExternalData
+      - LineItems
+      title: CreateAnIntentRequest
+    ListAllIntentsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/ListAllIntentsResponseItems'
+      title: ListAllIntentsResponse
+    CancelAnIntentRequestLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item in Mangopay ecosystem.
+        Amount:
+          type: integer
+          description: The amount of the cancellation. The sum of the cancellation's `LineItems.Amount` values must equal the `Amount` of the cancellation.
+      required:
+      - Id
+      - Amount
+      title: CancelAnIntentRequestLineItemsItems
+    Id_IntentRefund:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Refund.
+      description: Information about the Refund.
+      title: Id_IntentRefund
+    ViewAnIntentResponseCancelsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Cancel.
+        Amount:
+          type: integer
+          description: The amount of the Cancel.
+        Status:
+          type: string
+          description: 'The status of the Intent Cancel:
+
+            - `CANCELLED` – The transaction authorized was canceled and its funds are not expected on the platform''s technical wallet.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewAnIntentResponseCancelsItemsLineItemsItems'
+          description: Information about the line items in the Capture.
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the Cancel was created.
+        ExecutionDate:
+          type: integer
+          description: The date at which the object was successfully moved to `CANCELLED`.
+      title: ViewAnIntentResponseCancelsItems
+    CreateAnIntentRequestLineItemsItemsShippingAddress:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: The region of the address.
+        PostalCode:
+          type: string
+          description: The postal code of the address.
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The shipping address.
+      title: CreateAnIntentRequestLineItemsItemsShippingAddress
+    IntentSplitsResponse:
+      type: object
+      properties:
+        Splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntentSplitsResponseSplitsItems'
+          description: The Splits requested.
+      title: IntentSplitsResponse
+    UpdateAnIntentDisputeRequest:
+      type: object
+      properties:
+        Decision:
+          type: string
+          description: '**Allowed values:** `DEFENDED`, `DISPUTED_WON`, `DISPUTED_LOST`
+
+
+            The outcome of the Dispute, which can be declared as one of the following values:
+
+            - `DEFENDED`
+
+            - `DISPUTED_WON`
+
+            - `DISPUTED_LOST`'
+      required:
+      - Decision
+      title: UpdateAnIntentDisputeRequest
+    ViewAnIntentResponseDisputesItemsLineItemsItems:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the line item.
+        Amount:
+          type: integer
+          description: The amount of the line item.
+      title: ViewAnIntentResponseDisputesItemsLineItemsItems
+    LineItems_Intent:
+      type: object
+      properties:
+        Seller:
+          $ref: '#/components/schemas/AuthorIdWalletIdFeesAmount'
+        Id:
+          type: string
+          description: The unique identifier of the line item in Mangopay's ecosystem.
+        Sku:
+          type: string
+          description: The stock keeping unit (SKU) or other unique identifier of the item.
+        Name:
+          type: string
+          description: The name of the item.
+        Description:
+          type: string
+          description: The description of the item.
+        Quantity:
+          type: integer
+          description: The number of units in the line item.
+        UnitAmount:
+          type: integer
+          description: The cost of each unit, including `TaxAmount` and excluding `DiscountAmount`.
+        TaxAmount:
+          type: integer
+          description: The amount of the `UnitAmount` which is tax.
+        DiscountAmount:
+          type: integer
+          description: The amount of discount applied to the line item.
+        Category:
+          type: string
+          description: The category of the item, as defined by the platform.
+        ShippingAddress:
+          $ref: '#/components/schemas/LineItemsIntentShippingAddress'
+          description: The shipping address.
+        CapturedAmount:
+          type: integer
+          description: The item total `CAPTURED` amount
+        RefundedAmount:
+          type: integer
+          description: The item total `REFUNDED` amount
+        DisputedAmount:
+          type: integer
+          description: The item total `DISPUTED` amount.
+        SplitAmount:
+          type: integer
+          description: The item total `COMPLETED` amount.
+        CancelledAmount:
+          type: integer
+          description: The item total `CANCELLED` amount.
+        TotalLineItemAmount:
+          type: integer
+          description: The total amount of the line item calculated as ((`UnitAmount` x `Quantity`) - `DiscountAmount`).
+        UnfundedSellerAmount:
+          type: integer
+          description: The amount needing to be settled to the Platform's technical wallet before the Intent Splits can be executed for this seller.
+        SplitOriginWalletId:
+          type: string
+          description: 'The unique identifier of the wallet from which the split will be debited.
+
+
+            This parameter is required for Intents where `ExternalProviderName` is `Mangopay`. If it is not defined in the Intent it must be defined at Split creation.'
+      title: LineItems_Intent
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

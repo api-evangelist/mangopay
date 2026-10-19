@@ -1,0 +1,473 @@
+openapi: 3.2.0
+info:
+  title: Reference Client API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Client
+paths:
+  /v2.01/{ClientId}/clients:
+    put:
+      operationId: client_update_client
+      summary: Update a Client
+      description: 'Modify certain information registered with Mangopay for your platform, notably:
+
+        - The `PrimaryThemeColour` and `PrimaryButtonColour` used to customize the appearance of Mangopay-hosted webpages, such as for SCA and hosted KYC/KYB
+
+
+        To modify the `TradingName`, contact Mangopay via the Dashboard.'
+      tags:
+      - Client
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAClientResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAClientRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: client_view_client
+      summary: View a Client
+      description: Retrieve details about your platform registered with Mangopay
+      tags:
+      - Client
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/clients/logo:
+    put:
+      operationId: client_upload_client_logo
+      summary: Upload a Client logo
+      description: 'Upload your platform''s logo or wordmark as a Base64-encoded file.
+
+
+        Your logo is used in the following hosted webpages:
+
+        - SCA (read more)
+
+        - Hosted payment page (read more)
+
+        - Direct debit mandate confirmation page (read more)
+
+
+        File recommendations:
+
+        - **Format:** PNG or JPG
+
+        - **Orientation:** landscape
+
+        - **Size:** 240px min. height'
+      tags:
+      - Client
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/client_upload_client_logo_Response_200'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadAClientLogoRequest'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ClientResponsePlatformCategorization:
+      type: object
+      properties:
+        BusinessType:
+          type: string
+          description: The business type of the platform.
+        Sector:
+          type: string
+          description: The sector of activity of the platform.
+      description: The categorization of the platform in terms of business and sector of activity.
+      title: ClientResponsePlatformCategorization
+    Address:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The postal address.
+      title: Address
+    Address_PlatformHeadquarters:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'Required if `HeadquarterAddress` is sent.
+
+
+            The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: The address of the platform operator's headquarters. This parameter must be provided for the platform's payouts to be processed.
+      title: Address_PlatformHeadquarters
+    client_upload_client_logo_Response_200:
+      type: object
+      properties: {}
+      description: Empty response body
+      title: client_upload_client_logo_Response_200
+    ClientResponse:
+      type: object
+      properties:
+        PlatformType:
+          type: string
+          description: Type of the platform. This field has been replaced by the `PlatformCategorization` object.
+        ClientId:
+          type: string
+          description: The unique identifier associated with the API key, giving access to either the Sandbox or Production environment.
+        Name:
+          type: string
+          description: The trading name of the company operating the platform, shown on Mangopay-hosted webpages such as the [SCA session](/guides/sca/factors#customization) and the [hosted KYC/KYB session](/guides/users/verification/hosted#branding).
+        RegisteredName:
+          type: string
+          description: The registered legal name of the company operating the platform.
+        TechEmails:
+          type: array
+          items:
+            type: string
+          description: 'Format: Emails must be ≤ 40 characters
+
+
+            List of email addresses to contact the platform for technical matters. Important: If the email length exceeds 40 characters, it will be be impossible to process some payments.'
+        AdminEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for administrative or commercial matters.
+        BillingEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for billing matters.
+        FraudEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for fraud and compliance matters.
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address'
+        HeadquartersPhoneNumber:
+          type: string
+          description: 'Max. length: 15 characters; international telephone numbering plan E.164 (+ followed by the country code, then the number)
+
+
+            The phone number of the platform operator''s headquarters.'
+        TaxNumber:
+          type: string
+          description: The tax (or VAT) number for the company operating the platform.
+        PlatformCategorization:
+          $ref: '#/components/schemas/ClientResponsePlatformCategorization'
+          description: The categorization of the platform in terms of business and sector of activity.
+        PlatformURL:
+          type: string
+          description: The URL of the platform's website.
+        PlatformDescription:
+          type: string
+          description: 'Max. length: 2,000 characters
+
+
+            The description of what the platform does.'
+        CompanyReference:
+          type: string
+          description: The unique reference for the platform, which should be used when contacting Mangopay.
+        PrimaryThemeColour:
+          type: string
+          description: 'Format: Hex color code
+
+
+            The color used in accent highlights and icon elements on Mangopay-hosted webpages, such as for [SCA](/guides/sca/factors#customization) and [hosted KYC/KYB](/guides/users/verification/hosted#branding).'
+        PrimaryButtonColour:
+          type: string
+          description: 'Format: Hex color code
+
+
+            The color used for call-to-action (CTA) buttons on Mangopay-hosted webpages, such as for [SCA](/guides/sca/factors#customization) and [hosted KYC/KYB](/guides/users/verification/hosted#branding).'
+        Logo:
+          type: string
+          description: The URL of the platform's logo.
+        CompanyNumber:
+          type: string
+          description: The registration number of the company operating the platform, assigned by the relevant national authority.
+        MCC:
+          type: string
+          description: 4-digit merchant category code. The MCC is used to classify a business by the types of goods or services it provides.
+        Licensor:
+          type: string
+          description: 'Possible values: `EU`, `UK`
+
+
+            The licensor of the platform''s company account, indicating the Mangopay entity the platform contracted with:
+
+            - `EU` – Mangopay S.A.
+
+            - `UK` – Mangopay U.K. Ltd.'
+      title: ClientResponse
+    UploadAClientLogoRequest:
+      type: object
+      properties:
+        File:
+          type: string
+          description: 'Format: Base64 encoded file
+
+
+            The encoded file of the logo to upload.'
+      required:
+      - File
+      title: UploadAClientLogoRequest
+    UpdateAClientRequest:
+      type: object
+      properties:
+        TechEmails:
+          type: array
+          items:
+            type: string
+          description: 'Format: Emails must be ≤ 40 characters
+
+
+            List of email addresses to contact the platform for technical matters. Important: If the email length exceeds 40 characters, it will be be impossible to process some payments.'
+        AdminEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for administrative or commercial matters.
+        BillingEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for billing matters.
+        FraudEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for fraud and compliance matters.
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address_PlatformHeadquarters'
+        HeadquartersPhoneNumber:
+          type: string
+          description: 'Max. length: 15 characters; international telephone numbering plan E.164 (+ followed by the country code, then the number)
+
+
+            The phone number of the platform operator''s headquarters.'
+        TaxNumber:
+          type: string
+          description: The tax (or VAT) number for the company operating the platform.
+        PlatformURL:
+          type: string
+          description: The URL of the platform's website.
+        PlatformDescription:
+          type: string
+          description: 'Max. length: 2,000 characters
+
+
+            The description of what the platform does.'
+        PrimaryThemeColour:
+          type: string
+          description: 'Format: Hex color code
+
+
+            The color used in accent highlights and icon elements on Mangopay-hosted webpages, such as for [SCA](/guides/sca/factors#customization) and [hosted KYC/KYB](/guides/users/verification/hosted#branding).'
+        PrimaryButtonColour:
+          type: string
+          description: 'Format: Hex color code
+
+
+            The color used for call-to-action (CTA) buttons on Mangopay-hosted webpages, such as for [SCA](/guides/sca/factors#customization) and [hosted KYC/KYB](/guides/users/verification/hosted#branding).'
+      title: UpdateAClientRequest
+    UpdateAClientResponse:
+      type: object
+      properties:
+        PlatformType:
+          type: string
+          description: Type of the platform. This field has been replaced by the `PlatformCategorization` object.
+        ClientId:
+          type: string
+          description: The unique identifier associated with the API key, giving access to either the Sandbox or Production environment.
+        Name:
+          type: string
+          description: The trading name of the company operating the platform, used in users' [bank statement references](/bank-statements) and shown on Mangopay-hosted webpages such as the [SCA session](/guides/sca/factors#customization) and the [hosted KYC/KYB session](/guides/users/verification/hosted#branding).
+        RegisteredName:
+          type: string
+          description: The registered legal name of the company operating the platform.
+        TechEmails:
+          type: array
+          items:
+            type: string
+          description: 'Format: Emails must be ≤ 40 characters
+
+
+            List of email addresses to contact the platform for technical matters. Important: If the email length exceeds 40 characters, it will be be impossible to process some payments.'
+        AdminEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for administrative or commercial matters.
+        BillingEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for billing matters.
+        FraudEmails:
+          type: array
+          items:
+            type: string
+          description: List of email addresses to contact the platform for fraud and compliance matters.
+        HeadquartersAddress:
+          $ref: '#/components/schemas/Address'
+        HeadquartersPhoneNumber:
+          type: string
+          description: 'Max. length: 15 characters; international telephone numbering plan E.164 (+ followed by the country code, then the number)
+
+
+            The phone number of the platform operator''s headquarters.'
+        TaxNumber:
+          type: string
+          description: The tax (or VAT) number for the company operating the platform.
+        PlatformCategorization:
+          $ref: '#/components/schemas/UpdateAClientResponsePlatformCategorization'
+          description: The categorization of the platform in terms of business and sector of activity.
+        PlatformURL:
+          type: string
+          description: The URL of the platform's website.
+        PlatformDescription:
+          type: string
+          description: 'Max. length: 2,000 characters
+
+
+            The description of what the platform does.'
+        CompanyReference:
+          type: string
+          description: The unique reference for the platform, which should be used when contacting Mangopay.
+        PrimaryThemeColour:
+          type: string
+          description: 'Format: Hex color code
+
+
+            The color used in accent highlights and icon elements on Mangopay-hosted webpages, such as for [SCA](/guides/sca/factors#customization) and [hosted KYC/KYB](/guides/users/verification/hosted#branding).'
+        PrimaryButtonColour:
+          type: string
+          description: 'Format: Hex color code
+
+
+            The color used for call-to-action (CTA) buttons on Mangopay-hosted webpages, such as for [SCA](/guides/sca/factors#customization) and [hosted KYC/KYB](/guides/users/verification/hosted#branding).'
+        Logo:
+          type: string
+          description: The URL of the platform's logo.
+        CompanyNumber:
+          type: string
+          description: The registration number of the company operating the platform, assigned by the relevant national authority.
+        MCC:
+          type: string
+          description: 4-digit merchant category code. The MCC is used to classify a business by the types of goods or services it provides.
+      title: UpdateAClientResponse
+    UpdateAClientResponsePlatformCategorization:
+      type: object
+      properties:
+        BusinessType:
+          type: string
+          description: The business type of the platform.
+        Sector:
+          type: string
+          description: The sector of activity of the platform.
+      description: The categorization of the platform in terms of business and sector of activity.
+      title: UpdateAClientResponsePlatformCategorization
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

@@ -1,397 +1,522 @@
 openapi: 3.2.0
 info:
-  title: Mangopay REST Wallets API
-  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
-  version: '2.01'
-  contact:
-    name: Mangopay Support
-    url: https://hub.mangopay.com
+  title: Reference Wallets API
+  version: 1.0.0
 servers:
-- url: https://api.mangopay.com/v2.01/{clientId}
-  description: Production
-  variables:
-    clientId:
-      default: your-client-id
-      description: Your Mangopay Client ID
-- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+- url: https://api.sandbox.mangopay.com
   description: Sandbox
-  variables:
-    clientId:
-      default: your-client-id
-      description: Your Mangopay Client ID
-security:
-- OAuth2: []
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
 tags:
 - name: Wallets
 paths:
-  /wallets:
+  /v2.01/{ClientId}/wallets:
     post:
-      tags:
-      - Wallets
+      operationId: wallets_create_wallet
       summary: Create a Wallet
-      operationId: post_wallets
-      parameters: []
+      description: 'Create a Mangopay wallet for a Mangoapy User.
+
+
+        **Caution – Currency not updatable**
+
+
+        The `Currency` of a created wallet cannot be changed.'
+      tags:
+      - Wallets
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWalletResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '403':
           description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/wallets#create-wallet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              type: object
-            example:
-              Owners:
-              - '{{USER_ID}}'
-              Description: Description of the user's wallet
-              Currency: '{{CURRENCY}}'
-              Tag: Created using Mangopay API Postman Collection
-  /wallets/{walletId}:
+              $ref: '#/components/schemas/CreateAWalletRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/wallets/{WalletId}:
     put:
-      tags:
-      - Wallets
+      operationId: wallets_update_wallet
       summary: Update a Wallet
-      operationId: put_wallets_walletId
+      description: Modify a wallet.
+      tags:
+      - Wallets
       parameters:
-      - name: walletId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: WalletId
+        in: path
+        description: The unique identifier of the wallet.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWalletResponse'
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              type: object
-            example:
-              Description: Description of the user's wallet
-              Tag: Created using Mangopay API Postman Collection
+              $ref: '#/components/schemas/UpdateAWalletRequest'
+      security:
+      - oauth2: []
     get:
-      tags:
-      - Wallets
+      operationId: wallets_view_wallet
       summary: View a Wallet
-      operationId: get_wallets_walletId
+      description: 'Retrieve a wallet by its `Id`.
+
+
+        **Note – ScaContext default value is USER_PRESENT**
+
+
+        On this endpoint, the default value for `ScaContext` is `USER_PRESENT`. If the `PendingUserAction.RedirectUrl` value is returned, you need to redirect the user to perform SCA.
+
+
+        With approval from Mangopay, your platform may be able to use the `USER_NOT_PRESENT` value provided you also have a legal proxy in place with the user and the user''s consent to access wallet balances and transactions on their behalf (read more about proxy management).
+
+
+        **Note – SCA triggered by this endpoint**
+
+
+        This endpoint requires the user to perform SCA to authenticate the access to their wallet, unless SCA for wallet access was successfully completed in the **last 180 days** (or unless your platform is using a proxy and user consent).
+
+
+        When SCA is required, this endpoint returns a **401 - Unauthorized** response (see errors below for details).
+
+
+        To let the user complete the SCA session on the Mangopay-hosted webpage, your platform needs to retrieve the `RedirectUrl` from the `WWW-Authenticate` response header, add an encoded `returnUrl` query parameter, and redirect the user. Read more about how to redirect them in the SCA session guide.
+
+
+        In Sandbox, you can bypass SCA by including the word `accept` in the `Email` value of the Natural User or the `LegalRepresentative.Email` value of the Legal User – for example `accept@example.com` or `john.doe+accept@example.com`.'
+      tags:
+      - Wallets
       parameters:
-      - name: walletId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
         required: true
         schema:
           type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /wallets/{usernaturalpayerwalletid}:
-    put:
-      tags:
-      - Wallets
-      summary: Update a Wallet (Natural Payer User)
-      operationId: put_wallets_usernaturalpayerwalletid
-      parameters:
-      - name: usernaturalpayerwalletid
+      - name: WalletId
         in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            example:
-              Description: Description of the user's wallet
-              Tag: Created using Mangopay API Postman Collection
-    get:
-      tags:
-      - Wallets
-      summary: View a Wallet (Natural Payer User)
-      operationId: get_wallets_usernaturalpayerwalletid
-      parameters:
-      - name: usernaturalpayerwalletid
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /wallets/{usernaturalownerwalletid}:
-    put:
-      tags:
-      - Wallets
-      summary: Update a Wallet (Natural Owner User)
-      operationId: put_wallets_usernaturalownerwalletid
-      parameters:
-      - name: usernaturalownerwalletid
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            example:
-              Description: Description of the user's wallet
-              Tag: Created using Mangopay API Postman Collection
-    get:
-      tags:
-      - Wallets
-      summary: View a Wallet (Natural Owner User)
-      operationId: get_wallets_usernaturalownerwalletid
-      parameters:
-      - name: usernaturalownerwalletid
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /wallets/{userlegalownerwalletid}:
-    put:
-      tags:
-      - Wallets
-      summary: Update a Wallet (Legal Owner User)
-      operationId: put_wallets_userlegalownerwalletid
-      parameters:
-      - name: userlegalownerwalletid
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-            example:
-              Description: Description of the user's wallet
-              Tag: Created using Mangopay API Postman Collection
-    get:
-      tags:
-      - Wallets
-      summary: View a Wallet with SCA (Legal Owner User)
-      operationId: get_wallets_userlegalownerwalletid
-      parameters:
-      - name: userlegalownerwalletid
-        in: path
+        description: The unique identifier of the wallet.
         required: true
         schema:
           type: string
       - name: ScaContext
         in: query
+        description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+          The SCA context of the request, which is **required** if the user''s `UserCategory` is `OWNER`:
+
+          - `USER_PRESENT` – The user is taking the SCA-triggering action of accessing their wallet. The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session (unless exempted because a successful SCA session for wallet access occurred in the last 180 days, so no redirection link was returned).
+
+          - `USER_NOT_PRESENT` – The platform is taking the action under proxy from the user and the user has previously given consent to Mangopay (via the SCA hosted experience) to allow the action. If the user has not given (or has revoked) their consent, then `USER_NOT_PRESENT` returns a 403 error.
+
+
+          Read more about [managing proxy and user consent](/guides/sca/proxy-management) **&rarr;**
+
+
+          **Note:** For existing platforms, the parameter is technically optional if the User is an `OWNER`, and the default value will become `USER_PRESENT` from **Dec 15, 2025** (Dec 1 in Sandbox)'
         required: false
         schema:
           type: string
-        description: ''
       responses:
         '200':
           description: Success
-        '400':
-          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWalletResponse'
         '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /users/{userId}/wallets:
+          description: "SCA required to retrieve data because no successful SCA session for wallet access occurred in the last 180 days.\n\nIn this case, the user needs to authenticate the action. \n\nThe 401 response includes a `WWW-Authenticate` header with the `RedirectUrl` value needed."
+          content:
+            application/json:
+              schema:
+                description: Any type
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/wallets:
     get:
+      operationId: wallets_list_wallets_user
+      summary: List Wallets for a User
+      description: 'Retrieve wallets based on `UserId`.
+
+
+        **Note – ScaContext default value is USER_PRESENT**
+
+
+        On this endpoint, the default value for `ScaContext` is `USER_PRESENT`. If the `PendingUserAction.RedirectUrl` value is returned, you need to redirect the user to perform SCA.
+
+
+        With approval from Mangopay, your platform may be able to use the `USER_NOT_PRESENT` value provided you also have a legal proxy in place with the user and the user''s consent to access wallet balances and transactions on their behalf (read more about proxy management).
+
+
+        **Note – SCA triggered by this endpoint**
+
+
+        This endpoint requires the user to perform SCA to authenticate the access to their wallet, unless SCA for wallet access was successfully completed in the last 180 days (or unless your platform is using a proxy and user consent).
+
+
+        When SCA is required, this endpoint returns a **401 - Unauthorized** response (see errors below for details).
+
+
+        To let the user complete the SCA session on the Mangopay-hosted webpage, your platform needs to retrieve the `RedirectUrl` from the `WWW-Authenticate` response header, add an encoded `returnUrl` query parameter, and redirect the user. Read more about how to redirect them in the SCA session guide.
+
+
+        In Sandbox, you can bypass SCA by including the word `accept` in the `Email` value of the Natural User or the `LegalRepresentative.Email` value of the Legal User – for example `accept@example.com` or `john.doe+accept@example.com`.'
       tags:
       - Wallets
-      summary: List Wallets for a User with SCA (Natural Owner User)
-      operationId: get_users_userId_wallets
       parameters:
-      - name: userId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
         required: true
         schema:
           type: string
       - name: ScaContext
         in: query
+        description: '**Possible values:** `USER_PRESENT`, `USER_NOT_PRESENT`
+
+
+          The SCA context of the request, which is **required** if the user''s `UserCategory` is `OWNER`:
+
+          - `USER_PRESENT` – The user is taking the SCA-triggering action of accessing their wallet. The platform must [redirect the user](/guides/sca/session) using the `PendingUserAction.RedirectUrl` returned so that the user can complete the SCA session (unless exempted because a successful SCA session for wallet access occurred in the last 180 days, so no redirection link was returned).
+
+          - `USER_NOT_PRESENT` – The platform is taking the action under proxy from the user and the user has previously given consent to Mangopay (via the SCA hosted experience) to allow the action. If the user has not given (or has revoked) their consent, then `USER_NOT_PRESENT` returns a 403 error.
+
+
+          Read more about [managing proxy and user consent](/guides/sca/proxy-management) **&rarr;**
+
+
+          **Note:** For existing platforms, the parameter is technically optional if the User is an `OWNER`, and the default value will become `USER_PRESENT` from **Dec 15, 2025** (Dec 1 in Sandbox)'
         required: false
         schema:
           type: string
-        description: ''
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /wallets/{usernaturalpayerwalletid}/transactions:
-    get:
-      tags:
-      - Wallets
-      summary: List Transactions for a Wallet (Natural Payer User)
-      operationId: get_wallets_usernaturalpayerwalletid_transactions
-      parameters:
-      - name: usernaturalpayerwalletid
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /wallets/{usernaturalownerwalletid}/transactions:
-    get:
-      tags:
-      - Wallets
-      summary: List Transactions for a Wallet with SCA (Natural Owner User)
-      operationId: get_wallets_usernaturalownerwalletid_transactions
-      parameters:
-      - name: usernaturalownerwalletid
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: ScaContext
+      - name: per_page
         in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
         required: false
         schema:
-          type: string
-        description: ''
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /wallets/{userlegalownerwalletid}/transactions:
-    get:
-      tags:
-      - Wallets
-      summary: List Transactions for a Wallet with SCA (Legal Owner User)
-      operationId: get_wallets_userlegalownerwalletid_transactions
-      parameters:
-      - name: userlegalownerwalletid
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: ScaContext
+          type: integer
+      - name: page
         in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: Sort
+        in: query
+        description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+          **Default value:** `CreationDate:ASC`
+
+
+          Indicates the direction in which to sort the list.'
         required: false
         schema:
           type: string
-        description: ''
       responses:
         '200':
           description: Success
-        '400':
-          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWalletsForAUserResponse'
         '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
+          description: "SCA required to retrieve data because no successful SCA session for wallet access occurred in the last 180 days.\n\nIn this case, the user needs to authenticate the action. \n\nThe 401 response includes a `WWW-Authenticate` header with the `RedirectUrl` value needed."
+          content:
+            application/json:
+              schema:
+                description: Any type
+      security:
+      - oauth2: []
 components:
+  schemas:
+    ListWalletsForAUserResponse:
+      type: object
+      properties:
+        Array (Wallets):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListWalletsForAUserResponseArrayWalletsItems'
+          description: The list of wallets created by the platform.
+      title: ListWalletsForAUserResponse
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    ListWalletsForAUserResponseArrayWalletsItemsObjectWalletBalance:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The current balance of the wallet.
+      title: ListWalletsForAUserResponseArrayWalletsItemsObjectWalletBalance
+    UserWalletResponse:
+      type: object
+      properties:
+        Description:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The description of the wallet. It can be a name, the type, or anything else that can help you clearly identify the wallet on the platform (and for your end users).'
+        Owners:
+          type: array
+          items:
+            type: string
+          description: "The unique identifier of the user owning the wallet. \n\n**Note:** Only one owner can be defined; this array accepts only one string."
+        Id:
+          $ref: '#/components/schemas/Id'
+        Balance:
+          $ref: '#/components/schemas/UserWalletResponseBalance'
+          description: The current balance of the wallet.
+        Currency:
+          type: string
+          description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the wallet.'
+        FundsType:
+          type: string
+          description: '**Returned values:** `DEFAULT`, `FEES`, `CREDIT`
+
+
+            The type of funds in the wallet:
+
+            - `DEFAULT` – Regular funds for user-owned wallets. Wallets with this `FundsType` cannot have a negative balance.
+
+            - `FEES` – Fees Wallet, for fees collected by the platform, specific to the Client Wallet object.
+
+            - `CREDIT` – Repudiation Wallet, for funds for the platform''s dispute management, specific to the Client Wallet object.
+
+
+            **Note:** The Fees Wallet and Repudiation Wallet are created automatically by Mangopay for each currency.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the wallet was created.
+      title: UserWalletResponse
+    CreateAWalletRequest:
+      type: object
+      properties:
+        Description:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The description of the wallet. It can be a name, the type, or anything else that can help you clearly identify the wallet on the platform (and for your end users).'
+        Owners:
+          type: array
+          items:
+            type: string
+          description: "The unique identifier of the user owning the wallet. \n\n**Note:** Only one owner can be defined; this array accepts only one string."
+        Currency:
+          type: string
+          description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the wallet.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - Description
+      - Owners
+      - Currency
+      title: CreateAWalletRequest
+    ListWalletsForAUserResponseArrayWalletsItems:
+      type: object
+      properties:
+        Object (Wallet):
+          $ref: '#/components/schemas/ListWalletsForAUserResponseArrayWalletsItemsObjectWallet'
+          description: The Wallet object created by the platform.
+      title: ListWalletsForAUserResponseArrayWalletsItems
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    ListWalletsForAUserResponseArrayWalletsItemsObjectWallet:
+      type: object
+      properties:
+        Description:
+          type: string
+          description: The description of the wallet. It can be a name, the type, or anything else that can help you clearly identify the wallet on the platform (and for your end users).
+        Owners:
+          type: array
+          items:
+            type: string
+          description: "The unique identifier of the user owning the wallet. \n\n**Note:** Only one owner can be defined; this array accepts only one string."
+        Balance:
+          $ref: '#/components/schemas/ListWalletsForAUserResponseArrayWalletsItemsObjectWalletBalance'
+          description: The current balance of the wallet.
+        Currency:
+          type: string
+          description: '**Returned values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the wallet.'
+        FundsType:
+          type: string
+          description: '**Returned values:** `DEFAULT`, `FEES`, `CREDIT`
+
+
+            The type of funds in the wallet:
+
+            - `DEFAULT` – Regular funds for user-owned wallets. Wallets with this `FundsType` cannot have a negative balance.
+
+            - `FEES` – Fees Wallet, for fees collected by the platform, specific to the Client Wallet object.
+
+            - `CREDIT` – Repudiation Wallet, for funds for the platform''s dispute management, specific to the Client Wallet object.
+
+
+            **Note:** The Fees Wallet and Repudiation Wallet are created automatically by Mangopay for each currency.'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the wallet was created.
+      description: The Wallet object created by the platform.
+      title: ListWalletsForAUserResponseArrayWalletsItemsObjectWallet
+    UserWalletResponseBalance:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The current balance of the wallet.
+      title: UserWalletResponseBalance
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    UpdateAWalletRequest:
+      type: object
+      properties:
+        Description:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The description of the wallet. It can be a name, the type, or anything else that can help you clearly identify the wallet on the platform (and for your end users).'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      title: UpdateAWalletRequest
   securitySchemes:
-    OAuth2:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
-          scopes: {}
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

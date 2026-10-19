@@ -1,0 +1,131 @@
+openapi: 3.2.0
+info:
+  title: Reference API Responses API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: apiResponses
+paths:
+  /v2.01/{ClientId}/responses/{IdempotencyKey}:
+    get:
+      operationId: apiResponses_view_api_response
+      summary: View an API Response
+      description: 'Retrieve an API response from the last 24 hours based on the idempotency key you included in the request.
+
+
+        If the value you look up was not found by Mangopay within the last 24 hours, then this endpoint returns an error.
+
+
+        Read more about idempotency **→**'
+      tags:
+      - apiResponses
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: IdempotencyKey
+        in: path
+        description: The value used by your platform wihtin the last 24 hours as the `Idempotency-Key` header of the original API call.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewAnApiResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ViewAnApiResponseResource:
+      type: object
+      properties: {}
+      description: The response body of the original request.
+      title: ViewAnApiResponseResource
+    ViewAnApiResponse:
+      type: object
+      properties:
+        StatusCode:
+          type: string
+          description: The HTTP response code indicating the success or the failure of the original request.
+        ContentLength:
+          type: string
+          description: The size of the message body in bytes.
+        ContentType:
+          type: string
+          description: The media type (two-part identifier for file formats and format contents) of the resource.
+        Date:
+          type: string
+          description: The date and time at which the response was returned.
+        RequestURL:
+          type: string
+          description: The URL of the original request.
+        Resource:
+          $ref: '#/components/schemas/ViewAnApiResponseResource'
+          description: The response body of the original request.
+      title: ViewAnApiResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

@@ -1,0 +1,270 @@
+openapi: 3.2.0
+info:
+  title: Reference Client Wallets API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: clientWallets
+paths:
+  /v2.01/{ClientId}/clients/wallets/{FundsType}/{Currency}:
+    get:
+      operationId: clientWallets_view_client_wallet
+      summary: View a Client Wallet
+      tags:
+      - clientWallets
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: FundsType
+        in: path
+        description: '**Allowed values:** `FEES`, `CREDIT`
+
+
+          The type of funds in the Client Wallet:
+
+          - `FEES` – Fees Wallet, for fees collected by the platform, specific to the Client Wallet object.
+
+          - `CREDIT` – Repudiation Wallet, for funds for the platform''s dispute management, specific to the Client Wallet object.
+
+
+          **Note:** The Fees Wallet and Repudiation Wallet are created automatically by Mangopay for each currency.'
+        required: true
+        schema:
+          type: string
+      - name: Currency
+        in: path
+        description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+          The currency of the wallet.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientWalletResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/clients/wallets:
+    get:
+      operationId: clientWallets_list_client_wallets
+      summary: List all Client Wallets
+      tags:
+      - clientWallets
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllClientWalletsResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/clients/wallets/{FundsType}:
+    get:
+      operationId: clientWallets_list_client_wallets_fundstype
+      summary: List Client Wallets by FundsType
+      tags:
+      - clientWallets
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: FundsType
+        in: path
+        description: '**Allowed values:** `FEES`, `CREDIT`
+
+
+          The type of funds in the Client Wallet:
+
+          - `FEES` – Fees Wallet, for fees collected by the platform, specific to the Client Wallet object.
+
+          - `CREDIT` – Repudiation Wallet, for funds for the platform''s dispute management, specific to the Client Wallet object.
+
+
+          **Note:** The Fees Wallet and Repudiation Wallet are created automatically by Mangopay for each currency.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllClientWalletsResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ClientWalletResponseBalance:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The current balance of the wallet.
+      title: ClientWalletResponseBalance
+    ListAllClientWalletsResponseArrayClientWalletsItemsObjectClientWalletBalance:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: The current balance of the wallet.
+      title: ListAllClientWalletsResponseArrayClientWalletsItemsObjectClientWalletBalance
+    ClientWalletResponse:
+      type: object
+      properties:
+        Balance:
+          $ref: '#/components/schemas/ClientWalletResponseBalance'
+          description: The current balance of the wallet.
+        Currency:
+          type: string
+          description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the wallet.'
+        FundsType:
+          type: string
+          description: '**Returned values:** `DEFAULT`, `FEES`, `CREDIT`
+
+
+            The type of funds in the wallet:
+
+            - `DEFAULT` – Regular funds for user-owned wallets. Wallets with this `FundsType` cannot have a negative balance.
+
+            - `FEES` – Fees Wallet, for fees collected by the platform, specific to the Client Wallet object.
+
+            - `CREDIT` – Repudiation Wallet, for funds for the platform''s dispute management, specific to the Client Wallet object.
+
+
+            **Note:** The Fees Wallet and Repudiation Wallet are created automatically by Mangopay for each currency.'
+        Id:
+          type: string
+          description: 'The unique identifier of the wallet.
+
+
+            The `Id` of Client Wallet object has the format `FundsType`_`Currency`, for example: `FEES_EUR`, `CREDIT_GBP`, etc.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the wallet was created.
+      title: ClientWalletResponse
+    ListAllClientWalletsResponseArrayClientWalletsItemsObjectClientWallet:
+      type: object
+      properties:
+        Balance:
+          $ref: '#/components/schemas/ListAllClientWalletsResponseArrayClientWalletsItemsObjectClientWalletBalance'
+          description: The current balance of the wallet.
+        Currency:
+          type: string
+          description: '**Returned values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the wallet.'
+        FundsType:
+          type: string
+          description: '**Returned values:** `DEFAULT`, `FEES`, `CREDIT`
+
+
+            The type of funds in the wallet:
+
+            - `DEFAULT` – Regular funds for user-owned wallets. Wallets with this `FundsType` cannot have a negative balance.
+
+            - `FEES` – Fees Wallet, for fees collected by the platform, specific to the Client Wallet object.
+
+            - `CREDIT` – Repudiation Wallet, for funds for the platform''s dispute management, specific to the Client Wallet object.
+
+
+            **Note:** The Fees Wallet and Repudiation Wallet are created automatically by Mangopay for each currency.'
+        Id:
+          type: string
+          description: 'The unique identifier of the wallet.
+
+
+            The `Id` of Client Wallet object has the format `FundsType`_`Currency`, for example: `FEES_EUR`, `CREDIT_GBP`, etc.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the wallet was created.
+      description: The Client Wallet object created by MANGOPAY.
+      title: ListAllClientWalletsResponseArrayClientWalletsItemsObjectClientWallet
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    ListAllClientWalletsResponseArrayClientWalletsItems:
+      type: object
+      properties:
+        Object (Client Wallet):
+          $ref: '#/components/schemas/ListAllClientWalletsResponseArrayClientWalletsItemsObjectClientWallet'
+          description: The Client Wallet object created by MANGOPAY.
+      title: ListAllClientWalletsResponseArrayClientWalletsItems
+    ListAllClientWalletsResponse:
+      type: object
+      properties:
+        Array (Client Wallets):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAllClientWalletsResponseArrayClientWalletsItems'
+          description: The list of Client Wallets.
+      title: ListAllClientWalletsResponse
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

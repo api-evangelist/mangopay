@@ -1,0 +1,2909 @@
+openapi: 3.2.0
+info:
+  title: Reference PayPal API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Pay Pal
+paths:
+  /v2.01/{ClientId}/payins/payment-methods/paypal/data-collection:
+    post:
+      operationId: paypal_submit_data_paypal_payin
+      summary: Submit data for a PayPal PayIn
+      description: 'Provide transaction data to PayPal prior to initiating a pay-in (read guide).
+
+
+        **Note – Data to submit depends on industry**
+
+
+        The request body parameters described below are required for all marketplace businesses.
+
+
+        Additional data points are required for platforms operating in the following industries:
+
+        - Events and ticketing
+
+        - Online travel agents:
+
+        - Car rentals
+
+        - Hotels
+
+        - Transportation
+
+        - Travel packages
+
+        - Retail and groceries
+
+        - Cruise lines
+
+        - Buy online, pick up in store (BOPIS)
+
+        - Crypto
+
+
+        Before integrating this endpoint, platforms operating in the verticals above need to contact Mangopay via the Dashboard.
+
+
+        The `DataCollectionId` returned in the response must be sent on the associated pay-in call for both one-time and recurring payments:
+
+        - POST Create a PayPal PayIn
+
+        - POST Create a Recurring PayPal PayIn with the CIT payload
+
+        - POST Create a Recurring PayPal PayIn with the MIT payload
+
+
+        Each PayPal pay-in or preauth requires a new `DataCollectionId`. The property is not returned on the pay-in endpoints.'
+      tags:
+      - Pay Pal
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitDataForAPayPalPayInResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitDataForAPayPalPayInRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/payins/payment-methods/paypal/data-collection/{DataCollectionId}:
+    get:
+      operationId: paypal_view_data_paypal_payin
+      summary: View data submitted for a PayPal PayIn
+      description: Retrieve pre-transaction data submitted previously.
+      tags:
+      - Pay Pal
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: DataCollectionId
+        in: path
+        description: The unique identifier of the Data Collection object, returned after sending the requested data to the [POST Submit data for a PayPal PayIn](/api-reference/paypal/submit-data-paypal-payin) endpoint.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewDataSubmittedForAPayPalPayInResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/payins/payment-methods/paypal:
+    post:
+      operationId: paypal_create_paypal_payin
+      summary: Create a PayPal PayIn
+      tags:
+      - Pay Pal
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayPalPayInResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAPayPalPayInRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/payins/paypal/web:
+    post:
+      operationId: paypal_create_paypal_payin_web
+      summary: Create a PayPal PayIn
+      description: '**Caution – Deprecated legacy integration**
+
+
+        This endpoint is the legacy integration of PayPal with Mangopay. If you are integrating PayPal for the first time, use the new POST Create a PayPal PayIn endpoint.
+
+
+        Existing legacy integrations continue to be supported, but any integration enhancements are only developed on the new endpoint.
+
+
+        Platforms are strongly encouraged to move to the new integration to benefit from additional features, including:
+
+        - Recurring payment flows
+
+        - Support for tracking information to sync evidence of shipped goods
+
+        - Additional API payload data such as shipping preference, platform references, and PayPal user information'
+      tags:
+      - Pay Pal
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeprecatedPayPalPayInResponse'
+      deprecated: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeprecatedCreateAPayPalPayInRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/payins/payment-methods/paypal/recurring:
+    post:
+      operationId: paypal_create_recurring_paypal_payin
+      summary: Create a Recurring PayPal PayIn (CIT or MIT)
+      description: 'Request a recurring PayPal pay-in based on a `RecurringPayinRegistrationId` with `PaymentType` `PAYPAL`, obtained from POST Create a Recurring PayIn Registration.
+
+
+        There are two possible paylods:
+
+        - **CIT** – Customer-initiated transaction when the user is on session, requiring them to authenticate via PayPal on the `RedirectURL` returned.
+
+        - **MIT** – Subsequent merchant-initiated transactions in the absence of the user, based on the initial successful authentication.
+
+
+        Read the guide to PayPal recurring payments **→**'
+      tags:
+      - Pay Pal
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringPayPalPayInResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/paypal_create_recurring_paypal_payin_Request'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/deposit-preauthorizations/payment-methods/paypal:
+    post:
+      operationId: paypal_create_paypal_deposit_preauthorization
+      summary: Create a PayPal Deposit Preauthorization
+      description: '**Warning – Deprecated feature**
+
+
+        This endpoint is deprecated. Use POST Create a PayPal Extended Preauthorization instead.
+
+
+        The Deposit Preauthorization endpoints are scheduled for decommissioning at the end of 2027. Platforms with existing integrations need to move to the new endpoints at their earliest convenience before then.
+
+
+        The Extended Preauthorization feature is a like-for-like renaming of the legacy Deposit Preauthorization – the behavior is otherwise unchanged.
+
+
+        The previous use of the term "deposit" was for convenience only and does not constitute a traditional banking deposit under applicable banking regulations, including the EU Capital Requirements Directive (Directive 2013/36/EU) or the Deposit Guarantee Schemes Directive (Directive 2014/49/EU). Accordingly, these funds are not covered by any statutory deposit protection schemes, and Mangopay does not operate as a licensed banking institution.
+
+
+        This endpoint creates a Deposit Preauthorization with `PaymentType` of `PAYPAL` and returns the PayPal `RedirectURL` on which the user can preauthorize the debited funds.
+
+
+        Once authorized (`Status` becomes `SUCCEEDED`), you can capture the funds using the POST Create a Deposit Preauthorized PayIn endpoint.
+
+
+        **Best practice - Capture funds within 3 days**
+
+
+        PayPal recommends that you capture preauthorized funds within 3 days (using POST Create a Deposit Preauthorized PayIn). This is because the success of the capture is subject to risk and the availability of funds on the card (or other funding instrument) that the user has linked to their PayPal account.'
+      tags:
+      - Pay Pal
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeprecatedPayPalDepositPreauthorizationResponse'
+      deprecated: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeprecatedCreateAPayPalDepositPreauthorizationRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/extended-preauthorizations/payment-methods/paypal:
+    post:
+      operationId: paypal_create_paypal_extended_preauthorization
+      summary: Create a PayPal Extended Preauthorization
+      description: 'This endpoint creates an Extended Preauthorization with `PaymentType` of `PAYPAL` and returns the PayPal `RedirectURL` on which the user can preauthorize the debited funds.
+
+
+        Once authorized (`Status` becomes `SUCCEEDED`), you can capture the funds using the POST Create an Extended Preauthorized PayIn endpoint.
+
+
+        **Best practice - Capture funds within 3 days**
+
+
+        PayPal recommends that you capture preauthorized funds within 3 days (using POST Create an Extended Preauthorized PayIn). This is because the success of the capture is subject to risk and the availability of funds on the card (or other funding instrument) that the user has linked to their PayPal account.'
+      tags:
+      - Pay Pal
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayPalExtendedPreauthorizationResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAPayPalPreauthorizationRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/payins/{PayInId}/trackings:
+    put:
+      operationId: paypal_add_tracking_paypal_payin
+      summary: Add tracking information to a PayPal PayIn
+      description: '**Caution – Tracking information cannot be edited**
+
+
+        You can''t modify the `TrackingNumber`, `Carrier`, or `NotifyBuyer` once added.
+
+        You can only send a unique tracking number once.
+
+
+        Add tracking information to a PayPal PayIn
+
+
+        You can use this call to add the tracking number and carrier for `LineItems` shipments, on both one-time and recurring PayPal pay-ins.
+
+
+        There is no link between the line items and the tracking numbers.
+
+
+        If adding multiple tracking numbers for the same transaction, it is recommended to set `NotifyBuyer` to `true` on only one of them.'
+      tags:
+      - Pay Pal
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: PayInId
+        in: path
+        description: The unique identifier of the pay-in.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddTrackingInformationToAPayPalPayInResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTrackingInformationToAPayPalPayInRequest'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    RecurringPayPalPayInResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+      title: RecurringPayPalPayInResponseCreditedFunds
+    AddTrackingInformationToAPayPalPayInResponseShipping:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address'
+      description: 'Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS`.
+
+
+        Information about the end user''s shipping address, managed by `ShippingPreference`.'
+      title: AddTrackingInformationToAPayPalPayInResponseShipping
+    AddTrackingInformationToAPayPalPayInResponseFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the fees.
+      title: AddTrackingInformationToAPayPalPayInResponseFees
+    RecurringPayPalPayInResponseLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform''s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller''s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Returned values:** `PHYSICAL_GOODS`, `DIGITAL_GOODS`, `DONATION`
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+      title: RecurringPayPalPayInResponseLineItemsItems
+    DeprecatedPayPalDepositPreauthorizationResponseLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform’s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller’s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Allowed values:** PHYSICAL_GOODS, DIGITAL_GOODS, DONATION
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+        Sku:
+          type: string
+          description: The SKU or reference for the item on your platform.
+        Discount:
+          type: integer
+          description: The discount applied to the item, in the smallest currency sub-division.
+      title: DeprecatedPayPalDepositPreauthorizationResponseLineItemsItems
+    DeprecatedCreateAPayPalPayInRequestFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the fees.
+      title: DeprecatedCreateAPayPalPayInRequestFees
+    PayPalPayInResponseShipping:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address'
+      description: Information about the end user's shipping address, managed by `ShippingPreference`.
+      title: PayPalPayInResponseShipping
+    PayPalExtendedPreauthorizationResponsePayinsLinked:
+      type: object
+      properties:
+        PayinCaptureId:
+          type: string
+          description: The unique identifier of the preauthorized pay-in (capture) made against the extended preauthorization to debit the preauthorized funds.
+        PayinComplementId:
+          type: string
+          description: This deprecated parameter is always returned `null`.
+      description: Information about the extended preauthorized pay-ins made against the extended preauthorization.
+      title: PayPalExtendedPreauthorizationResponsePayinsLinked
+    DeprecatedPayPalPayInResponseFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the fees.
+      title: DeprecatedPayPalPayInResponseFees
+    DeprecatedPayPalDepositPreauthorizationResponsePayinsLinked:
+      type: object
+      properties:
+        PayinCaptureId:
+          type: string
+          description: The unique identifier of the preauthorized pay-in (capture) made against the deposit preauthorization to debit the preauthorized funds.
+        PayinComplementId:
+          type: string
+          description: This deprecated parameter is always returned `null`.
+      description: Information about the deposit preauthorized pay-ins made against the deposit preauthorization.
+      title: DeprecatedPayPalDepositPreauthorizationResponsePayinsLinked
+    SubmitDataForAPayPalPayInResponse:
+      type: object
+      properties:
+        DataCollectionId:
+          type: string
+          description: 'The unique identifier of the Data Collection object.
+
+
+            A new `DataCollectionId` is needed for each call to:
+
+            - [POST Create a PayPal PayIn](/api-reference/paypal/create-paypal-payin)
+
+            - [POST Create a Recurring PayPal PayIn](/api-reference/paypal/create-recurring-paypal-payin), with both the CIT and MIT payloads
+
+            - [POST Create a PayPal Extended Preauthorization](/api-reference/extended-preauthorizations/create-paypal-extended-preauthorization)'
+      title: SubmitDataForAPayPalPayInResponse
+    PayPalPayInResponseTrackingsItems:
+      type: object
+      properties:
+        TrackingNumber:
+          type: string
+          description: The shipment's tracking number provided by the carrier.
+        Carrier:
+          type: string
+          description: The carrier for the shipment. Use the country-specific version of the carrier if it exists, otherwise use its global version.
+        NotifyBuyer:
+          type: boolean
+          description: '**Default value:** false
+
+
+            If `true`, sends an email notification to the `PaypalBuyerAccountEmail` containing the `TrackingNumber` and `Carrier`, which allows the end user to track their shipment with the carrier.'
+      title: PayPalPayInResponseTrackingsItems
+    PayPalExtendedPreauthorizationResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExpirationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the hold period ends and the preauthorized funds are released. At the expiration date, the extended preauthorization's `PaymentStatus` changes to `EXPIRED` if no captures were made.
+        AuthorizationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time successful authorization occurred. If authorization failed, the value is `null`.
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        DebitedFunds:
+          $ref: '#/components/schemas/PayPalExtendedPreauthorizationResponseDebitedFunds'
+          description: Information about the preauthorized funds.
+        Status:
+          $ref: '#/components/schemas/AuthorizationStatus'
+        PaymentStatus:
+          type: string
+          description: '**Returned values:** `WAITING`, `CANCELED`, `CANCEL_REQUESTED`, `EXPIRED`, `VALIDATED`, `FAILED`
+
+
+            The payment status of the extended preauthorization object:
+
+            - `WAITING` – The extended preauthorization can be used: the preauthorized funds can be captured (if `Status` is `SUCCEEDED`) or the preauthorization can be canceled manually.
+
+            - `CANCELED` – Value to pass to manually cancel the extended preauthorization before use; indicates that the extended preauthorization was canceled manually.
+
+            - `CANCEL_REQUESTED` – The cancellation of the extended preauthorization has been requested but not yet processed.
+
+            - `EXPIRED` – The hold period on the preauthorized funds has ended without it being used.
+
+            - `VALIDATED` – Indicates that the preauthorized funds were captured.
+
+            - `FAILED` – The pay-in against the preauthorization has failed, but a retry may be possible.'
+        PayinsLinked:
+          $ref: '#/components/schemas/PayPalExtendedPreauthorizationResponsePayinsLinked'
+          description: Information about the extended preauthorized pay-ins made against the extended preauthorization.
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        PaymentType:
+          type: string
+          description: '**Returned values:** `PAYPAL`
+
+
+            The payment type of the preauthorization.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `WEB`
+
+
+            The execution type of the preauthorization.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        ShippingPreference:
+          type: string
+          description: '**Returned values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        PaypalBuyerAccountEmail:
+          type: string
+          description: The email address registered on the PayPal account used to make the payment.
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform''s order reference for the transaction.'
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        PaypalOrderID:
+          type: string
+          description: PayPal's unique identifier for the order.
+        BuyerCountry:
+          type: string
+          description: The country of the buyer.
+        BuyerFirstname:
+          type: string
+          description: The first name of the buyer.
+        BuyerPhone:
+          type: string
+          description: The mobile phone number of the buyer.
+        BuyerLastname:
+          type: string
+          description: The last name of the buyer.
+        PaypalPayerID:
+          type: string
+          description: The PayPal identifier of the buyer.
+        Trackings:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayPalExtendedPreauthorizationResponseTrackingsItems'
+          description: Shipping information of the `LineItems` added to the pay-in object.
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayPalExtendedPreauthorizationResponseLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items' `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        Billing:
+          description: Returned `null` because the billing address is not applicable to PayPal preauth.
+        RedirectURL:
+          type: string
+          description: 'The URL to which to redirect the user to complete the payment.
+
+
+            **Caution:** This variable URL is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+      description: Response if Extended Preauthorization's `PaymentType` is `PAYPAL`.
+      title: PayPalExtendedPreauthorizationResponse
+    RecurringPayPalPayInResponseFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the fees.
+      title: RecurringPayPalPayInResponseFees
+    Address:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The postal address.
+      title: Address
+    TransactionNature:
+      type: string
+      description: '**Returned values:** `REGULAR`, `REPUDIATION`, `REFUND`, `SETTLEMENT`
+
+
+        The nature of the transaction, providing more information about the context in which the transaction occurred:
+
+        - `REGULAR` – Relative to most of the transactions (pay-ins, payouts, and transfers) in a usual workflow.
+
+        - `REPUDIATION` – Automatic withdrawal of funds from the platform''s repudiation wallet as part of the dispute process (when the user has requested a chargeback).
+
+        - `REFUND` – Reimbursement of a transaction to the user (pay-in refund), to a wallet (transfer refund), or of a payout (payout refund, only initiated by Mangopay).
+
+        - `SETTLEMENT` – Transfer made to the repudiation wallet by the platform to settle a lost dispute.'
+      title: TransactionNature
+    CreateAPayPalPreauthorizationRequestLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform''s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller''s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Allowed values:** PHYSICAL_GOODS, DIGITAL_GOODS, DONATION
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+      required:
+      - Name
+      - Quantity
+      - UnitAmount
+      - Description
+      title: CreateAPayPalPreauthorizationRequestLineItemsItems
+    DeprecatedPayPalDepositPreauthorizationResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the preauthorized funds.
+      title: DeprecatedPayPalDepositPreauthorizationResponseDebitedFunds
+    CreateARecurringPayPalPayInMitRequestFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: 'Information about the fees. This property overrides the `FirstTransactionFees` of the Registration, and is **required if** that property is empty.
+
+
+        **Caution:** An amount must be provided in either the Registration''s `FirstTransactionFees` or the pay-in''s `Fees`.'
+      title: CreateARecurringPayPalPayInMitRequestFees
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    CreateAPayPalPayInRequestLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform''s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller''s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Allowed values:** PHYSICAL_GOODS, DIGITAL_GOODS, DONATION
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+      required:
+      - Name
+      - Quantity
+      - UnitAmount
+      - Description
+      title: CreateAPayPalPayInRequestLineItemsItems
+    paypal_create_recurring_paypal_payin_Request:
+      oneOf:
+      - $ref: '#/components/schemas/CreateARecurringPayPalPayInCITRequest'
+      - $ref: '#/components/schemas/CreateARecurringPayPalPayInMITRequest'
+      title: paypal_create_recurring_paypal_payin_Request
+    CreateARecurringPayPalPayInCitRequestLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform''s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller''s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Allowed values:** PHYSICAL_GOODS, DIGITAL_GOODS, DONATION
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+      required:
+      - Name
+      - Quantity
+      - UnitAmount
+      - Description
+      title: CreateARecurringPayPalPayInCitRequestLineItemsItems
+    AddTrackingInformationToAPayPalPayInResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+      title: AddTrackingInformationToAPayPalPayInResponseCreditedFunds
+    CreateARecurringPayPalPayInMitRequestLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform''s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller''s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Allowed values:** PHYSICAL_GOODS, DIGITAL_GOODS, DONATION
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+      required:
+      - Name
+      - Quantity
+      - UnitAmount
+      - Description
+      title: CreateARecurringPayPalPayInMitRequestLineItemsItems
+    DeprecatedPayPalPayInResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the debited funds.
+      title: DeprecatedPayPalPayInResponseDebitedFunds
+    DeprecatedPayPalPayInResponseShippingAddress:
+      type: object
+      properties:
+        RecipientName:
+          type: string
+          description: The full name of the shipping addressee.
+        Address:
+          $ref: '#/components/schemas/Address'
+      description: Information about the shipping recipient and address for the transaction. If sent, this information overrides the user's PayPal shipping address. If not sent, the user's PayPal shipping address is used.
+      title: DeprecatedPayPalPayInResponseShippingAddress
+    DeprecatedCreateAPayPalDepositPreauthorizationRequest:
+      type: object
+      properties:
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/DeprecatedCreateAPayPalDepositPreauthorizationRequestDebitedFunds'
+          description: Information about the preauthorized funds.
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        DataCollectionId:
+          type: string
+          description: The unique identifier of the Data Collection object, returned after sending the requested data to the [POST Submit data for a PayPal PayIn](/api-reference/paypal/submit-data-paypal-payin) endpoint.
+        ShippingPreference:
+          type: string
+          description: '**Allowed values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        Shipping:
+          $ref: '#/components/schemas/DeprecatedCreateAPayPalDepositPreauthorizationRequestShipping'
+          description: 'Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS`.
+
+
+            Information about the end user’s shipping address, managed by `ShippingPreference`.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeprecatedCreateAPayPalDepositPreauthorizationRequestLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items’ `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform’s order reference for the transaction.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Culture:
+          type: string
+          description: '**Allowed values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+      required:
+      - AuthorId
+      - DebitedFunds
+      - ReturnURL
+      - LineItems
+      title: DeprecatedCreateAPayPalDepositPreauthorizationRequest
+    DeprecatedPayPalPayInResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        DebitedFunds:
+          $ref: '#/components/schemas/DeprecatedPayPalPayInResponseDebitedFunds'
+          description: Information about the debited funds.
+        CreditedFunds:
+          $ref: '#/components/schemas/DeprecatedPayPalPayInResponseCreditedFunds'
+          description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+        Fees:
+          $ref: '#/components/schemas/DeprecatedPayPalPayInResponseFees'
+          description: Information about the fees.
+        Status:
+          $ref: '#/components/schemas/TransactionStatus'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        ExecutionDate:
+          $ref: '#/components/schemas/TransactionExecutionDate'
+        Type:
+          $ref: '#/components/schemas/TransactionType'
+        Nature:
+          $ref: '#/components/schemas/TransactionNature'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        DebitedWalletId:
+          type: string
+          description: The unique identifier of the debited wallet.
+        PaymentType:
+          type: string
+          description: '**Returned values:** `PAYPAL`
+
+
+            The payment type of the pay-in.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `WEB`
+
+
+            The execution type of the pay-in.'
+        RedirectURL:
+          type: string
+          description: 'The URL to which to redirect the user to complete the payment.
+
+
+            **Caution:** This variable URL is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): DE, EN, ES, FR, IT, NL, PL, PT.
+
+
+            The language in which the payment page is to be displayed.'
+        ShippingAddress:
+          $ref: '#/components/schemas/DeprecatedPayPalPayInResponseShippingAddress'
+          description: Information about the shipping recipient and address for the transaction. If sent, this information overrides the user's PayPal shipping address. If not sent, the user's PayPal shipping address is used.
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        PaypalBuyerAccountEmail:
+          type: string
+          description: The email address registered on the PayPal account used to make the payment.
+      title: DeprecatedPayPalPayInResponse
+    DeprecatedCreateAPayPalDepositPreauthorizationRequestLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform’s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller’s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Allowed values:** PHYSICAL_GOODS, DIGITAL_GOODS, DONATION
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+      required:
+      - Name
+      - Quantity
+      - UnitAmount
+      - Description
+      title: DeprecatedCreateAPayPalDepositPreauthorizationRequestLineItemsItems
+    PayPalExtendedPreauthorizationResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the preauthorized funds.
+      title: PayPalExtendedPreauthorizationResponseDebitedFunds
+    FlowDescriptorRequest:
+      type: object
+      properties:
+        Beneficiaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FlowDescriptorRequestBeneficiariesItems'
+          description: 'Max. length: 5 items
+
+
+            The list of up to 5 Natural or Legal Users declared as beneficiaries of the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made. The pay-in also fails if the `Beneficiaries` array contains nulled objects or invalid `UserId` values.'
+      description: "Information about the Owner beneficiaries targeted by the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made ([read more](/guides/payin-beneficiaries)).\n\nIf the `FlowDescriptor.Beneficiaries` is sent in the API request, then:\n- The transaction's `CreditedWalletId` holder is disregarded in KYC/KYB checks.\n- **ALL** `UserId` values in the array must be one of:\n  - `OWNER` whose `KYCLevel` is `REGULAR`\n  - `PLATFORM`\n  \nThe pay-in `Status` becomes `FAILED` with `ResultCode` [002951](/errors/codes/002951) if at least one `FlowDescriptor.Beneficiaries.UserId` is:\n- `PAYER`\n- `OWNER` whose `KYCLevel` is `LIGHT`\n\nIf the `FlowDescriptor.Beneficiaries` is not sent in the API request, then the `CreditedWalletId` holder is subject to KYC/KYB checks. This property is optional for backwards compatibility but is recommended for all pay-in flows, even when the `CreditedWalletId` holder is a `PAYER` or the same value as one of the `FlowDescriptor.Beneficiaries`. \n"
+      title: FlowDescriptorRequest
+    Shipping_DefaultsBillingUser_Response:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      description: '**Default values:** `FirstName`, `LastName`, and `Address` information of the `Billing` object if sent, otherwise of the `AuthorId` (if address values present).
+
+
+        Information about the shipping address. '
+      title: Shipping_DefaultsBillingUser_Response
+    DeprecatedPayPalPayInResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+      title: DeprecatedPayPalPayInResponseCreditedFunds
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    AddTrackingInformationToAPayPalPayInResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/AddTrackingInformationToAPayPalPayInResponseDebitedFunds'
+          description: Information about the debited funds.
+        CreditedFunds:
+          $ref: '#/components/schemas/AddTrackingInformationToAPayPalPayInResponseCreditedFunds'
+          description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+        Fees:
+          $ref: '#/components/schemas/AddTrackingInformationToAPayPalPayInResponseFees'
+          description: Information about the fees.
+        Status:
+          $ref: '#/components/schemas/TransactionStatus'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        ExecutionDate:
+          $ref: '#/components/schemas/TransactionExecutionDate'
+        Type:
+          $ref: '#/components/schemas/TransactionType'
+        Nature:
+          $ref: '#/components/schemas/TransactionNature'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        PaymentType:
+          type: string
+          description: '**Returned values:** `PAYPAL`
+
+
+            The payment type of the pay-in.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `WEB`
+
+
+            The execution type of the pay-in.'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        RedirectURL:
+          type: string
+          description: 'The URL to which to redirect the user to complete the payment.
+
+
+            **Caution:** This variable URL is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Shipping:
+          $ref: '#/components/schemas/AddTrackingInformationToAPayPalPayInResponseShipping'
+          description: 'Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS`.
+
+
+            Information about the end user''s shipping address, managed by `ShippingPreference`.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddTrackingInformationToAPayPalPayInResponseLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items' `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        ShippingPreference:
+          type: string
+          description: '**Returned values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        PaypalBuyerAccountEmail:
+          type: string
+          description: The email address registered on the PayPal account used to make the payment.
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform''s order reference for the transaction.'
+        Trackings:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddTrackingInformationToAPayPalPayInResponseTrackingsItems'
+          description: Shipping information of the `LineItems` added to the pay-in object.
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        PaypalOrderID:
+          type: string
+          description: PayPal's unique identifier for the order.
+        BuyerCountry:
+          type: string
+          description: The country of the buyer.
+        BuyerFirstname:
+          type: string
+          description: The first name of the buyer.
+        BuyerPhone:
+          type: string
+          description: The mobile phone number of the buyer.
+        BuyerLastname:
+          type: string
+          description: The last name of the buyer.
+        PaypalPayerID:
+          type: string
+          description: The PayPal identifier of the buyer.
+      title: AddTrackingInformationToAPayPalPayInResponse
+    AddTrackingInformationToAPayPalPayInRequest:
+      type: object
+      properties:
+        TrackingNumber:
+          type: string
+          description: The shipment's tracking number provided by the carrier.
+        Carrier:
+          type: string
+          description: The carrier for the shipment. Use the country-specific version of the carrier if it exists, otherwise use its global version.
+        NotifyBuyer:
+          type: boolean
+          description: '**Default value:** false
+
+
+            If `true`, sends an email notification to the `PaypalBuyerAccountEmail` containing the `TrackingNumber` and `Carrier`, which allows the end user to track their shipment with the carrier.'
+      required:
+      - TrackingNumber
+      - Carrier
+      title: AddTrackingInformationToAPayPalPayInRequest
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    CreateARecurringPayPalPayInMitRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: 'Information about the debited funds. This property overrides the `FirstTransactionDebitedFunds` of the Registration, and is **required if** that property is empty.
+
+
+        **Caution:** An amount must be provided in either the Registration''s `FirstTransactionDebitedFunds` or the pay-in''s `DebitedFunds`.'
+      title: CreateARecurringPayPalPayInMitRequestDebitedFunds
+    CreateAPayPalPreauthorizationRequestShipping:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      required:
+      - Address
+      description: 'Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS`.
+
+
+        Information about the end user''s shipping address, managed by `ShippingPreference`.'
+      title: CreateAPayPalPreauthorizationRequestShipping
+    DeprecatedCreateAPayPalDepositPreauthorizationRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the preauthorized funds.
+      title: DeprecatedCreateAPayPalDepositPreauthorizationRequestDebitedFunds
+    RecurringPayPalPayInResponseTrackingsItems:
+      type: object
+      properties:
+        TrackingNumber:
+          type: string
+          description: The shipment's tracking number provided by the carrier.
+        Carrier:
+          type: string
+          description: The carrier for the shipment. Use the country-specific version of the carrier if it exists, otherwise use its global version.
+        NotifyBuyer:
+          type: boolean
+          description: '**Default value:** false
+
+
+            If `true`, sends an email notification to the `PaypalBuyerAccountEmail` containing the `TrackingNumber` and `Carrier`, which allows the end user to track their shipment with the carrier.'
+      title: RecurringPayPalPayInResponseTrackingsItems
+    CreateARecurringPayPalPayInCITRequest:
+      type: object
+      properties:
+        RecurringPayinRegistrationId:
+          type: string
+          description: The unique identifier of the recurring pay-in registration.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Shipping:
+          $ref: '#/components/schemas/CreateARecurringPayPalPayInCitRequestShipping'
+          description: '**Default values:** `Shipping` information of the registration object (if present).
+
+
+            Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS` and the shipping information is not present in the recurring registration object.
+
+
+            Information about the end user''s shipping address, managed by `ShippingPreference`.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateARecurringPayPalPayInCitRequestLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items' `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Culture:
+          type: string
+          description: '**Allowed values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        ShippingPreference:
+          type: string
+          description: '**Allowed values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform''s order reference for the transaction.'
+        DataCollectionId:
+          type: string
+          description: The unique identifier of the Data Collection object, returned after sending the requested data to the [POST Submit data for a PayPal PayIn](/api-reference/paypal/submit-data-paypal-payin) endpoint.
+      required:
+      - ReturnURL
+      - LineItems
+      description: Request body for a PayPal customer-initiated transaction (CIT).
+      title: CreateARecurringPayPalPayInCITRequest
+    RecurringPayPalPayInResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/RecurringPayPalPayInResponseDebitedFunds'
+          description: Information about the debited funds. The amount must be equal to the total of all `UnitAmount` and `TaxAmount` of all `LineItems`.
+        CreditedFunds:
+          $ref: '#/components/schemas/RecurringPayPalPayInResponseCreditedFunds'
+          description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+        Fees:
+          $ref: '#/components/schemas/RecurringPayPalPayInResponseFees'
+          description: Information about the fees.
+        Status:
+          $ref: '#/components/schemas/TransactionStatus'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        ExecutionDate:
+          $ref: '#/components/schemas/TransactionExecutionDate'
+        Type:
+          $ref: '#/components/schemas/TransactionType'
+        Nature:
+          $ref: '#/components/schemas/TransactionNature'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        PaymentType:
+          type: string
+          description: '**Returned values:** `PAYPAL`
+
+
+            The payment type of the pay-in.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `DIRECT`
+
+
+            The execution type of the pay-in.'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        RedirectURL:
+          type: string
+          description: 'The URL to which to redirect the user to complete the payment.
+
+
+            **Caution:** This variable URL is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Shipping:
+          $ref: '#/components/schemas/RecurringPayPalPayInResponseShipping'
+          description: Information about the end user's shipping address, managed by `ShippingPreference`.
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurringPayPalPayInResponseLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items' `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        ShippingPreference:
+          type: string
+          description: '**Returned values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        PaypalBuyerAccountEmail:
+          type: string
+          description: The email address registered on the PayPal account used to make the payment.
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform''s order reference for the transaction.'
+        Trackings:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurringPayPalPayInResponseTrackingsItems'
+          description: Shipping information of the `LineItems` added to the pay-in object.
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        PaypalPayerID:
+          type: string
+          description: The PayPal identifier of the buyer.
+        BuyerCountry:
+          type: string
+          description: The country of the buyer.
+        BuyerFirstname:
+          type: string
+          description: The first name of the buyer.
+        BuyerLastname:
+          type: string
+          description: The last name of the buyer.
+        BuyerPhone:
+          type: string
+          description: The mobile phone number of the buyer.
+        PaypalOrderID:
+          type: string
+          description: PayPal's unique identifier for the order.
+        RecurringPayinRegistrationId:
+          type: string
+          description: The unique identifier of the recurring pay-in registration.
+      description: 'A recurring PayPal pay-in:
+
+        - `PaymentType` – `PAYPAL`
+
+        - `ExecutionType` – `DIRECT`
+
+        - Object includes `RecurringPayinRegistrationId`'
+      title: RecurringPayPalPayInResponse
+    CreateAPayPalPreauthorizationRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the preauthorized funds.
+      title: CreateAPayPalPreauthorizationRequestDebitedFunds
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    CreateAPayPalPayInRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the debited funds.
+      title: CreateAPayPalPayInRequestDebitedFunds
+    FlowDescriptorRequestBeneficiariesItems:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the Natural User or Legal User declared as a beneficiary of the pay-in.
+      title: FlowDescriptorRequestBeneficiariesItems
+    FlowDescriptorResponseBeneficiariesItems:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the Natural User or Legal User declared as a beneficiary of the pay-in.
+      title: FlowDescriptorResponseBeneficiariesItems
+    TransactionExecutionDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the status changed to `SUCCEEDED`, indicating that the transaction occurred. The statuses `CREATED` and `FAILED` return an `ExecutionDate` of `null`.
+      title: TransactionExecutionDate
+    CreateARecurringPayPalPayInMitRequestShipping:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address'
+      description: '**Default values:** `Shipping` information of the registration object (if present).
+
+
+        Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS` and the shipping information is not present in the recurring registration object.
+
+
+        Information about the end user''s shipping address, managed by `ShippingPreference`.'
+      title: CreateARecurringPayPalPayInMitRequestShipping
+    ProfilingAttemptReference:
+      type: string
+      description: 'The unique reference generated for the profiling session, used by the <a href="/guides/fraud-prevention">fraud prevention</a> solution to produce recommendations for the transaction using the profiling data.
+
+
+        **Note:** Parameter not returned by the API. Profiling feature available on request – contact Mangopay <a href="https://hub.mangopay.com/" target="_blank">via the Dashboard</a> for more information.'
+      title: ProfilingAttemptReference
+    AuthorizationStatus:
+      type: string
+      description: '**Returned values:** `CREATED`, `SUCCEEDED`, `FAILED`
+
+
+        The status of the authorization.'
+      title: AuthorizationStatus
+    CreateAPayPalPayInRequestFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the fees.
+      title: CreateAPayPalPayInRequestFees
+    DeprecatedCreateAPayPalPayInRequest:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/DeprecatedCreateAPayPalPayInRequestDebitedFunds'
+          description: Information about the debited funds.
+        Fees:
+          $ref: '#/components/schemas/DeprecatedCreateAPayPalPayInRequestFees'
+          description: Information about the fees.
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        Culture:
+          type: string
+          description: '**Allowed values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): DE, EN, ES, FR, IT, NL, PL, PT.
+
+
+            The language in which the payment page is to be displayed.'
+        ShippingAddress:
+          $ref: '#/components/schemas/DeprecatedCreateAPayPalPayInRequestShippingAddress'
+          description: Information about the shipping recipient and address for the transaction. If sent, this information overrides the user's PayPal shipping address. If not sent, the user's PayPal shipping address is used.
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+      required:
+      - AuthorId
+      - DebitedFunds
+      - Fees
+      - CreditedWalletId
+      - ReturnURL
+      title: DeprecatedCreateAPayPalPayInRequest
+    CreateARecurringPayPalPayInCitRequestShipping:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address'
+      description: '**Default values:** `Shipping` information of the registration object (if present).
+
+
+        Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS` and the shipping information is not present in the recurring registration object.
+
+
+        Information about the end user''s shipping address, managed by `ShippingPreference`.'
+      title: CreateARecurringPayPalPayInCitRequestShipping
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+    DeprecatedCreateAPayPalPayInRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the debited funds.
+      title: DeprecatedCreateAPayPalPayInRequestDebitedFunds
+    RecurringPayPalPayInResponseShipping:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address'
+      description: Information about the end user's shipping address, managed by `ShippingPreference`.
+      title: RecurringPayPalPayInResponseShipping
+    CreateARecurringPayPalPayInMITRequest:
+      type: object
+      properties:
+        RecurringPayinRegistrationId:
+          type: string
+          description: The unique identifier of the recurring pay-in registration.
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateARecurringPayPalPayInMitRequestDebitedFunds'
+          description: 'Information about the debited funds. This property overrides the `FirstTransactionDebitedFunds` of the Registration, and is **required if** that property is empty.
+
+
+            **Caution:** An amount must be provided in either the Registration''s `FirstTransactionDebitedFunds` or the pay-in''s `DebitedFunds`.'
+        Fees:
+          $ref: '#/components/schemas/CreateARecurringPayPalPayInMitRequestFees'
+          description: 'Information about the fees. This property overrides the `FirstTransactionFees` of the Registration, and is **required if** that property is empty.
+
+
+            **Caution:** An amount must be provided in either the Registration''s `FirstTransactionFees` or the pay-in''s `Fees`.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Shipping:
+          $ref: '#/components/schemas/CreateARecurringPayPalPayInMitRequestShipping'
+          description: '**Default values:** `Shipping` information of the registration object (if present).
+
+
+            Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS` and the shipping information is not present in the recurring registration object.
+
+
+            Information about the end user''s shipping address, managed by `ShippingPreference`.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateARecurringPayPalPayInMitRequestLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items' `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Culture:
+          type: string
+          description: '**Allowed values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        ShippingPreference:
+          type: string
+          description: '**Allowed values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform''s order reference for the transaction.'
+        DataCollectionId:
+          type: string
+          description: The unique identifier of the Data Collection object, returned after sending the requested data to the [POST Submit data for a PayPal PayIn](/api-reference/paypal/submit-data-paypal-payin) endpoint.
+      required:
+      - ReturnURL
+      - LineItems
+      description: Request body for a PayPal merchant-initiated transaction (MIT).
+      title: CreateARecurringPayPalPayInMITRequest
+    CreateAPayPalPayInRequestShipping:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      required:
+      - Address
+      description: 'Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS`.
+
+
+        Information about the end user''s shipping address, managed by `ShippingPreference`.'
+      title: CreateAPayPalPayInRequestShipping
+    DeprecatedCreateAPayPalPayInRequestShippingAddress:
+      type: object
+      properties:
+        RecipientName:
+          type: string
+          description: The full name of the shipping addressee.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      required:
+      - RecipientName
+      - Address
+      description: Information about the shipping recipient and address for the transaction. If sent, this information overrides the user's PayPal shipping address. If not sent, the user's PayPal shipping address is used.
+      title: DeprecatedCreateAPayPalPayInRequestShippingAddress
+    CreateAPayPalPreauthorizationRequest:
+      type: object
+      properties:
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateAPayPalPreauthorizationRequestDebitedFunds'
+          description: Information about the preauthorized funds.
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        DataCollectionId:
+          type: string
+          description: The unique identifier of the Data Collection object, returned after sending the requested data to the [POST Submit data for a PayPal PayIn](/api-reference/paypal/submit-data-paypal-payin) endpoint.
+        ShippingPreference:
+          type: string
+          description: '**Allowed values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        Shipping:
+          $ref: '#/components/schemas/CreateAPayPalPreauthorizationRequestShipping'
+          description: 'Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS`.
+
+
+            Information about the end user''s shipping address, managed by `ShippingPreference`.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAPayPalPreauthorizationRequestLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items' `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform''s order reference for the transaction.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Culture:
+          type: string
+          description: '**Allowed values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+      required:
+      - AuthorId
+      - DebitedFunds
+      - ReturnURL
+      - LineItems
+      title: CreateAPayPalPreauthorizationRequest
+    PayPalPayInResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the debited funds. The amount must be equal to the total of all `UnitAmount` and `TaxAmount` of all `LineItems`.
+      title: PayPalPayInResponseDebitedFunds
+    AddTrackingInformationToAPayPalPayInResponseLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform''s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller''s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Allowed values:** PHYSICAL_GOODS, DIGITAL_GOODS, DONATION
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+      title: AddTrackingInformationToAPayPalPayInResponseLineItemsItems
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    SubmitDataForAPayPalPayInRequest:
+      type: object
+      properties:
+        sender_account_id:
+          type: string
+          description: 'Format: Alphanumeric; example: `A12345N343`
+
+
+            Unique identifier of the sender/buyer account on the marketplace platform.'
+        sender_first_name:
+          type: string
+          description: 'Format: Alphanumeric; example: `Jane`
+
+
+            First name registered with the sender/buyer''s marketplace account.'
+        sender_last_name:
+          type: string
+          description: 'Format: Alphanumeric; example: `Doe`
+
+
+            Last name registered with the sender/buyer''s marketplace account.'
+        sender_email:
+          type: string
+          description: 'Format: E.123 – Email Address; example: `john@example.com`
+
+
+            Email address registered with the sender/buyer''s marketplace account.'
+        sender_phone:
+          type: string
+          description: 'Format: E.123 - Telephone Number (national notation); example `(042) 1123 4567`
+
+
+            Phone number (national notation) registered with the sender/buyer''s marketplace account.'
+        sender_country_code:
+          type: string
+          description: 'Format: ISO Alpha-2 Country Code; example: `FR`
+
+
+            Country code registered with the sender/buyer''s marketplace account.'
+        sender_create_date:
+          type: string
+          description: 'Format: ISO 8601 date format; example: `2012-12-09T19:14:55.277-0:00`
+
+
+            Date of creation of the sender/buyer''s account on the marketplace platform.'
+        sender_signup_ip:
+          type: string
+          description: 'Format: IP (IPv4 / IPv6); example: `10.220.90.20`
+
+
+            IP address that the sender/buyer used to sign up on the marketplace platform.'
+        sender_popularity_score:
+          type: string
+          description: 'Possible values: `high`, `medium`, `low`; example: `high`
+
+
+            Risk-based scoring on the sender/buyer by the marketplace platform (e.g., social score, identity score, risk score). This score is likely unique for each platform based on marketplace platform''s risk platform capabilities.'
+        receiver_account_id:
+          type: string
+          description: 'Format: Alphanumeric; example: `A12345N343`
+
+
+            Unique identifier of the seller/recipient''s account on the marketplace platform.'
+        receiver_create_date:
+          type: string
+          description: 'Format: ISO 8601 date format; example: `2012-12-09T19:14:55.277-0:00`
+
+
+            Date of creation of the seller/recipient''s account on the marketplace platform.'
+        receiver_email:
+          type: string
+          description: 'Format: E.123 – Email Address; example: `john@example.com`
+
+
+            Seller/recipient''s registered email on the marketplace platform.'
+        receiver_address_country_code:
+          type: string
+          description: 'Format: ISO Alpha-2 Country Code; example: `FR`
+
+
+            Seller/recipient''s country code registered on the marketplace platform.'
+        business_name:
+          type: string
+          description: 'Format: Alphanumeric; example: `Acme Corp.`
+
+
+            Business name used by the seller/recipient to register on the marketplace platform.'
+        recipient_popularity_score:
+          type: string
+          description: 'Possible values: `high`, `medium`, `low`; example: `high`
+
+
+            Risk-based scoring on the seller/recipient by the marketplace platform (e.g., social score, identity score, risk score). This score is likely unique for each platform based on marketplace platform''s risk platform capabilities.'
+        first_interaction_date:
+          type: string
+          description: 'Format: ISO 8601 date format; example: `2012-12-09T 19:14:55.277-0:00`
+
+
+            Date of the first interaction between the sender and receiver on the marketplace platform. Definition of ''interaction'' is to be defined by the marketplace platform. Examples are: first transaction attempt between sender and receiver, add friend date between sender and receiver, etc.'
+        txn_count_total:
+          type: string
+          description: 'Format: Integer; example: `34`
+
+
+            Total number of transactions the sender/buyer has had to date on the marketplace platform (through PayPal or otherwise).'
+        vertical:
+          type: string
+          description: 'Format: Alphanumeric; examples: `household goods`, `shoes`, `clothing`, `tickets`, etc.
+
+
+            Transaction level vertical flag for the seller/receiver''s transactions that are in several verticals.'
+        transaction_is_tangible:
+          type: string
+          description: 'Possible values: `0`, `1`; example: `0`
+
+
+            The seller/receiver''s transaction is for tangible rather than digital goods. If tangible, value = 1. If intangible, value = 0.'
+      title: SubmitDataForAPayPalPayInRequest
+    RecurringPayPalPayInResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the debited funds. The amount must be equal to the total of all `UnitAmount` and `TaxAmount` of all `LineItems`.
+      title: RecurringPayPalPayInResponseDebitedFunds
+    StatementDescriptor:
+      type: string
+      description: 'Max. length: 10 characters; only alphanumeric and spaces
+
+
+        Custom description to appear on the user’s bank statement along with the platform name. Different banks may show more or less information. See the <a href="/bank-statements">Customizing bank statement references</a> article for details.'
+      title: StatementDescriptor
+    Address_SubPropsRequired:
+      type: object
+      properties:
+        AddressLine1:
+          type: string
+          description: The first line of the address.
+        AddressLine2:
+          type: string
+          description: The second line of the address.
+        City:
+          type: string
+          description: The city of the address.
+        Region:
+          type: string
+          description: Required if `Country` is US, CA, or MX. The region of the address.
+        PostalCode:
+          type: string
+          description: 'The postal code of the address. The postal code can contain the following characters: alphanumeric, dashes, and spaces.'
+        Country:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      required:
+      - AddressLine1
+      - City
+      - PostalCode
+      - Country
+      description: The postal address.
+      title: Address_SubPropsRequired
+    PayPalPayInResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+      title: PayPalPayInResponseCreditedFunds
+    PayPalPayInResponseLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform''s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller''s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Returned values:** `PHYSICAL_GOODS`, `DIGITAL_GOODS`, `DONATION`
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+      title: PayPalPayInResponseLineItemsItems
+    AuthorId:
+      type: string
+      description: The unique identifier of the user at the source of the transaction.
+      title: AuthorId
+    DeprecatedPayPalDepositPreauthorizationResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExpirationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the hold period ends and the preauthorized funds are released. At the expiration date, the deposit preauthorization’s `PaymentStatus` changes to `EXPIRED` if no captures were made.
+        AuthorizationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time successful authorization occurred. If authorization failed, the value is `null`.
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        DebitedFunds:
+          $ref: '#/components/schemas/DeprecatedPayPalDepositPreauthorizationResponseDebitedFunds'
+          description: Information about the preauthorized funds.
+        Status:
+          $ref: '#/components/schemas/AuthorizationStatus'
+        PaymentStatus:
+          type: string
+          description: '**Returned values:** `WAITING`, `CANCELED`, `CANCEL_REQUESTED`, `EXPIRED`, `VALIDATED`, `FAILED`
+
+
+            The payment status of the deposit preauthorization object:
+
+            - `WAITING` – The deposit preauthorization can be used: the preauthorized funds can be captured (if `Status` is `SUCCEEDED`) or the preauthorization can be canceled manually.
+
+            - `CANCELED` – Value to pass to manually cancel the deposit preauthorization before use; indicates that the deposit preauthorization was canceled manually.
+
+            - `CANCEL_REQUESTED` – The cancellation of the deposit preauthorization has been requested but not yet processed.
+
+            - `EXPIRED` – The hold period on the preauthorized funds has ended without it being used.
+
+            - `VALIDATED` – Indicates that the preauthorized funds were captured.
+
+            - `FAILED` – The pay-in against the preauthorization has failed, but a retry may be possible.'
+        PayinsLinked:
+          $ref: '#/components/schemas/DeprecatedPayPalDepositPreauthorizationResponsePayinsLinked'
+          description: Information about the deposit preauthorized pay-ins made against the deposit preauthorization.
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        PaymentType:
+          type: string
+          description: '**Returned values:** `PAYPAL`
+
+
+            The payment type of the preauthorization.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `WEB`
+
+
+            The execution type of the preauthorization.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Shipping:
+          $ref: '#/components/schemas/Shipping_DefaultsBillingUser_Response'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        ShippingPreference:
+          type: string
+          description: '**Returned values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        PaypalBuyerAccountEmail:
+          type: string
+          description: The email address registered on the PayPal account used to make the payment.
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform’s order reference for the transaction.'
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        PaypalOrderID:
+          type: string
+          description: PayPal's unique identifier for the order.
+        BuyerCountry:
+          type: string
+          description: The country of the buyer.
+        BuyerFirstname:
+          type: string
+          description: The first name of the buyer.
+        BuyerPhone:
+          type: string
+          description: The mobile phone number of the buyer.
+        BuyerLastname:
+          type: string
+          description: The last name of the buyer.
+        PaypalPayerID:
+          type: string
+          description: The PayPal identifier of the buyer.
+        Trackings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeprecatedPayPalDepositPreauthorizationResponseTrackingsItems'
+          description: Shipping information of the `LineItems` added to the pay-in object.
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeprecatedPayPalDepositPreauthorizationResponseLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items’ `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        Billing:
+          description: Returned `null` because the billing address is not applicable to PayPal preauth.
+        RedirectURL:
+          type: string
+          description: 'The URL to which to redirect the user to complete the payment.
+
+
+            **Caution:** This variable URL is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+      description: Response if Deposit Preauthorization's `PaymentType` is `PAYPAL`.
+      title: DeprecatedPayPalDepositPreauthorizationResponse
+    PayPalPayInResponseFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the fees.
+      title: PayPalPayInResponseFees
+    PayPalExtendedPreauthorizationResponseLineItemsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the item.
+        Quantity:
+          type: integer
+          description: The quantity of the item.
+        UnitAmount:
+          type: integer
+          description: The cost of the item, excluding tax.
+        TaxAmount:
+          type: integer
+          description: The tax amount applied to the item.
+        Description:
+          type: string
+          description: 'The platform''s unique reference for the seller. This value must be consistently used for the given seller. You can use, for example, the Mangopay `UserId` or the seller''s business name or first name and last name.
+
+
+            **Caution:** Failure to use a unique seller identifier may result in PayPal restricting your service.'
+        Category:
+          type: string
+          description: '**Allowed values:** PHYSICAL_GOODS, DIGITAL_GOODS, DONATION
+
+
+            The category of the item:
+
+            - `PHYSICAL_GOODS` – Tangible items that can be physically shipped and received with proof of delivery upon arrival.
+
+            - `DIGITAL_GOODS` – Products or services that are distributed and consumed via digital platforms or devices.
+
+            - `DONATION` – Voluntary contribution made without any goods or services received in return. Multiple line items can be categorized as `DONATION` within a single transaction, however it is not possible to combine `DONATION` other line item categories within the same transaction.'
+        Sku:
+          type: string
+          description: The SKU or reference for the item on your platform.
+        Discount:
+          type: integer
+          description: The discount applied to the item, in the smallest currency sub-division.
+      title: PayPalExtendedPreauthorizationResponseLineItemsItems
+    ViewDataSubmittedForAPayPalPayInResponse:
+      type: object
+      properties:
+        business_name:
+          type: string
+          description: 'Format: Alphanumeric; example: `Acme Corp.`
+
+
+            Business name used by the seller/recipient to register on the marketplace platform.'
+        first_interaction_date:
+          type: string
+          description: 'Format: ISO 8601 date format; example: `2012-12-09T 19:14:55.277-0:00`
+
+
+            Date of the first interaction between the sender and receiver on the marketplace platform. Definition of ''interaction'' is to be defined by the marketplace platform. Examples are: first transaction attempt between sender and receiver, add friend date between sender and receiver, etc.'
+        sender_phone:
+          type: string
+          description: 'Format: E.123 - Telephone Number (national notation); example `(042) 1123 4567`
+
+
+            Phone number (national notation) registered with the sender/buyer''s marketplace account.'
+        receiver_create_date:
+          type: string
+          description: 'Format: ISO 8601 date format; example: `2012-12-09T19:14:55.277-0:00`
+
+
+            Date of creation of the seller/recipient''s account on the marketplace platform.'
+        receiver_address_country_code:
+          type: string
+          description: 'Format: ISO Alpha-2 Country Code; example: `FR`
+
+
+            Seller/recipient''s country code registered on the marketplace platform.'
+        rcs:
+          type: string
+          description: The `rcs` returned by PayPal.
+        stc:
+          type: string
+          description: The `stc` returned by PayPal.
+        sender_create_date:
+          type: string
+          description: 'Format: ISO 8601 date format; example: `2012-12-09T19:14:55.277-0:00`
+
+
+            Date of creation of the sender/buyer''s account on the marketplace platform.'
+        transaction_is_tangible:
+          type: string
+          description: 'Possible values: `0`, `1`; example: `0`
+
+
+            The seller/receiver''s transaction is for tangible rather than digital goods. If tangible, value = 1. If intangible, value = 0.'
+        receiver_email:
+          type: string
+          description: 'Format: E.123 – Email Address; example: `john@example.com`
+
+
+            Seller/recipient''s registered email on the marketplace platform.'
+        vertical:
+          type: string
+          description: 'Format: Alphanumeric; examples: `household goods`, `shoes`, `clothing`, `tickets`, etc.
+
+
+            Transaction level vertical flag for the seller/receiver''s transactions that are in several verticals.'
+        sender_country_code:
+          type: string
+          description: 'Format: ISO Alpha-2 Country Code; example: `FR`
+
+
+            Country code registered with the sender/buyer''s marketplace account.'
+        txn_count_total:
+          type: string
+          description: 'Format: Integer; example: `34`
+
+
+            Total number of transactions the sender/buyer has had to date on the marketplace platform (through PayPal or otherwise).'
+        sender_signup_ip:
+          type: string
+          description: 'Format: IP (IPv4 / IPv6); example: `10.220.90.20`
+
+
+            IP address that the sender/buyer used to sign up on the marketplace platform.'
+        rdauuid:
+          type: string
+          description: The `rdauuid` returned by PayPal.
+        receiver_account_id:
+          type: string
+          description: 'Format: Alphanumeric; example: `A12345N343`
+
+
+            Unique identifier of the seller/recipient''s account on the marketplace platform.'
+        sender_last_name:
+          type: string
+          description: 'Format: Alphanumeric; example: `Doe`
+
+
+            Last name registered with the sender/buyer''s marketplace account.'
+        sender_account_id:
+          type: string
+          description: 'Format: Alphanumeric; example: `A12345N343`
+
+
+            Unique identifier of the sender/buyer account on the marketplace platform.'
+        api_caller:
+          type: string
+          description: The `api_caller` returned by PayPal.
+        sender_first_name:
+          type: string
+          description: 'Format: Alphanumeric; example: `Jane`
+
+
+            First name registered with the sender/buyer''s marketplace account.'
+        sender_popularity_score:
+          type: string
+          description: 'Possible values: `high`, `medium`, `low`; example: `high`
+
+
+            Risk-based scoring on the sender/buyer by the marketplace platform (e.g., social score, identity score, risk score). This score is likely unique for each platform based on marketplace platform''s risk platform capabilities.'
+        recipient_popularity_score:
+          type: string
+          description: 'Possible values: `high`, `medium`, `low`; example: `high`
+
+
+            Risk-based scoring on the seller/recipient by the marketplace platform (e.g., social score, identity score, risk score). This score is likely unique for each platform based on marketplace platform''s risk platform capabilities.'
+        sender_email:
+          type: string
+          description: 'Format: E.123 – Email Address; example: `john@example.com`
+
+
+            Email address registered with the sender/buyer''s marketplace account.'
+      title: ViewDataSubmittedForAPayPalPayInResponse
+    TransactionStatus:
+      type: string
+      description: '**Returned values:** `CREATED`, `SUCCEEDED`, `FAILED`
+
+
+        The status of the transaction.'
+      title: TransactionStatus
+    AddTrackingInformationToAPayPalPayInResponseTrackingsItems:
+      type: object
+      properties:
+        TrackingNumber:
+          type: string
+          description: The shipment's tracking number provided by the carrier.
+        Carrier:
+          type: string
+          description: The carrier for the shipment. Use the country-specific version of the carrier if it exists, otherwise use its global version.
+        NotifyBuyer:
+          type: boolean
+          description: '**Default value:** false
+
+
+            If `true`, sends an email notification to the `PaypalBuyerAccountEmail` containing the `TrackingNumber` and `Carrier`, which allows the end user to track their shipment with the carrier.'
+      title: AddTrackingInformationToAPayPalPayInResponseTrackingsItems
+    CreditedUserId:
+      type: string
+      description: '**Default value:** The unique identifier of the owner of the credited wallet.
+
+
+        The unique identifier of the user whose wallet is credited.'
+      title: CreditedUserId
+    FlowDescriptorResponse:
+      type: object
+      properties:
+        FlowId:
+          type: string
+          description: Unique identifier of the payment flow, used by Mangopay for internal purposes.
+        Beneficiaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FlowDescriptorResponseBeneficiariesItems'
+          description: 'Max. length: 5 items
+
+
+            The list of up to 5 Natural or Legal Users declared as beneficiaries of the pay-in, who must all be KYC/KYB verified when the pay-in request is made. The pay-in also fails if the `Beneficiaries` array contains nulled objects or invalid `UserId` values.'
+      description: "Information about the Owner beneficiaries targeted by the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made ([read more](/guides/payin-beneficiaries)).\n\nIf the `FlowDescriptor.Beneficiaries` is sent in the API request, then:\n- The transaction's `CreditedWalletId` holder is disregarded in KYC/KYB checks.\n- **ALL** `UserId` values in the array must be one of:\n  - `OWNER` whose `KYCLevel` is `REGULAR`\n  - `PLATFORM`\n  \nThe pay-in `Status` becomes `FAILED` with `ResultCode` [002951](/errors/codes/002951) if at least one `FlowDescriptor.Beneficiaries.UserId` is:\n- `PAYER`\n- `OWNER` whose `KYCLevel` is `LIGHT`\n\nIf the `FlowDescriptor.Beneficiaries` is not sent in the API request, then the `CreditedWalletId` holder is subject to KYC/KYB checks. This property is optional for backwards compatibility but is recommended for all pay-in flows, even when the `CreditedWalletId` holder is a `PAYER` or the same value as one of the `FlowDescriptor.Beneficiaries`.\n"
+      title: FlowDescriptorResponse
+    DeprecatedCreateAPayPalDepositPreauthorizationRequestShipping:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: The first name of the user.
+        LastName:
+          type: string
+          description: The last name of the user.
+        Address:
+          $ref: '#/components/schemas/Address_SubPropsRequired'
+      required:
+      - Address
+      description: 'Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS`.
+
+
+        Information about the end user’s shipping address, managed by `ShippingPreference`.'
+      title: DeprecatedCreateAPayPalDepositPreauthorizationRequestShipping
+    AddTrackingInformationToAPayPalPayInResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the debited funds.
+      title: AddTrackingInformationToAPayPalPayInResponseDebitedFunds
+    PayPalPayInResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        DebitedFunds:
+          $ref: '#/components/schemas/PayPalPayInResponseDebitedFunds'
+          description: Information about the debited funds. The amount must be equal to the total of all `UnitAmount` and `TaxAmount` of all `LineItems`.
+        CreditedFunds:
+          $ref: '#/components/schemas/PayPalPayInResponseCreditedFunds'
+          description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+        Fees:
+          $ref: '#/components/schemas/PayPalPayInResponseFees'
+          description: Information about the fees.
+        Status:
+          $ref: '#/components/schemas/TransactionStatus'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        ExecutionDate:
+          $ref: '#/components/schemas/TransactionExecutionDate'
+        Type:
+          $ref: '#/components/schemas/TransactionType'
+        Nature:
+          $ref: '#/components/schemas/TransactionNature'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        PaymentType:
+          type: string
+          description: '**Returned values:** `PAYPAL`
+
+
+            The payment type of the pay-in.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `WEB`
+
+
+            The execution type of the pay-in.'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        RedirectURL:
+          type: string
+          description: 'The URL to which to redirect the user to complete the payment.
+
+
+            **Caution:** This variable URL is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Shipping:
+          $ref: '#/components/schemas/PayPalPayInResponseShipping'
+          description: Information about the end user's shipping address, managed by `ShippingPreference`.
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayPalPayInResponseLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items' `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        ShippingPreference:
+          type: string
+          description: '**Returned values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        PaypalBuyerAccountEmail:
+          type: string
+          description: The email address registered on the PayPal account used to make the payment.
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform''s order reference for the transaction.'
+        Trackings:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayPalPayInResponseTrackingsItems'
+          description: Shipping information of the `LineItems` added to the pay-in object.
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        PaypalOrderID:
+          type: string
+          description: PayPal's unique identifier for the order.
+        BuyerCountry:
+          type: string
+          description: The country of the buyer.
+        BuyerFirstname:
+          type: string
+          description: The first name of the buyer.
+        BuyerPhone:
+          type: string
+          description: The mobile phone number of the buyer.
+        BuyerLastname:
+          type: string
+          description: The last name of the buyer.
+        PaypalPayerID:
+          type: string
+          description: The PayPal identifier of the buyer.
+      description: 'A one-time PayPal pay-in:
+
+        - `PaymentType` – `PAYPAL`
+
+        - `ExecutionType` – `WEB`
+
+        - Object does not include `RecurringPayinRegistrationId`'
+      title: PayPalPayInResponse
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    ReturnURL_255:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        The URL to which the user is returned after the payment, whether the transaction is successful or not.'
+      title: ReturnURL_255
+    DeprecatedPayPalDepositPreauthorizationResponseTrackingsItems:
+      type: object
+      properties:
+        TrackingNumber:
+          type: string
+          description: The shipment’s tracking number provided by the carrier.
+        Carrier:
+          type: string
+          description: The carrier for the shipment. Use the country-specific version of the carrier if it exists, otherwise use its global version.
+        NotifyBuyer:
+          type: boolean
+          description: '**Default value:** false
+
+
+            If `true`, sends an email notification to the `PaypalBuyerAccountEmail` containing the `TrackingNumber` and `Carrier`, which allows the end user to track their shipment with the carrier.'
+      title: DeprecatedPayPalDepositPreauthorizationResponseTrackingsItems
+    TransactionType:
+      type: string
+      description: '**Returned values:** `PAYIN`, `TRANSFER`, `CONVERSION`, `PAYOUT`
+
+
+        The type of the transaction.'
+      title: TransactionType
+    PayPalExtendedPreauthorizationResponseTrackingsItems:
+      type: object
+      properties:
+        TrackingNumber:
+          type: string
+          description: The shipment's tracking number provided by the carrier.
+        Carrier:
+          type: string
+          description: The carrier for the shipment. Use the country-specific version of the carrier if it exists, otherwise use its global version.
+        NotifyBuyer:
+          type: boolean
+          description: '**Default value:** false
+
+
+            If `true`, sends an email notification to the `PaypalBuyerAccountEmail` containing the `TrackingNumber` and `Carrier`, which allows the end user to track their shipment with the carrier.'
+      title: PayPalExtendedPreauthorizationResponseTrackingsItems
+    CreateAPayPalPayInRequest:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateAPayPalPayInRequestDebitedFunds'
+          description: Information about the debited funds.
+        Fees:
+          $ref: '#/components/schemas/CreateAPayPalPayInRequestFees'
+          description: Information about the fees.
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Shipping:
+          $ref: '#/components/schemas/CreateAPayPalPayInRequestShipping'
+          description: 'Required if `ShippingPreference` is `SET_PROVIDED_ADDRESS`.
+
+
+            Information about the end user''s shipping address, managed by `ShippingPreference`.'
+        LineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAPayPalPayInRequestLineItemsItems'
+          description: Information about the items purchased in the transaction. The total of all line items' `UnitAmount` and `TaxAmount` must equal the `DebitedFunds` amount (negative amounts not allowed).
+        Culture:
+          type: string
+          description: '**Allowed values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): AT, BR, CA, CH, CN, DE, DK, ES, FR, GB, ID, IL, IT, JK, JP, NL, NO, PL, PT, RU, SE, TH, TR, TW, US.
+
+
+            The language in which the PayPal payment page is to be displayed.'
+        ShippingPreference:
+          type: string
+          description: '**Allowed values:** `SET_PROVIDED_ADDRESS`, `GET_FROM_FILE`, `NO_SHIPPING`
+
+
+            Information about the shipping address behavior on the PayPal payment page:
+
+            - `SET_PROVIDED_ADDRESS` - The `Shipping` parameter becomes required and its values are displayed to the end user, who is not able to modify them.
+
+            - `GET_FROM_FILE` – The `Shipping` parameter is ignored and the end user can choose from registered addresses.
+
+            - `NO_SHIPPING` – No shipping address section is displayed.'
+        Reference:
+          type: string
+          description: 'Max. length: 127 characters (truncated after)
+
+
+            The platform''s order reference for the transaction.'
+        CancelURL:
+          type: string
+          description: The URL to which the user is returned after canceling the payment. If not provided, the Cancel button returns the user to the `RedirectURL`.
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+        DataCollectionId:
+          type: string
+          description: The unique identifier of the Data Collection object, returned after sending the requested data to the [POST Submit data for a PayPal PayIn](/api-reference/paypal/submit-data-paypal-payin) endpoint.
+      required:
+      - AuthorId
+      - DebitedFunds
+      - Fees
+      - CreditedWalletId
+      - ReturnURL
+      - LineItems
+      title: CreateAPayPalPayInRequest
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

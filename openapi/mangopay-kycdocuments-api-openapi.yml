@@ -1,0 +1,590 @@
+openapi: 3.2.0
+info:
+  title: Reference Kyc Documents API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: kycDocuments
+paths:
+  /v2.01/{ClientId}/users/{UserId}/kyc/documents:
+    post:
+      operationId: kycDocuments_create_kyc_document
+      summary: Create a KYC Document
+      description: 'Create a container for files to be submitted
+
+
+        **Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms (relying on the IDV Session object). The legacy KYC Document endpoints remain available for the sole purposes of sending additional documents, but this use case will also be handled by the hosted solution in future.
+
+
+        In Sandbox, you can set the KYC Document `Tag` to `accept` to simulate acceptance of the document after submission. Other values are available to simulate different refusal reasons – see the guide for details.'
+      tags:
+      - kycDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KYCDocumentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAKYCDocumentRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: kycDocuments_list_kyc_documents_user
+      summary: List KYC Documents for a User
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms (relying on the IDV Session object). The legacy KYC Document endpoints remain available for the sole purposes of sending additional documents, but this use case will also be handled by the hosted solution in future.'
+      tags:
+      - kycDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: Status
+        in: query
+        description: '**Allowed values:** `CREATED`, `VALIDATION_ASKED`, `VALIDATED`, `REFUSED`, `OUT_OF_DATE`
+
+
+          The status of the KYC Document. You can filter on multiple values by separating them with a comma.'
+        required: false
+        schema:
+          type: string
+      - name: Type
+        in: query
+        description: '**Allowed values:** `IDENTITY_PROOF`, `REGISTRATION_PROOF`, `ARTICLES_OF_ASSOCIATION`, `SHAREHOLDER_DECLARATION`, `ADDRESS_PROOF`
+
+
+          The type of the KYC Document. You can filter on multiple values by separating them with a comma.'
+        required: false
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllKYCDocumentsResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/kyc/documents/{KycDocumentId}/pages:
+    post:
+      operationId: kycDocuments_create_kyc_document_page
+      summary: Create a KYC Document Page
+      description: 'Upload a file to the KYC Document object
+
+
+        **Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms (relying on the IDV Session object). The legacy KYC Document endpoints remain available for the sole purposes of sending additional documents, but this use case will also be handled by the hosted solution in future.
+
+
+        The KYC Document Page is a file attached to the KYC Document for Mangopay''s teams to review.
+
+
+        You can upload up to 5 files to each KYC Document, and each upload requires a call to this endpoint. Each file can contain as many real-life pages as required.
+
+
+        To be able to upload a file using this endpoint:
+
+        - The corresponding KYC Document `Status` must be `CREATED`
+
+        - The `File` must be Base64 encoded and abide by the format and size constraints
+
+
+        Read more about the KYC Document object →'
+      tags:
+      - kycDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: KycDocumentId
+        in: path
+        description: The unique identifier of the KYC Document.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kycDocuments_create_kyc_document_page_Response_200'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadAClientLogoRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/kyc/documents/{KycDocumentId}:
+    put:
+      operationId: kycDocuments_submit_kyc_document
+      summary: Submit a KYC Document
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms (relying on the IDV Session object). The legacy KYC Document endpoints remain available for the sole purposes of sending additional documents, but this use case will also be handled by the hosted solution in future.
+
+
+        Submitting a KYC Document consists in updating the object `Status` from `CREATED` to `VALIDATION_ASKED`.
+
+
+        Once submitted, Mangopay''s teams review the document and validate or reject it. This process takes on average 24 hours (on bank working days).
+
+
+        Set up a hook for the following event types in order to be notified of the outcome:
+
+        - `KYC_SUCCEEDED`
+
+        - `KYC_FAILED`'
+      tags:
+      - kycDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: KycDocumentId
+        in: path
+        description: The unique identifier of the KYC Document.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KYCDocumentResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitAKYCDocumentRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/kyc/documents/{KycDocumentId}:
+    get:
+      operationId: kycDocuments_view_kyc_document
+      summary: View a KYC Document
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms (relying on the IDV Session object). The legacy KYC Document endpoints remain available for the sole purposes of sending additional documents, but this use case will also be handled by the hosted solution in future.'
+      tags:
+      - kycDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: KycDocumentId
+        in: path
+        description: The unique identifier of the KYC Document.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KYCDocumentResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/kyc/documents:
+    get:
+      operationId: kycDocuments_list_kyc_documents
+      summary: List all KYC Documents
+      description: '**Caution – Legacy endpoints being superseded by the hosted KYC/KYB solution**
+
+
+        Mangopay''s hosted KYC/KYB solution is becoming mandatory for all platforms (relying on the IDV Session object). The legacy KYC Document endpoints remain available for the sole purposes of sending additional documents, but this use case will also be handled by the hosted solution in future.'
+      tags:
+      - kycDocuments
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: Status
+        in: query
+        description: '**Allowed values:** `CREATED`, `VALIDATION_ASKED`, `VALIDATED`, `REFUSED`, `OUT_OF_DATE`
+
+
+          The status of the KYC Document. You can filter on multiple values by separating them with a comma.'
+        required: false
+        schema:
+          type: string
+      - name: Type
+        in: query
+        description: '**Allowed values:** `IDENTITY_PROOF`, `REGISTRATION_PROOF`, `ARTICLES_OF_ASSOCIATION`, `SHAREHOLDER_DECLARATION`, `ADDRESS_PROOF`
+
+
+          The type of the KYC Document. You can filter on multiple values by separating them with a comma.'
+        required: false
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllKYCDocumentsResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ListAllKYCDocumentsResponse:
+      type: object
+      properties:
+        Array (KYCDocument):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAllKycDocumentsResponseArrayKycDocumentItems'
+          description: The list of KYC documents created by the platform.
+      title: ListAllKYCDocumentsResponse
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    ListAllKycDocumentsResponseArrayKycDocumentItems:
+      type: object
+      properties:
+        Object (KYCDocument):
+          $ref: '#/components/schemas/ListAllKycDocumentsResponseArrayKycDocumentItemsObjectKycDocument'
+          description: KYC Document created by the platform.
+      title: ListAllKycDocumentsResponseArrayKycDocumentItems
+    kycDocuments_create_kyc_document_page_Response_200:
+      type: object
+      properties: {}
+      description: Empty response body
+      title: kycDocuments_create_kyc_document_page_Response_200
+    CreateAKYCDocumentRequest:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Allowed values:** `IDENTITY_PROOF`, `REGISTRATION_PROOF`, `ARTICLES_OF_ASSOCIATION`, `SHAREHOLDER_DECLARATION`, `ADDRESS_PROOF`
+
+
+            The type of the document for the user verification.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - Type
+      title: CreateAKYCDocumentRequest
+    ListAllKycDocumentsResponseArrayKycDocumentItemsObjectKycDocument:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Returned values:** `IDENTITY_PROOF`, `REGISTRATION_PROOF`, `ARTICLES_OF_ASSOCIATION`, `SHAREHOLDER_DECLARATION`, `ADDRESS_PROOF`
+
+
+            The type of the document for the user verification.'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        Flags:
+          type: array
+          items:
+            type: string
+          description: '**Returned values:** A code from the <a href="/guides/users/verification/documents/submission/refusals" target="_blank">Flags list</a>.
+
+
+            The series of codes providing more precision regarding the reason why the identity proof document was refused. You can review the explanations for each code in the <a href="/guides/users/verification/documents/submission/refusals" target="_blank">Flags list</a>.'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `VALIDATION_ASKED`, `VALIDATED`, `REFUSED`, `OUT_OF_DATE`
+
+
+            The status of the document:
+
+            - `CREATED` – The document container is created and files can be uploaded using the [POST Create a KYC Document Page](/api-reference/kyc-documents/create-kyc-document-page) endpoint before submission.
+
+            - `VALIDATION_ASKED` – The document is submitted to Mangopay for validation.
+
+            - `VALIDATED` – The document is validated by Mangopay''s teams.
+
+            - `REFUSED` – The document is rejected by Mangopay''s teams and a new KYC Document object needs to be created to resubmit it. You can learn more about the reason why it was refused in the `RefusedReasonType` parameter.
+
+            - `OUT_OF_DATE` – The document is downgraded and a new KYC Document object needs to be created to resubmit it.'
+        RefusedReasonType:
+          type: string
+          description: '**Returned values:** DOCUMENT_DO_NOT_MATCH_USER_DATA, DOCUMENT_FALSIFIED, DOCUMENT_HAS_EXPIRED, DOCUMENT_INCOMPLETE, DOCUMENT_MISSING, DOCUMENT_NOT_ACCEPTED, DOCUMENT_UNREADABLE, SPECIFIC_CASE, UNDERAGE_PERSON
+
+
+            Returned `null` unless `Status` is `REFUSED`.
+
+
+            The reason for the document refusal. See the <a href="/guides/users/verification/documents/submission/refusals">refused reason types</a> for more information depending on the document type.'
+        RefusedReasonMessage:
+          type: string
+          description: '**Default value:** null
+
+
+            Additional information about why the KYC Document was refused, provided by Mangopay''s team.'
+      description: KYC Document created by the platform.
+      title: ListAllKycDocumentsResponseArrayKycDocumentItemsObjectKycDocument
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    UploadAClientLogoRequest:
+      type: object
+      properties:
+        File:
+          type: string
+          description: 'Format: Base64 encoded file
+
+
+            The encoded file of the logo to upload.'
+      required:
+      - File
+      title: UploadAClientLogoRequest
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    SubmitAKYCDocumentRequest:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Allowed values:** `VALIDATION_ASKED`
+
+
+            The status of the document:
+
+            - `CREATED` – The document container is created and files can be uploaded using the [POST Create a KYC Document Page](/api-reference/kyc-documents/create-kyc-document-page) endpoint before submission.
+
+            - `VALIDATION_ASKED` – The document is submitted to Mangopay for validation.
+
+            - `VALIDATED` – The document is validated by Mangopay''s teams.
+
+            - `REFUSED` – The document is rejected by Mangopay''s teams and a new KYC Document object needs to be created to resubmit it. You can learn more about the reason why it was refused in the `RefusedReasonType` parameter.
+
+            - `OUT_OF_DATE` – The document is downgraded and a new KYC Document object needs to be created to resubmit it.'
+      required:
+      - Status
+      title: SubmitAKYCDocumentRequest
+    KYCDocumentResponse:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Returned values:** `IDENTITY_PROOF`, `REGISTRATION_PROOF`, `ARTICLES_OF_ASSOCIATION`, `SHAREHOLDER_DECLARATION`, `ADDRESS_PROOF`
+
+
+            The type of the document for the user verification.'
+        UserId:
+          type: string
+          description: The unique identifier of the user.
+        Flags:
+          type: array
+          items:
+            type: string
+          description: '**Returned values:** A code from the <a href="/guides/users/verification/documents/submission/refusals" target="_blank">Flags list</a>.
+
+
+            The series of codes providing more precision regarding the reason why the identity proof document was refused. You can review the explanations for each code in the <a href="/guides/users/verification/documents/submission/refusals" target="_blank">Flags list</a>.'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ProcessedDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the document was processed by Mangopay's team.
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `VALIDATION_ASKED`, `VALIDATED`, `REFUSED`, `OUT_OF_DATE`
+
+
+            The status of the document:
+
+            - `CREATED` – The document container is created and files can be uploaded using the [POST Create a KYC Document Page](/api-reference/kyc-documents/create-kyc-document-page) endpoint before submission.
+
+            - `VALIDATION_ASKED` – The document is submitted to Mangopay for validation.
+
+            - `VALIDATED` – The document is validated by Mangopay''s teams.
+
+            - `REFUSED` – The document is rejected by Mangopay''s teams and a new KYC Document object needs to be created to resubmit it. You can learn more about the reason why it was refused in the `RefusedReasonType` parameter.
+
+            - `OUT_OF_DATE` – The document is downgraded and a new KYC Document object needs to be created to resubmit it.'
+        RefusedReasonType:
+          type: string
+          description: '**Returned values:** DOCUMENT_DO_NOT_MATCH_USER_DATA, DOCUMENT_FALSIFIED, DOCUMENT_HAS_EXPIRED, DOCUMENT_INCOMPLETE, DOCUMENT_MISSING, DOCUMENT_NOT_ACCEPTED, DOCUMENT_UNREADABLE, SPECIFIC_CASE, UNDERAGE_PERSON
+
+
+            Returned `null` unless `Status` is `REFUSED`.
+
+
+            The reason for the document refusal. See the <a href="/guides/users/verification/documents/submission/refusals">refused reason types</a> for more information depending on the document type.'
+        RefusedReasonMessage:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            **Default value:** null Additional information about why the KYC Document was refused, provided by Mangopay''s team.'
+      title: KYCDocumentResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

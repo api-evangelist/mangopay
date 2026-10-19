@@ -1,0 +1,163 @@
+openapi: 3.2.0
+info:
+  title: Reference Country Authorizations API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: countryAuthorizations
+paths:
+  /v2.01/countries/{CountryCode}/authorizations:
+    get:
+      operationId: countryAuthorizations_view_authorizations_country
+      summary: View Authorizations for a country
+      description: 'View Authorizations for a country
+
+
+        This call returns the restrictions for a specific country.'
+      tags:
+      - countryAuthorizations
+      parameters:
+      - name: CountryCode
+        in: path
+        description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+          The code of the country.'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryAuthorizationsResponse'
+      security:
+      - oauth2: []
+  /v2.01/countries/authorizations:
+    get:
+      operationId: countryAuthorizations_list_authorizations_countries
+      summary: List Authorizations for all countries
+      description: 'List Authorizations for all countries
+
+
+        This call returns the restrictions of all countries.'
+      tags:
+      - countryAuthorizations
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthorizationsForAllCountriesResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItemsObjectCountryAuthorizationAuthorization:
+      type: object
+      properties:
+        BlockUserCreation:
+          type: boolean
+          description: Whether or not user creation is possible based on the user's country of residence, address, and nationality.
+        BlockBankAccountCreation:
+          type: boolean
+          description: Whether or not bank account creation is possible based on the bank's country of domiciliation.
+        BlockPayout:
+          type: boolean
+          description: Whether or not payout creation is possible based on the bank's country of domiciliation.
+      description: Information about the country's restrictions.
+      title: ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItemsObjectCountryAuthorizationAuthorization
+    ListAuthorizationsForAllCountriesResponse:
+      type: object
+      properties:
+        Array (Authorizations):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItems'
+          description: The list of countries and their restrictions.
+      title: ListAuthorizationsForAllCountriesResponse
+    ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItems:
+      type: object
+      properties:
+        Object (Country Authorization):
+          $ref: '#/components/schemas/ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItemsObjectCountryAuthorization'
+          description: The country authorization object indicating if there are restrictions for a given country.
+      title: ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItems
+    CountryAuthorizationsResponseAuthorization:
+      type: object
+      properties:
+        BlockUserCreation:
+          type: boolean
+          description: Whether or not user creation is possible based on the user's country of residence, address, and nationality.
+        BlockBankAccountCreation:
+          type: boolean
+          description: Whether or not bank account creation is possible based on the bank's country of domiciliation.
+        BlockPayout:
+          type: boolean
+          description: Whether or not payout creation is possible based on the bank's country of domiciliation.
+      description: Information about the country's restrictions.
+      title: CountryAuthorizationsResponseAuthorization
+    ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItemsObjectCountryAuthorization:
+      type: object
+      properties:
+        CountryCode:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The code of the country.'
+        CountryName:
+          type: string
+          description: Name of the country.
+        Authorization:
+          $ref: '#/components/schemas/ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItemsObjectCountryAuthorizationAuthorization'
+          description: Information about the country's restrictions.
+        LastUpdate:
+          type: integer
+          description: The date and time when at least one of the country's authorizations has been last updated.
+      description: The country authorization object indicating if there are restrictions for a given country.
+      title: ListAuthorizationsForAllCountriesResponseArrayAuthorizationsItemsObjectCountryAuthorization
+    CountryAuthorizationsResponse:
+      type: object
+      properties:
+        CountryCode:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The code of the country.'
+        CountryName:
+          type: string
+          description: Name of the country.
+        Authorization:
+          $ref: '#/components/schemas/CountryAuthorizationsResponseAuthorization'
+          description: Information about the country's restrictions.
+        LastUpdate:
+          type: integer
+          description: The date and time when at least one of the country's authorizations has been last updated.
+      title: CountryAuthorizationsResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

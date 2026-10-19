@@ -1,0 +1,505 @@
+openapi: 3.2.0
+info:
+  title: Reference Mandates API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Mandates
+paths:
+  /v2.01/{ClientId}/mandates/directdebit/web:
+    post:
+      operationId: mandates_create_mandate
+      summary: Create a Mandate
+      description: '**Note – Mandate expires after 1 hour**
+
+
+        If not confirmed within 1 hour of the `CreationDate`, the Mandate expires with the error 001807 and a new one must be created.
+
+
+        The `RecipientId` must reference a Recipient with the correct values for the `Scheme` of the payments. Read more **→**
+
+
+        For SEPA Direct Debit (SDD), if the underlying account (via `RecipientId` or `BankAccountId`) is a Danish or Swedish IBAN (starting `DK` or `SE`), this endpoint returns a 400 error because they are not currently supported (see IBAN compatibility).'
+      tags:
+      - Mandates
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MandateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAMandateRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/mandates/{MandateId}/cancel:
+    put:
+      operationId: mandates_cancel_mandate
+      summary: Cancel a Mandate
+      description: '**Warning – Call requires `Content-Length` adjustment**
+
+
+        For this call to succeed, you need to define the header `Content-Length` to `0`.
+
+
+        **Note – Mandate must be `ACTIVE` or `SUBMITTED`**
+
+
+        A mandate can only be canceled if its `Status` is `ACTIVE` or `SUBMITTED`. Once canceled, its status changes to `FAILED`.
+
+
+        Cancel a Mandate'
+      tags:
+      - Mandates
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: MandateId
+        in: path
+        description: The unique identifier of the mandate.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MandateResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/mandates/{MandateId}:
+    get:
+      operationId: mandates_view_mandate
+      summary: View a Mandate
+      tags:
+      - Mandates
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: MandateId
+        in: path
+        description: The unique identifier of the mandate.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MandateResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/mandates:
+    get:
+      operationId: mandates_list_mandates
+      summary: List all Mandates
+      tags:
+      - Mandates
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllMandatesResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/mandates:
+    get:
+      operationId: mandates_list_mandates_user
+      summary: List Mandates for a User
+      tags:
+      - Mandates
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllMandatesResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/recipients/{RecipientId}/mandates:
+    get:
+      operationId: mandates_list_mandates_recipient
+      summary: List Mandates for a Recipient
+      tags:
+      - Mandates
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: RecipientId
+        in: path
+        description: The unique identifier of the [Recipient](/api-reference/recipients/recipient-object).
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllMandatesResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/bankaccounts/{BankAccountId}/mandates:
+    get:
+      operationId: mandates_list_mandates_bank_account
+      summary: List Mandates for a Bank Account
+      tags:
+      - Mandates
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: BankAccountId
+        in: path
+        description: The unique identifier of the Recipient (or legacy Bank Account object). This property is being replaced by `RecipientId`, which you should rely on instead.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllMandatesResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ListAllMandatesResponse:
+      type: object
+      properties:
+        Array (Mandates):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAllMandatesResponseArrayMandatesItems'
+          description: The list of mandates created by the platform.
+      title: ListAllMandatesResponse
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    CreateAMandateRequest:
+      type: object
+      properties:
+        RecipientId:
+          type: string
+          description: 'The unique identifier of the [Recipient](/api-reference/recipients/recipient-object) object on which the mandate is based. This property should be used by platforms integrating for the first time (and not the `BankAccountId`).
+
+
+            **Warning:** For the SEPA scheme, the Recipient''s `PayoutMethodType` must be `LocalBankTransfer` or `InternationalBankTransfer` with an EUR account (other currencies are refused). For the Bacs scheme, the Recipient''s `PayoutMethodType` must be `LocalBankTransfer` with a GBP account (`InternationalBankTransfer` is not supported for Bacs).'
+        BankAccountId:
+          type: string
+          description: 'The unique identifier of the bank account. This property should **not** be used by platforms integrating for the first time – use the `RecipientId` instead.
+
+
+            **Warning:** The [Bank Account](/api-reference/bank-accounts/bank-account-object) `Type` must be IBAN for the SEPA scheme and GB for the Bacs scheme.'
+        Culture:
+          type: string
+          description: '**Allowed values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): DE, EN, ES, FR, IT, NL, PL
+
+
+            The language in which the mandate confirmation page is to be displayed. This value only applies to mandates with the SEPA `Scheme`.'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_220'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - Culture
+      - ReturnURL
+      title: CreateAMandateRequest
+    ListAllMandatesResponseArrayMandatesItems:
+      type: object
+      properties:
+        Object (Mandate):
+          $ref: '#/components/schemas/ListAllMandatesResponseArrayMandatesItemsObjectMandate'
+          description: The mandate created by the platform.
+      title: ListAllMandatesResponseArrayMandatesItems
+    MandateResponse:
+      type: object
+      properties:
+        Scheme:
+          type: string
+          description: 'The scheme of the mandate, which is available once the mandate is submitted. The value can be one of the following:
+
+            - BACS – Covers payments in the UK, in GBP only.
+
+            - SEPA – Covers payments in the EU.'
+        RecipientId:
+          type: string
+          description: The unique identifier of the [Recipient](/api-reference/recipients/recipient-object) object on which the mandate is based. This property should be used by platforms integrating for the first time (and not the `BankAccountId`).
+        BankAccountId:
+          type: string
+          description: 'The unique identifier of the bank account. This property should **not** be used by platforms integrating for the first time – use the `RecipientId` instead.
+
+
+            **Warning:** The [Bank Account](/api-reference/bank-accounts/bank-account-object) `Type` must be IBAN for the SEPA scheme and GB for the Bacs scheme.'
+        BankReference:
+          type: string
+          description: The banking reference for the Mandate.
+        Culture:
+          type: string
+          description: '**Returned values:** One of the supported languages in the [ISO 639-1 format](/api-reference/overview/data-formats): DE, EN, ES, FR, IT, NL, PL
+
+
+            The language in which the mandate confirmation page is to be displayed. This value only applies to mandates with the SEPA `Scheme`.'
+        DocumentURL:
+          type: string
+          description: The URL at which the mandate document can be downloaded.
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_220'
+        RedirectURL:
+          type: string
+          description: 'The URL to which to redirect the user to complete the payment.
+
+
+            **Caution:** This variable URL is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `SUBMITTED`, `ACTIVE`, `FAILED`, `EXPIRED`
+
+
+            The status of the mandate:
+
+            - `CREATED` – The mandate has been generated but not yet confirmed.
+
+            - `SUBMITTED` – The mandate has been confirmed and sent to the user''s bank, and can be used to request a direct debit pay-in.
+
+            - `ACTIVE` – The mandate has been accepted by the user''s bank or successfully used to process a direct debit direct pay-in. Further pay-ins can be requested.
+
+            - `FAILED` – The mandate has been canceled or otherwise failed, and can no longer be used for payments.
+
+            - `EXPIRED` – No payment has been made against the mandate in the last 24 months. It can no longer be used for payments.'
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `WEB`
+
+
+            The execution type of the mandate.'
+        MandateType:
+          type: string
+          description: The type of the mandate.
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+      title: MandateResponse
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    ReturnURL_220:
+      type: string
+      description: 'Max. length: 220 characters
+
+
+        The URL to which the user is returned after the payment, whether the transaction is successful or not.'
+      title: ReturnURL_220
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    ListAllMandatesResponseArrayMandatesItemsObjectMandate:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `SUBMITTED`, `ACTIVE`, `FAILED`, `EXPIRED`
+
+
+            The status of the mandate:
+
+            - `CREATED` – The mandate has been generated but not yet confirmed.
+
+            - `SUBMITTED` – The mandate has been confirmed and sent to the user''s bank, and can be used to request a direct debit pay-in.
+
+            - `ACTIVE` – The mandate has been accepted by the user''s bank or successfully used to process a direct debit direct pay-in. Further pay-ins can be requested.
+
+            - `FAILED` – The mandate has been canceled or otherwise failed, and can no longer be used for payments.
+
+            - `EXPIRED` – No payment has been made against the mandate in the last 24 months. It can no longer be used for payments.'
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `WEB`
+
+
+            The execution type of the mandate.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+      description: The mandate created by the platform.
+      title: ListAllMandatesResponseArrayMandatesItemsObjectMandate
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

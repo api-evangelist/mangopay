@@ -1,0 +1,467 @@
+openapi: 3.2.0
+info:
+  title: Reference Card Validations API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: cardValidations
+paths:
+  /v2.01/{ClientId}/cards/{CardId}/validation:
+    post:
+      operationId: cardValidations_create_card_validation
+      summary: Create a Card Validation
+      tags:
+      - cardValidations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: CardId
+        in: path
+        description: The unique identifier of the Card object, obtained during the card registration process.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardValidationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateACardValidationRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/cards/{CardId}/validation/{ValidationId}:
+    get:
+      operationId: cardValidations_view_card_validation
+      summary: View a Card Validation
+      tags:
+      - cardValidations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: CardId
+        in: path
+        description: The unique identifier of the Card object, obtained during the card registration process.
+        required: true
+        schema:
+          type: string
+      - name: ValidationId
+        in: path
+        description: The unique identifier of the Card Validation object.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardValidationResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    SecureModeReturnURL:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        The URL to which users are automatically returned after 3DS2 if it is triggered (i.e., if the `SecureModeNeeded` parameter is set to `true`).'
+      title: SecureModeReturnURL
+    AuthenticationResult:
+      type: object
+      properties:
+        AuthenticationType:
+          type:
+          - string
+          - 'null'
+          description: '**Returned values:** `CHALLENGE`, `FRICTIONLESS`, `DIRECT_AUTHORIZATION`
+
+
+            The type of authentication:
+
+
+            - `CHALLENGE` – The issuer requested SCA to be enforced (for example, using 3DS).
+
+            - `FRICTIONLESS` – The transaction was exempted from SCA because an exemption was granted by the issuer.
+
+            - `DIRECT_AUTHORIZATION` – The transaction was sent to the issuer for authorization without any frictionless or challenge (for example, if SCA doesn''t apply). A `null` value typically indicates that authentication was not requested (for example, because the request failed before being sent) or a decision was not received.
+
+
+            A `null` value typically indicates that authentication was not requested (for example, because the request failed before being sent) or a decision was not received.'
+      description: Information about the authentication result, based on the request made by Mangopay and the decision of the issuer regarding the type of authentication to be enforced (if applicable).
+      title: AuthenticationResult
+    PaymentCategory:
+      type: string
+      description: '**Default value:** `ECommerce`
+
+
+        **Allowed values:** `ECommerce`, `TelephoneOrder`
+
+
+        The channel through which the user provided their card details, used to indicate mail-order and telephone-order (MOTO) payments:
+
+        - `ECommerce` – Payment received online.
+
+        - `TelephoneOrder` – Payment received via mail order or telephone order (MOTO).'
+      title: PaymentCategory
+    CardValidationResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        Status:
+          $ref: '#/components/schemas/TransactionStatus'
+        SecureModeReturnURL:
+          $ref: '#/components/schemas/SecureModeReturnURL'
+        SecureModeRedirectURL:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The URL to which to redirect the user to proceed to 3DS2 validation.'
+        SecureModeNeeded:
+          type: boolean
+          description: Whether or not the `SecureMode` was used.
+        IpAddress:
+          $ref: '#/components/schemas/IpAddress'
+        BrowserInfo:
+          $ref: '#/components/schemas/BrowserInfo'
+        PreferredCardNetwork:
+          $ref: '#/components/schemas/PreferredCardNetwork'
+        PaymentCategory:
+          $ref: '#/components/schemas/PaymentCategory'
+        SecureMode:
+          type: string
+          description: '**Default value:** DEFAULT\
+
+            **Allowed values:** DEFAULT, FORCE, NO_CHOICE
+
+
+            The mode applied for the [3DS protocol](/guides/payment-methods/card/3ds) for CB, Visa, and Mastercard. The options are:
+
+            - `DEFAULT` – Requests an exemption to strong customer authentication (SCA), and thus a frictionless payment experience, if allowed by your Mangopay contract and accepted by the issuer.
+
+            - `FORCE` – Requests SCA.
+
+            - `NO_CHOICE` – Leaves the choice to the issuer whether to allow for a frictionless payment experience or to enforce SCA.
+
+
+            _Note: Sending the FORCE value automatically sets the ValidationUsage value to MIT._'
+        ValidationUsage:
+          type: string
+          description: '**Default value:** MIT\
+
+            **Allowed values:** MIT, CIT
+
+
+            Indicates the intended usage of the card:
+
+
+            - CIT – For customer-initiated transactions (CITs), meaning 3DS is less likely to be required on the card validation.
+
+            - MIT – For merchant-initiated transactions (MITs), meaning 3DS is more likely to be required on the card validation.
+
+
+            _Note: The MIT value is returned automatically if the SecureMode value is FORCE, even if CIT is sent._'
+        Validity:
+          $ref: '#/components/schemas/Validity'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Type:
+          type: string
+          description: '**Returned values:** `CARD_VALIDATION`
+
+
+            The type of the card validation.'
+        Applied3DSVersion:
+          type: string
+          description: '**Returned values:** `V1`, `V2_1`
+
+
+            The 3DS protocol version applied to the transaction.'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CardInfo:
+          $ref: '#/components/schemas/CardInfo'
+        AuthenticationResult:
+          $ref: '#/components/schemas/AuthenticationResult'
+      title: CardValidationResponse
+    AuthorId:
+      type: string
+      description: The unique identifier of the user at the source of the transaction.
+      title: AuthorId
+    ProfilingAttemptReference:
+      type: string
+      description: 'The unique reference generated for the profiling session, used by the <a href="/guides/fraud-prevention">fraud prevention</a> solution to produce recommendations for the transaction using the profiling data.
+
+
+        **Note:** Parameter not returned by the API. Profiling feature available on request – contact Mangopay <a href="https://hub.mangopay.com/" target="_blank">via the Dashboard</a> for more information.'
+      title: ProfilingAttemptReference
+    Validity:
+      type: string
+      description: '**Returned values:** `UNKNOWN`, `VALID`, `INVALID`
+
+
+        Whether the card is valid or not.
+
+        - `UNKNOWN` – No payment or card validation has been processed, so the validity of the card remains unknown.
+
+        - `VALID` – The first payment or card validation using the card was processed successfully within 24 hours of the initial card registration.
+
+        - `INVALID` – The first payment or card validation using the card was attempted and failed, or the status of the corresponding card registration was `CREATED` for more than 24 hours.
+
+        Once a card is set to `INVALID`, it cannot be set back to `VALID`. A new card registration will be necessary to make a payment.'
+      title: Validity
+    TransactionStatus:
+      type: string
+      description: '**Returned values:** `CREATED`, `SUCCEEDED`, `FAILED`
+
+
+        The status of the transaction.'
+      title: TransactionStatus
+    CreateACardValidationRequest:
+      type: object
+      properties:
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        SecureModeReturnURL:
+          $ref: '#/components/schemas/SecureModeReturnURL'
+        IpAddress:
+          $ref: '#/components/schemas/IpAddress'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        BrowserInfo:
+          $ref: '#/components/schemas/BrowserInfo'
+        PreferredCardNetwork:
+          $ref: '#/components/schemas/PreferredCardNetwork'
+        PaymentCategory:
+          $ref: '#/components/schemas/PaymentCategory'
+        SecureMode:
+          type: string
+          description: '**Allowed values:** `DEFAULT`, `FORCE`, `NO_CHOICE`
+
+
+            **Default value:** `DEFAULT`
+
+
+            The mode applied for the <a href="/guides/payment-methods/card/3ds">3DS2 protocol</a> for CB, Visa, and Mastercard. The options are:
+
+            - `DEFAULT` – Requests an exemption to strong customer authentication (SCA), and thus a frictionless payment experience, if allowed by your Mangopay contract and accepted by the issuer.
+
+            - `FORCE` – Requests SCA.
+
+            - `NO_CHOICE` – Leaves the choice to the issuer whether to allow for a frictionless payment experience or to enforce SCA.
+
+
+            **Note:** Sending the FORCE value automatically sets the ValidationUsage value to MIT.'
+        ValidationUsage:
+          type: string
+          description: '**Default value:** MIT\
+
+            **Allowed values:** MIT, CIT
+
+
+            Indicates the intended usage of the card:
+
+
+            - CIT – For customer-initiated transactions (CITs), meaning 3DS is less likely to be required on the card validation.
+
+            - MIT – For merchant-initiated transactions (MITs), meaning 3DS is more likely to be required on the card validation.
+
+
+            _Note: The MIT value is returned automatically if the SecureMode value is FORCE, even if CIT is sent._'
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+      required:
+      - AuthorId
+      - SecureModeReturnURL
+      - IpAddress
+      - BrowserInfo
+      title: CreateACardValidationRequest
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    IpAddress:
+      type: string
+      description: The IP address of the end user initiating the transaction, in IPV4 or IPV6 format.
+      title: IpAddress
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    PreferredCardNetwork:
+      type: string
+      description: '**Allowed values:** `VISA`, `MASTERCARD`, `CB`, `MAESTRO`
+
+
+        The card network to use, as chosen by the cardholder, in case of <a href="/guides/payment-methods/card/co-branded">co-branded cards</a>.'
+      title: PreferredCardNetwork
+    BrowserInfo:
+      type: object
+      properties:
+        AcceptHeader:
+          type: string
+          description: The exact content of the HTTP accept headers as sent to the platform from the end user's browser.
+        JavaEnabled:
+          type: boolean
+          description: Whether or not the end user's browser has the ability to execute Java.
+        Language:
+          type: string
+          description: 'Format: Two-letter language code (ISO 639-1 alpha-2) followed by two-letter country code (ISO 3166-1 alpha-2), separated by a hyphen (example: `en-US`; pattern:`^[a-zA-Z]{2}(-[a-zA-Z]{2})?$`)
+
+
+            The language of the browser.'
+        ColorDepth:
+          type: integer
+          description: The value representing the depth of the screen's color palette for displaying images, in bits per pixel.
+        ScreenHeight:
+          type: integer
+          description: The height of the screen in pixels.
+        ScreenWidth:
+          type: integer
+          description: The width of the screen in pixels.
+        TimeZoneOffset:
+          type: integer
+          description: The difference in minutes between the browser's timezone and UTC.
+        UserAgent:
+          type: string
+          description: The exact content of the HTTP User-Agent header.
+        JavascriptEnabled:
+          type: boolean
+          description: Whether or not the end user's browser has the ability to execute JavaScript.
+      required:
+      - AcceptHeader
+      - JavaEnabled
+      - Language
+      - ColorDepth
+      - ScreenHeight
+      - ScreenWidth
+      - TimeZoneOffset
+      - UserAgent
+      - JavascriptEnabled
+      description: Information about the browser used by the end user (author) to perform the payment.
+      title: BrowserInfo
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    CardInfo:
+      type: object
+      properties:
+        BIN:
+          type: string
+          description: The bank identification number (BIN) of the card.
+        IssuingBank:
+          type: string
+          description: The name of the bank that issued the card.
+        IssuerCountryCode:
+          type: string
+          description: The country code of the card issuer.
+        Type:
+          type: string
+          description: The type of card (for example, `CREDIT` or `DEBIT`).
+        SubType:
+          type:
+          - string
+          - 'null'
+          description: The sub-type of the card, if available.
+        Brand:
+          type: string
+          description: The card brand (for example, `VISA` or `MASTERCARD`).
+      description: Information about the card used for the transaction. If the information or data is not available, `null` is returned.
+      title: CardInfo
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

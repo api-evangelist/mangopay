@@ -1,0 +1,1347 @@
+openapi: 3.2.0
+info:
+  title: Reference Virtual Accounts API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: virtualAccounts
+paths:
+  /v2.01/{ClientId}/virtual-accounts/availability:
+    get:
+      operationId: virtualAccounts_view_virtual_account_availabilities
+      summary: View Virtual Account availabilities
+      description: 'See your platform''s account capabilities per account type and country.
+
+
+        This endpoint allows you to check which account countries and currencies are available to your platform for Collection and User-Owned accounts (see guide for details).'
+      tags:
+      - virtualAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewVirtualAccountAvailabilitiesResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/wallets/{WalletId}/virtual-accounts:
+    post:
+      operationId: virtualAccounts_create_virtual_account
+      summary: Create a Virtual Account
+      description: 'Set up a virtual IBAN or local account attached to a wallet
+
+
+        **Note – One account purpose per wallet**
+
+
+        A wallet can only have either `COLLECTION` or `USER_OWNED` virtual accounts attached, but not both.
+
+
+        It is, however, possible to attach multiple virtual accounts of the same `VirtualAccountPurpose` to a single wallet.'
+      tags:
+      - virtualAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: WalletId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualAccountResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAVirtualAccountRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: virtualAccounts_list_virtual_accounts_wallet
+      summary: List Virtual Accounts for a Wallet
+      tags:
+      - virtualAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: WalletId
+        in: path
+        description: The unique identifier of the wallet.
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: Sort
+        in: query
+        description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+          **Default value:** `CreationDate:ASC`
+
+
+          Indicates the direction in which to sort the list.'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListVirtualAccountsForAWalletResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/wallets/{WalletId}/virtual-accounts/{VirtualAccountId}:
+    put:
+      operationId: virtualAccounts_deactivate_virtual_account
+      summary: Deactivate a Virtual Account
+      description: '**Caution - Deactivating a Virtual Account is irreversible**
+
+
+        Once the Virtual Account object is deactivated, it is closed and cannot be reopened.
+
+
+        Any funds wired to this IBAN or local account details won''t be credited to the corresponding wallet and will be returned to the sender.
+
+
+        If such cases arise, contact Mangopay via the Dashboard.
+
+
+        Close an account permanently to prevent it being used
+
+
+        This call serves only to deactivate a virtual account if it is no longer needed. Once deactivated, the account `Status` is `CLOSED`.'
+      tags:
+      - virtualAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: WalletId
+        in: path
+        description: The unique identifier of the wallet.
+        required: true
+        schema:
+          type: string
+      - name: VirtualAccountId
+        in: path
+        description: The unique identifier of the Virtual Account or legacy Banking Alias (the legacy `BankingAliasId` value can be used on this endpoint).
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualAccountResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeactivateAVirtualAccountRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: virtualAccounts_view_virtual_account
+      summary: View a Virtual Account
+      description: Fetch a Virtual Account or legacy Banking Alias based on its ID
+      tags:
+      - virtualAccounts
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: WalletId
+        in: path
+        description: The unique identifier of the wallet.
+        required: true
+        schema:
+          type: string
+      - name: VirtualAccountId
+        in: path
+        description: The unique identifier of the Virtual Account or legacy Banking Alias (the legacy `BankingAliasId` value can be used on this endpoint).
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualAccountResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    VirtualAccountLocalDetails_IBAN:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountAccount_IBAN'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Local account details for `DE`, `ES`, `FR`, `LU` Virtual Accounts (IBAN format).
+      title: VirtualAccountLocalDetails_IBAN
+    VirtualAccountAccount_CA:
+      type: object
+      properties:
+        BranchCode:
+          type:
+          - string
+          - 'null'
+          description: The 5-digit branch code or transit number of the CA account.
+        InstitutionNumber:
+          type:
+          - string
+          - 'null'
+          description: The 3-digit institution number of the CA account.
+        AccountNumber:
+          type:
+          - string
+          - 'null'
+          description: The account number of the account.
+      description: Details of the account in local CA format. Returned when `Country` is `CA`.
+      title: VirtualAccountAccount_CA
+    VirtualAccountInternationalAccount:
+      type: object
+      properties:
+        Iban:
+          type: string
+          description: The international bank account number (IBAN) of the account.
+        Bic:
+          type: string
+          description: The bank identifier code (BIC) of the account.
+      description: Details of the account in international (IBAN) format. Returned `null` if `Country` is `US`, `CA`, or `AU` as `Capabilities.InternationalPayinAvailable` is `false` for these countries.
+      title: VirtualAccountInternationalAccount
+    WalletId_VirtualAccount_Response:
+      type: string
+      description: The unique identifier of the wallet.
+      title: WalletId_VirtualAccount_Response
+    Status_VirtualAccount_Response:
+      type: string
+      description: '**Returned values:** `PENDING`, `ACTIVE`, `BLOCKED`, `CLOSED`, `FAILED`
+
+
+        The status of the Virtual Account:
+
+        - `PENDING` – The account creation request is being processed and full account details may not yet be returned. Any funds sent to the account are returned (if account details exist). `PENDING` can transition to `ACTIVE` or `FAILED`.
+
+        - `ACTIVE` – The account is active and can receive funds (see note about delayed [UK CoP recognition](#set-up-the-account) for `GB` accounts). `ACTIVE` can transition to `BLOCKED` or `CLOSED`.
+
+        - `BLOCKED` – The account is blocked and is not active. Any funds sent to the account are returned. This temporary status may be used during processes relating to user verification or fraud screening. `BLOCKED` can transition to `ACTIVE` or `CLOSED`.
+
+        - `CLOSED` – The account has been deactivated and is closed. Any funds sent to the account are returned. This is a final state.
+
+        - `FAILED` – The account creation request failed or was rejected. This final state is rare. Any funds sent to the account are returned (if account details exist).
+
+
+        See the [virtual account](/guides/payment-methods/banking/virtual-iban#status) guide for more details.'
+      title: Status_VirtualAccount_Response
+    ListVirtualAccountsForAWalletResponse:
+      type: object
+      properties:
+        Array (Virtual Accounts):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListVirtualAccountsForAWalletResponseArrayVirtualAccountsItems'
+          description: The list of virtual accounts created by the platform.
+      title: ListVirtualAccountsForAWalletResponse
+    ViewVirtualAccountAvailabilitiesResponse:
+      type: object
+      properties:
+        Collection:
+          type: array
+          items:
+            $ref: '#/components/schemas/VirtualAccountAvailabilityItem'
+          description: List of account capabilities for the account purpose and their availability for the platform.
+        UserOwned:
+          type: array
+          items:
+            $ref: '#/components/schemas/VirtualAccountAvailabilityItem'
+          description: List of account capabilities for the account purpose and their availability for the platform.
+      title: ViewVirtualAccountAvailabilitiesResponse
+    VirtualAccountAccount_AU:
+      type: object
+      properties:
+        BSBCode:
+          type: string
+          description: The 6-digit bank state branch (BSB) code of the AU local account.
+        AccountNumber:
+          type: string
+          description: The 10-digit account number of the AU local account.
+      description: Details of the account in local AU format. Returned when `Country` is `AU`.
+      title: VirtualAccountAccount_AU
+    Country_VirtualAccount_Availability_Response:
+      type: string
+      description: '**Returned values:** One of the supported countries in two-letter <a href="/api-reference/overview/data-formats">ISO 3166-1</a> format
+
+
+        The country of the account purpose.'
+      title: Country_VirtualAccount_Availability_Response
+    Active_VirtualAccount_Response:
+      type: boolean
+      description: Whether or not the Virtual Account is active.
+      title: Active_VirtualAccount_Response
+    VirtualAccountAccount_IBAN:
+      type: object
+      properties:
+        Iban:
+          type: string
+          description: The international bank account number (IBAN) of the account.
+        Bic:
+          type: string
+          description: The bank identifier code (BIC) of the account.
+      description: Details of the account in local IBAN format. Returned when `Country` is `DE`, `ES`, `FR`, or `LU`.
+      title: VirtualAccountAccount_IBAN
+    VirtualAccountLocalDetails_LI:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountAccount_LI'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Local account details for `LI` Virtual Accounts.
+      title: VirtualAccountLocalDetails_LI
+    Country_VirtualAccount_Request:
+      type: string
+      description: '**Allowed values:** The two-letter <a href="/api-reference/overview/data-formats">ISO 3166-1</a> country code (LU, FR, GB, etc.) of an <a href="/guides/payment-methods/banking/virtual-iban">available country</a> (depends on contract and activation settings): `AU`, `CA`, `DK`, `DE`, `ES`, `FR`, `GB`, `LI`, `LU`, `US`
+
+
+        The country of the Virtual Account. The country must correspond to the currency of the wallet. See the <a href="/guides/payment-methods/banking/virtual-iban">virtual account</a> guide for details.'
+      title: Country_VirtualAccount_Request
+    VirtualAccount_DE:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `DE`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_IBAN'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VirtualAccountInternationalDetailsItem'
+          description: 'List of the account details in international format, populated if `Capabilities.InternationalPayinAvailable` is `true`.
+
+
+            **Best practice:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `InternationalAccountDetails.Account` object may be `null` depending on the virtual account `Country`.'
+      description: 'German Virtual Account with `Country` `DE`.
+
+
+        `LocalAccountDetails.Account` uses the IBAN format.
+
+
+        `InternationalAccountDetails` is populated if `Capabilities.InternationalPayinAvailable` is `true`.'
+      title: VirtualAccount_DE
+    VirtualAccountAccount_DK:
+      type: object
+      properties:
+        BankCode:
+          type: string
+          description: The 4-digit bank code of the DK local account.
+        AccountNumber:
+          type: string
+          description: The 10-digit account number of the DK local account.
+      description: Details of the account in local DK format. Returned when `Country` is `DK`.
+      title: VirtualAccountAccount_DK
+    AccountOwner_VirtualAccount_Response:
+      type: string
+      description: 'The owner of the virtual account.
+
+
+        The account owner is assigned automatically depending on the `VirtualAccountPurpose`:
+
+        - `COLLECTION` – Owned by Mangopay SA or Mangopay UK Ltd., mentioning the platform''s trading name in the format "MGP `PlatformTradingName`"
+
+        - `USER_OWNED` – Owned by the owner of the associated wallet: `FirstName` `LastName` for Natural Users; `Name` for Legal Users'
+      title: AccountOwner_VirtualAccount_Response
+    VirtualAccountLocalDetails_DK:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountAccount_DK'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Local account details for `DK` Virtual Accounts.
+      title: VirtualAccountLocalDetails_DK
+    VirtualAccountInternationalDetailsItem_LI:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountAccount_LI'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Item in the `InternationalAccountDetails` array for `LI` Virtual Accounts. `Account` uses the same format as `LocalAccountDetails.Account`.
+      title: VirtualAccountInternationalDetailsItem_LI
+    VirtualAccount_LU:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `LU`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_IBAN'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VirtualAccountInternationalDetailsItem'
+          description: 'List of the account details in international format, populated if `Capabilities.InternationalPayinAvailable` is `true`.
+
+
+            **Best practice:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `InternationalAccountDetails.Account` object may be `null` depending on the virtual account `Country`.'
+      description: 'Luxembourg Virtual Account with `Country` `LU`.
+
+
+        `LocalAccountDetails.Account` uses the IBAN format.
+
+
+        `InternationalAccountDetails` is populated if `Capabilities.InternationalPayinAvailable` is `true`.'
+      title: VirtualAccount_LU
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    VirtualAccountInternationalDetailsItem:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountInternationalAccount'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Item in the `InternationalAccountDetails` array (international IBAN format). Not populated for `US`, `CA`, or `AU` Virtual Accounts.
+      title: VirtualAccountInternationalDetailsItem
+    VirtualAccountAvailabilityItem:
+      type: object
+      properties:
+        Country:
+          $ref: '#/components/schemas/Country_VirtualAccount_Availability_Response'
+        Available:
+          $ref: '#/components/schemas/Available_VirtualAccount_Availability_Response'
+        Currencies:
+          $ref: '#/components/schemas/Currencies_VirtualAccount_Availability_Response'
+      title: VirtualAccountAvailabilityItem
+    Available_VirtualAccount_Availability_Response:
+      type: boolean
+      description: Whether or not the account is available for the given country and purpose.
+      title: Available_VirtualAccount_Availability_Response
+    VirtualAccount_LI:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `LI`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_LI'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VirtualAccountInternationalDetailsItem_LI'
+          description: 'List of the account details in international format, populated if `Capabilities.InternationalPayinAvailable` is `true`.
+
+
+            **Best practice:** Retrieve both the fields and values of these child objects dynamically to present to the user. For `LI`, `InternationalAccountDetails.Account` uses the same format as `LocalAccountDetails.Account`.'
+      description: 'Liechtenstein Virtual Account with `Country` `LI`.
+
+
+        `LocalAccountDetails.Account` uses the LI-specific format (`BCNumber`, `AccountNumber`).
+
+
+        `InternationalAccountDetails` is populated if `Capabilities.InternationalPayinAvailable` is `true`. For `LI`, `InternationalAccountDetails.Account` uses the same format as `LocalAccountDetails.Account`.'
+      title: VirtualAccount_LI
+    VirtualAccount_FR:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `FR`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_IBAN'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VirtualAccountInternationalDetailsItem'
+          description: 'List of the account details in international format, populated if `Capabilities.InternationalPayinAvailable` is `true`.
+
+
+            **Best practice:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `InternationalAccountDetails.Account` object may be `null` depending on the virtual account `Country`.'
+      description: 'French Virtual Account with `Country` `FR`.
+
+
+        `LocalAccountDetails.Account` uses the IBAN format.
+
+
+        `InternationalAccountDetails` is populated if `Capabilities.InternationalPayinAvailable` is `true`.'
+      title: VirtualAccount_FR
+    VirtualAccountLocalDetails_CA:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountAccount_CA'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Local account details for `CA` Virtual Accounts.
+      title: VirtualAccountLocalDetails_CA
+    VirtualAccountAddress:
+      type: object
+      properties:
+        StreetName:
+          type:
+          - string
+          - 'null'
+          description: The building number and street name of the address.
+        PostCode:
+          type:
+          - string
+          - 'null'
+          description: The postal code of the address.
+        TownName:
+          type:
+          - string
+          - 'null'
+          description: The town or city of the address.
+        CountrySubDivision:
+          type:
+          - string
+          - 'null'
+          description: The region, state, or county of the address.
+        Country:
+          type:
+          - string
+          - 'null'
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the address.'
+      description: The address associated with the account.
+      title: VirtualAccountAddress
+    CreateAVirtualAccountRequest:
+      type: object
+      properties:
+        Country:
+          $ref: '#/components/schemas/Country_VirtualAccount_Request'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Request'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+      required:
+      - Country
+      - VirtualAccountPurpose
+      title: CreateAVirtualAccountRequest
+    VirtualAccount_GB:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `GB`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_GB'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VirtualAccountInternationalDetailsItem'
+          description: 'List of the account details in international format, populated if `Capabilities.InternationalPayinAvailable` is `true`.
+
+
+            **Best practice:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `InternationalAccountDetails.Account` object may be `null` depending on the virtual account `Country`.'
+      description: 'United Kingdom (UK) Virtual Account with `Country` `GB`.
+
+
+        `LocalAccountDetails.Account` uses the GB-specific format (`AccountNumber`, `SortCode`).
+
+
+        `InternationalAccountDetails` is populated if `Capabilities.InternationalPayinAvailable` is `true`.'
+      title: VirtualAccount_GB
+    VirtualAccountAccount_GB:
+      type: object
+      properties:
+        AccountNumber:
+          type: string
+          description: The account number of the account.
+        SortCode:
+          type: string
+          description: The sort code of the account.
+      description: Details of the account in local GB format. Returned when `Country` is `GB`.
+      title: VirtualAccountAccount_GB
+    VirtualAccount_DK:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `DK`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_DK'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VirtualAccountInternationalDetailsItem'
+          description: 'List of the account details in international format, populated if `Capabilities.InternationalPayinAvailable` is `true`.
+
+
+            **Best practice:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `InternationalAccountDetails.Account` object may be `null` depending on the virtual account `Country`.'
+      description: 'Danish Virtual Account with `Country` `DK`.
+
+
+        `LocalAccountDetails.Account` uses the DK-specific format (`BankCode`, `AccountNumber`).
+
+
+        `InternationalAccountDetails` is populated if `Capabilities.InternationalPayinAvailable` is `true`.'
+      title: VirtualAccount_DK
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    VirtualAccountLocalDetails_AU:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountAccount_AU'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Local account details for `AU` Virtual Accounts.
+      title: VirtualAccountLocalDetails_AU
+    Currencies_VirtualAccount_Availability_Response:
+      type: array
+      items:
+        type: string
+      description: '**Returned values:** One or more currency codes in <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217</a> format (EUR, GBP, etc.)
+
+
+        List of currencies supported by the account.'
+      title: Currencies_VirtualAccount_Availability_Response
+    VirtualAccount_ES:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `ES`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_IBAN'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VirtualAccountInternationalDetailsItem'
+          description: 'List of the account details in international format, populated if `Capabilities.InternationalPayinAvailable` is `true`.
+
+
+            **Best practice:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `InternationalAccountDetails.Account` object may be `null` depending on the virtual account `Country`.'
+      description: 'Spanish Virtual Account with `Country` `ES`.
+
+
+        `LocalAccountDetails.Account` uses the IBAN format.
+
+
+        `InternationalAccountDetails` is populated if `Capabilities.InternationalPayinAvailable` is `true`.'
+      title: VirtualAccount_ES
+    VirtualAccount_CA:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `CA`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_CA'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          description: Always `null` for `CA` Virtual Accounts because `Capabilities.InternationalPayinAvailable` is always `false`.
+      description: 'Canadian Virtual Account with `Country` `CA`.
+
+
+        `LocalAccountDetails.Account` uses the CA-specific format (`BranchCode`, `InstitutionNumber`, `AccountNumber`).
+
+
+        `InternationalAccountDetails` is always `null` because `Capabilities.InternationalPayinAvailable` is always `false`.'
+      title: VirtualAccount_CA
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    VirtualAccount_US:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `US`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_US'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          description: Always `null` for `US` Virtual Accounts because `Capabilities.InternationalPayinAvailable` is always `false`.
+      description: 'United States Virtual Account with `Country` `US`.
+
+
+        `LocalAccountDetails.Account` uses the US-specific format (`AccountNumber`, `AchNumber`, `FedWireNumber`, `AccountType`).
+
+
+        `InternationalAccountDetails` is always `null` because `Capabilities.InternationalPayinAvailable` is always `false`.'
+      title: VirtualAccount_US
+    VirtualAccount_AU:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        WalletId:
+          $ref: '#/components/schemas/WalletId_VirtualAccount_Response'
+        VirtualAccountPurpose:
+          $ref: '#/components/schemas/VirtualAccountPurpose_VirtualAccount_Response'
+        Status:
+          $ref: '#/components/schemas/Status_VirtualAccount_Response'
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Response'
+        AccountOwner:
+          $ref: '#/components/schemas/AccountOwner_VirtualAccount_Response'
+        Capabilities:
+          $ref: '#/components/schemas/VirtualAccountCapabilities'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Country:
+          type: string
+          description: '**Returned values:** `AU`
+
+
+            The two-letter ISO 3166-1 country code of the Virtual Account.'
+        LocalAccountDetails:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountLocalDetails_AU'
+          - type: 'null'
+          description: 'The account details in local format, populated if `Capabilities.LocalPayinAvailable` is `true`.
+
+
+            **Caution:** Retrieve both the fields and values of these child objects dynamically to present to the user. The `LocalAccountDetails.Account` object has different properties depending on the virtual account `Country`, and these may change over time as Mangopay''s coverage expands.'
+        InternationalAccountDetails:
+          description: Always `null` for `AU` Virtual Accounts because `Capabilities.InternationalPayinAvailable` is always `false`. The account can only accept domestic wire transfers.
+      description: 'Australian Virtual Account with `Country` `AU`.
+
+
+        `LocalAccountDetails.Account` uses the AU-specific format (`BSBCode`, `AccountNumber`).
+
+
+        `InternationalAccountDetails` is always `null` because `Capabilities.InternationalPayinAvailable` is always `false`.'
+      title: VirtualAccount_AU
+    VirtualAccountCapabilities:
+      type: object
+      properties:
+        LocalPayinAvailable:
+          type: boolean
+          description: Whether or not local bank wires can be made to this account.
+        InternationalPayinAvailable:
+          type: boolean
+          description: 'Whether or not international bank wires can be made to this account.
+
+
+            Returned `false` if `Country` is `US`, `CA`, or `AU`.'
+        Currencies:
+          type: array
+          items:
+            type: string
+          description: '**Returned values:** One or more currency codes in <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217</a> format (EUR, GBP, etc.)
+
+
+            List of currencies supported by the account.'
+      description: Information about the account's payment capabilities.
+      title: VirtualAccountCapabilities
+    VirtualAccountAccount_US:
+      type: object
+      properties:
+        AccountNumber:
+          type:
+          - string
+          - 'null'
+          description: The account number of the account.
+        AchNumber:
+          type:
+          - string
+          - 'null'
+          description: The 9-digit ACH routing number of the US account.
+        FedWireNumber:
+          type:
+          - string
+          - 'null'
+          description: The 9-digit Fedwire (ABA) number of the US account.
+        AccountType:
+          type: string
+          description: The account type of the US account, which is always `CHECKING`.
+      description: Details of the account in local US format. Returned when `Country` is `US`.
+      title: VirtualAccountAccount_US
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    VirtualAccountLocalDetails_GB:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountAccount_GB'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Local account details for `GB` Virtual Accounts.
+      title: VirtualAccountLocalDetails_GB
+    DeactivateAVirtualAccountRequest:
+      type: object
+      properties:
+        Active:
+          $ref: '#/components/schemas/Active_VirtualAccount_Deactivate_Request'
+      title: DeactivateAVirtualAccountRequest
+    VirtualAccountAccount_LI:
+      type: object
+      properties:
+        BCNumber:
+          type: string
+          description: The 5-digit bank clearing number of the LI local account.
+        AccountNumber:
+          type: string
+          description: The 12-digit account number of the LI local account.
+      description: Details of the account in local LI format. Returned when `Country` is `LI`.
+      title: VirtualAccountAccount_LI
+    Active_VirtualAccount_Deactivate_Request:
+      type: boolean
+      description: 'Whether or not the Virtual Account is active.
+
+
+        **Caution:** Setting this value to `false` permanently closes the account and is irreversible.'
+      title: Active_VirtualAccount_Deactivate_Request
+    ListVirtualAccountsForAWalletResponseArrayVirtualAccountsItems:
+      type: object
+      properties:
+        Object (Virtual Account):
+          $ref: '#/components/schemas/VirtualAccountResponse'
+      title: ListVirtualAccountsForAWalletResponseArrayVirtualAccountsItems
+    VirtualAccountLocalDetails_US:
+      type: object
+      properties:
+        Address:
+          $ref: '#/components/schemas/VirtualAccountAddress'
+        Account:
+          oneOf:
+          - $ref: '#/components/schemas/VirtualAccountAccount_US'
+          - type: 'null'
+        BankName:
+          type:
+          - string
+          - 'null'
+          description: The name of the bank.
+      description: Local account details for `US` Virtual Accounts.
+      title: VirtualAccountLocalDetails_US
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    VirtualAccountPurpose_VirtualAccount_Request:
+      type: string
+      description: '**Allowed values:** `COLLECTION`, `USER_OWNED`
+
+
+        The type of the virtual account:
+
+        - `COLLECTION` - Owned by Mangopay and usable by platforms and/or users for the purpose of collecting and reconciling incoming funds paid by users.
+
+        - `USER_OWNED` - Owned by the wallet owner, enabling them to accept and store funds and make payments. Offering User-Owned Accounts requires your platform to sign the [VOP](/guides/vop) contract amendment.
+
+
+        For more information, see the [virtual account](/guides/payment-methods/banking/virtual-iban) guide.'
+      title: VirtualAccountPurpose_VirtualAccount_Request
+    VirtualAccountPurpose_VirtualAccount_Response:
+      type: string
+      description: '**Returned values:** `COLLECTION`, `USER_OWNED`
+
+
+        The type of the virtual account:
+
+        - `COLLECTION` - Owned by Mangopay and usable by platforms and/or users for the purpose of collecting and reconciling incoming funds paid by users.
+
+        - `USER_OWNED` - Owned by the wallet owner, enabling them to accept and store funds and make payments. Offering User-Owned Accounts requires your platform to sign the [VOP](/guides/vop) contract amendment.
+
+
+        For more information, see the [virtual account](/guides/payment-methods/banking/virtual-iban) guide.'
+      title: VirtualAccountPurpose_VirtualAccount_Response
+    VirtualAccountResponse:
+      oneOf:
+      - $ref: '#/components/schemas/VirtualAccount_AU'
+      - $ref: '#/components/schemas/VirtualAccount_CA'
+      - $ref: '#/components/schemas/VirtualAccount_DE'
+      - $ref: '#/components/schemas/VirtualAccount_DK'
+      - $ref: '#/components/schemas/VirtualAccount_ES'
+      - $ref: '#/components/schemas/VirtualAccount_FR'
+      - $ref: '#/components/schemas/VirtualAccount_GB'
+      - $ref: '#/components/schemas/VirtualAccount_LI'
+      - $ref: '#/components/schemas/VirtualAccount_LU'
+      - $ref: '#/components/schemas/VirtualAccount_US'
+      title: VirtualAccountResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

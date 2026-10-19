@@ -1,0 +1,165 @@
+openapi: 3.2.0
+info:
+  title: Reference User Data Format API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: userDataFormat
+paths:
+  /v2.01/{ClientId}/users/data-formats/validation:
+    post:
+      operationId: userDataFormat_validate_user_data_format
+      summary: Validate the format of User data
+      description: '**Caution – Veracity of data checked during verification**
+
+
+        This endpoint only checks that the format of the data corresponds to that which is expected. Whether or not the data is true and correct for the specific User is checked during the user verification process when documents are submitted.
+
+
+        Validate the format of User data
+
+
+        This endpoint allows you to check that the format of the `CompanyNumber` is correct and retrieve the validation rules applied to it.
+
+
+        The `CompanyNumber` must be in the correct format for Business Legal Users to be KYC/B verified.'
+      tags:
+      - userDataFormat
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateTheFormatOfUserDataResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateTheFormatOfUserDataRequest'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    ValidateTheFormatOfUserDataResponseCompanyNumber:
+      type: object
+      properties:
+        CompanyNumber:
+          type: string
+          description: The registration number of a legal entity, assigned by the relevant national authority.
+        CountryCode:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the registration of the legal entity, against which the company number format is validated.'
+        IsValid:
+          type: boolean
+          description: Whether the format of the company number is valid for the given country.
+        ValidationRules:
+          type: array
+          items:
+            type: string
+          description: The validation rules applied to the company number format for the given country.
+      description: Information about the registration number of a legal entity. For details, see the [Company number](/guides/users/verification/company-number) article.
+      title: ValidateTheFormatOfUserDataResponseCompanyNumber
+    ValidateTheFormatOfUserDataRequestCompanyNumber:
+      type: object
+      properties:
+        CompanyNumber:
+          type: string
+          description: 'The registration number of a legal entity, assigned by the relevant national authority.
+
+
+            **Note:** Any non-alphanumeric characters, like dashes or spaces, are removed before applying the validation rules.'
+        CountryCode:
+          type: string
+          description: 'Format: Two-letter country code ([ISO 3166-1 alpha-2 format](/api-reference/overview/data-formats))
+
+
+            The country of the registration of the legal entity, against which the company number format is validated.'
+      required:
+      - CompanyNumber
+      - CountryCode
+      description: Information about the registration number of a legal entity. For details, see the [Company number](/guides/users/verification/company-number) article.
+      title: ValidateTheFormatOfUserDataRequestCompanyNumber
+    ValidateTheFormatOfUserDataResponse:
+      type: object
+      properties:
+        CompanyNumber:
+          $ref: '#/components/schemas/ValidateTheFormatOfUserDataResponseCompanyNumber'
+          description: Information about the registration number of a legal entity. For details, see the [Company number](/guides/users/verification/company-number) article.
+      title: ValidateTheFormatOfUserDataResponse
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ValidateTheFormatOfUserDataRequest:
+      type: object
+      properties:
+        CompanyNumber:
+          $ref: '#/components/schemas/ValidateTheFormatOfUserDataRequestCompanyNumber'
+          description: Information about the registration number of a legal entity. For details, see the [Company number](/guides/users/verification/company-number) article.
+      title: ValidateTheFormatOfUserDataRequest
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

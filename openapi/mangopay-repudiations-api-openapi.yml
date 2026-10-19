@@ -1,0 +1,220 @@
+openapi: 3.2.0
+info:
+  title: Reference Repudiations API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Repudiations
+paths:
+  /v2.01/{ClientId}/repudiations/{RepudiationId}:
+    get:
+      operationId: repudiations_view_repudiation
+      summary: View a Repudiation
+      tags:
+      - Repudiations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: RepudiationId
+        in: path
+        description: The unique identifier of the repudiation.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepudiationResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    RepudiationResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the debited funds.
+      title: RepudiationResponseDebitedFunds
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    RepudiationResponse:
+      type: object
+      properties:
+        AuthorId:
+          type: string
+          description: The unique identifier of the user at the source of the initial transaction.
+        CreditedUserId:
+          type: string
+          description: The unique identifier of the user whose wallet is credited. In the specific case of the Payout object, this value is always `null` since there is no credited wallet.
+        CreditedFunds:
+          $ref: '#/components/schemas/RepudiationResponseCreditedFunds'
+          description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+        Status:
+          $ref: '#/components/schemas/TransactionStatus'
+        ExecutionDate:
+          $ref: '#/components/schemas/TransactionExecutionDate'
+        Type:
+          $ref: '#/components/schemas/TransactionType'
+        Nature:
+          $ref: '#/components/schemas/TransactionNature'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet. In the specific case of the Payout object, this value is always `null` since there is no credited wallet.
+        DebitedFunds:
+          $ref: '#/components/schemas/RepudiationResponseDebitedFunds'
+          description: Information about the debited funds.
+        Fees:
+          $ref: '#/components/schemas/RepudiationResponseFees'
+          description: Information about the fees.
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        InitialTransactionId:
+          type: string
+          description: The unique identifier of the initial transaction being refunded.
+        InitialTransactionType:
+          type: string
+          description: '**Returned values:** `PAYIN`, `TRANSFER`, `PAYOUT`
+
+
+            The type of the initial transaction being refunded.'
+        InitialTransactionNature:
+          type: string
+          description: '**Returned values:** `REGULAR`, `REPUDIATION`, `REFUND`, `SETTLEMENT`
+
+
+            The nature of the initial transaction being refunded, providing more information about the context in which the transaction occurred:
+
+            - REGULAR – Relative to most of the transactions (pay-ins, payouts, and transfers) in a usual workflow.
+
+            - REPUDIATION – Automatic withdrawal of funds from the platform''s repudiation wallet as part of the dispute process (when the user requested a chargeback).
+
+            - REFUND – Reimbursement of a transaction to the user (pay-in refund), to a wallet (transfer refund), or of a payout (payout refund, only initiated by Mangopay).
+
+            - SETTLEMENT – Transfer made to the repudiation wallet by the platform to settle the credit from a repudiation following a lost dispute.'
+      title: RepudiationResponse
+    TransactionNature:
+      type: string
+      description: '**Returned values:** `REGULAR`, `REPUDIATION`, `REFUND`, `SETTLEMENT`
+
+
+        The nature of the transaction, providing more information about the context in which the transaction occurred:
+
+        - `REGULAR` – Relative to most of the transactions (pay-ins, payouts, and transfers) in a usual workflow.
+
+        - `REPUDIATION` – Automatic withdrawal of funds from the platform''s repudiation wallet as part of the dispute process (when the user has requested a chargeback).
+
+        - `REFUND` – Reimbursement of a transaction to the user (pay-in refund), to a wallet (transfer refund), or of a payout (payout refund, only initiated by Mangopay).
+
+        - `SETTLEMENT` – Transfer made to the repudiation wallet by the platform to settle a lost dispute.'
+      title: TransactionNature
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    TransactionType:
+      type: string
+      description: '**Returned values:** `PAYIN`, `TRANSFER`, `CONVERSION`, `PAYOUT`
+
+
+        The type of the transaction.'
+      title: TransactionType
+    RepudiationResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+      title: RepudiationResponseCreditedFunds
+    RepudiationResponseFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the fees.
+      title: RepudiationResponseFees
+    TransactionStatus:
+      type: string
+      description: '**Returned values:** `CREATED`, `SUCCEEDED`, `FAILED`
+
+
+        The status of the transaction.'
+      title: TransactionStatus
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+    TransactionExecutionDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the status changed to `SUCCEEDED`, indicating that the transaction occurred. The statuses `CREATED` and `FAILED` return an `ExecutionDate` of `null`.
+      title: TransactionExecutionDate
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

@@ -1,0 +1,372 @@
+openapi: 3.2.0
+info:
+  title: Reference Card Registrations API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: cardRegistrations
+paths:
+  /v2.01/{ClientId}/cardregistrations:
+    post:
+      operationId: cardRegistrations_create_card_registration
+      summary: Create a Card Registration
+      description: 'Create a Card Registration
+
+
+        Read more about the Card Registration object →'
+      tags:
+      - cardRegistrations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardRegistrationResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateACardRegistrationRequest'
+      security:
+      - oauth2: []
+  /{CardRegistrationUrl}:
+    post:
+      operationId: cardRegistrations_tokenize_card
+      summary: Tokenize the card
+      description: 'Send card details to a PCI-DSS-compliant tokenization server without reaching Mangopay''s servers.
+
+
+        The URL to use for this endpoint is returned in the `CardRegistrationURL` parameter on the POST Create a Card Registration endpoint.
+
+
+        The request must be made using the “application/x-www-form-urlencoded” content type.
+
+
+        **Note – Do not hardcode the URL**
+
+
+        The `CardRegistrationURL` is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.
+
+
+        **Caution – Card details must never pass via your server**
+
+
+        For security reasons, it is strictly forbidden to send the card details to your own server. You must rely on the dedicated PCI-DSS-compliant tokenization server by using the endpoint provided.'
+      tags:
+      - cardRegistrations
+      parameters:
+      - name: CardRegistrationUrl
+        in: path
+        description: The variable URL is only documented as a path parameter on this path for documentation reasons. I allows it to be rendered visiablly on the page, and because there are two dynamic server URLs in the spec (so both would be on the / path). The variable URL is the server for this request, and it has a variable host and path and query parameters. You do not need to add anything to it.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: "The string returned by the tokenization server. \n\nSend this string in full as the `RegistrationData` value on the [PUT Update a Card Registration](/api-reference/card-registrations/update-card-registration) endpoint to create the Card object."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessKeyRef:
+                  type: string
+                  description: The `AccessKey` returned by the [POST Create a Card Registration](/api-reference/card-registrations/create-card-registration) call.
+                data:
+                  type: string
+                  description: The `PreregistrationData` returned by the [POST Create a Card Registration](/api-reference/card-registrations/create-card-registration) call.
+                cardNumber:
+                  type: string
+                  description: The full PAN (card number) of the card.
+                cardExpirationDate:
+                  type: string
+                  description: 'The expiration date of the card in MMYY format, for example: `1229`.'
+                cardCvx:
+                  type: string
+                  description: 'The card verification code (CVC) or card verification value (CVV), typically 3 digits found on the back of the card.
+
+
+                    AMEX codes are 4 digits and are called card identification (CID) numbers.
+
+
+                    For cards that don''t have a CVC, such as Maestro, use `000` or `999`.'
+              required:
+              - accessKeyRef
+              - data
+              - cardNumber
+              - cardExpirationDate
+              - cardCvx
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/cardregistrations/{CardRegistrationId}:
+    put:
+      operationId: cardRegistrations_update_card_registration
+      summary: Update a Card Registration
+      description: 'Update a Card Registration
+
+
+        This call is used to add the string acquired from the tokenization to the Card Registration object in the parameter `RegistrationData`, thereby validating the registration.
+
+
+        As a result, the Card object is created and the corresponding `CardId` returned.
+
+
+        Platforms should also send the cardholder''s name as it appears on the payment card. The `CardHolderName` parameter is sent on this call but not returned in the response; it is added to the Card object.'
+      tags:
+      - cardRegistrations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: CardRegistrationId
+        in: path
+        description: The unique identifier of the Card Registration object.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardRegistrationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateACardRegistrationRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: cardRegistrations_view_card_registration
+      summary: View a Card Registration
+      tags:
+      - cardRegistrations
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: CardRegistrationId
+        in: path
+        description: The unique identifier of the Card Registration object.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardRegistrationResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    UpdateACardRegistrationRequest:
+      type: object
+      properties:
+        RegistrationData:
+          type: string
+          description: The string returned by the tokenization server on the <a href="/api-reference/card-registrations/tokenize-card">POST Tokenize the card</a> endpoint.
+        CardHolderName:
+          type: string
+          description: 'Min. length: 2 characters; max. length: 45 characters passed to card network, 255 accepted by the API
+
+
+            The cardholder''s name shown on the payment card. This value is passed to the card network for use in transaction risk analysis. The value should only contain unmarked alphabetic characters (A-Z, a-z), hyphens (-), apostrophes (''), and spaces. Letters with diacritics (e.g. É, Ü, ẞ), honorifics (e.g. MRS.) and other special characters are not recommended. The `CardHolderName` is not returned in the Card Registration object; it is added to the Card object.'
+      required:
+      - RegistrationData
+      title: UpdateACardRegistrationRequest
+    CardRegistrationResponse:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: The unique identifier of the Card Registration object.
+        Tag:
+          $ref: '#/components/schemas/Tag_CardRegistration'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        UserId:
+          type: string
+          description: The unique identifier of the user the card belongs to.
+        AccessKey:
+          type: string
+          description: The secure value to use when tokenizing the card via the dedicated endpoint.
+        PreregistrationData:
+          type: string
+          description: The secure value to identify the registration when tokenizing the card via the dedicated endpoint.
+        RegistrationData:
+          type: string
+          description: The string returned by the tokenization server, which must be sent in full as the `RegistrationData` on the <a href="/api-reference/card-registrations/update-card-registration">PUT Update a Card Registration</a> endpoint to create the Card object.
+        CardId:
+          type: string
+          description: The unique identifier of the Card object, which is returned after updating the Card Registration object with the `RegistrationData`.
+        CardType:
+          type: string
+          description: '**Returned values:** `CB_VISA_MASTERCARD`, `AMEX`, `MAESTRO`, `BCMC`
+
+
+            **Default value:** `CB_VISA_MASTERCARD`
+
+
+            The type of the card. If not supplied, the default value will be taken into account.'
+        CardRegistrationURL:
+          type: string
+          description: 'The URL to make the card tokenization call.
+
+
+            **Caution:** This variable URL is specific to each card registration. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        Currency:
+          type: string
+          description: '**Returned values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the card.'
+        Status:
+          type: string
+          description: '**Returned values:** `CREATED`, `VALIDATED`, `ERROR`
+
+
+            The status of the card registration:
+
+            - `CREATED` – The card registration has been created, but no `RegistrationData` has been entered yet and the `CardId` value is `null`.
+
+            - `VALIDATED` – The card registration has been successfully updated with the `RegistrationData` from the tokenization server.
+
+            - `ERROR` – The card registration couldn''t be updated with the `RegistrationData` and no `CardId` was generated. For more information, refer to the `ResultCode` (<a href="/errors/codes/105206">105206</a>, <a href="/errors/codes/105299">105299</a>) and `ResultMessage`.'
+      title: CardRegistrationResponse
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    CreateACardRegistrationRequest:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag_CardRegistration'
+        UserId:
+          type: string
+          description: The unique identifier of the user the card belongs to.
+        CardType:
+          type: string
+          description: '**Allowed values:** `CB_VISA_MASTERCARD`, `AMEX`, `MAESTRO`, `BCMC`
+
+
+            **Default value:** `CB_VISA_MASTERCARD`
+
+
+            The type of the card. If not supplied, the default value will be taken into account.'
+        Currency:
+          type: string
+          description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the card.'
+      required:
+      - UserId
+      - Currency
+      title: CreateACardRegistrationRequest
+    Tag_CardRegistration:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.
+
+
+        This value will also be inherited by the Card object''s `Tag` parameter and cannot be edited.'
+      title: Tag_CardRegistration
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

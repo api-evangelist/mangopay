@@ -1,0 +1,485 @@
+openapi: 3.2.0
+info:
+  title: Reference Cards API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Cards
+paths:
+  /v2.01/{ClientId}/cards/{CardId}:
+    put:
+      operationId: cards_deactivate_edit_card
+      summary: Deactivate or edit a Card
+      description: '**Warning – Implement card deactivation**
+
+
+        Because card information cannot be kept without the end user''s approval, you should implement a way to deactivate the end user''s card systematically when relevant.
+
+
+        Deactivate or edit a Card
+
+
+        This call serves one of two purposes:
+
+        - Setting the card as inactive, and thereby disabling it from being used again. This action is irreversible but doesn''t prevent the card being registered again with POST Create a Card Registration.
+
+        - Adding the `CardHolderName` to an existing Card object. The `CardHolderName` cannot be modified once added to a Card object. It can also be done during registration with PUT Update a Card Registration, in which case attempting to edit it with this endpoint returns an error.'
+      tags:
+      - Cards
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: CardId
+        in: path
+        description: The unique identifier of the Card object, which is returned after updating the Card Registration object with the `RegistrationData`.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeactivateOrEditACardResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeactivateOrEditACardRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: cards_view_card
+      summary: View a Card
+      tags:
+      - Cards
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: CardId
+        in: path
+        description: The unique identifier of the Card object, which is returned after updating the Card Registration object with the `RegistrationData`.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewACardResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/users/{UserId}/cards:
+    get:
+      operationId: cards_list_cards_user
+      summary: List Cards for a User
+      tags:
+      - Cards
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: UserId
+        in: path
+        description: The unique identifier of the user.
+        required: true
+        schema:
+          type: string
+      - name: Active
+        in: query
+        description: Whether the card is active or not.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCardsForAFingerprintResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/cards/fingerprints/{Fingerprint}:
+    get:
+      operationId: cards_list_cards_fingerprint
+      summary: List Cards for a Fingerprint
+      description: Retrieve all Card objects with the same `Fingerprint` value. This can be useful to detect abnormal or fraudulent behavior.
+      tags:
+      - Cards
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: Fingerprint
+        in: path
+        description: The unique representation of the card number. This string can be used to track the card behavior while keeping the card information confidential.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCardsForAFingerprintResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    Tag_Card:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data added to this object. This value is inherited from the Card Registration object and cannot be edited.'
+      title: Tag_Card
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    ListCardsForAFingerprintResponseArrayCardsItemsCard:
+      type: object
+      properties:
+        ExpirationDate:
+          type: string
+          description: The expiration date of the card.
+        Alias:
+          type: string
+          description: The card number, partially obfuscated.
+        CardType:
+          type: string
+          description: '**Returned values:** `CB_VISA_MASTERCARD`, `AMEX`, `MAESTRO`, `BCMC`
+
+
+            **Default value:** `CB_VISA_MASTERCARD`
+
+
+            The type of the card. If not supplied, the default value will be taken into account.'
+        CardProvider:
+          type: string
+          description: '**Allowed values:** `CB`, `VISA`, `MASTERCARD`, `AMEX`, `MAESTRO`, `BCMC`, `JCB`, `DISCOVER`
+
+
+            The provider of the card.'
+        Country:
+          type: string
+          description: The country of the card (which is the same as the country of the issuer).
+        BankCode:
+          type: string
+          description: The name of the card issuing bank.
+        Active:
+          type: boolean
+          description: Whether the card is active or not. Setting this parameter to `false` is irreversible and should be done once the pay-in is successful.
+        Currency:
+          type: string
+          description: '**Returned values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the card.'
+        Validity:
+          type: string
+          description: '**Returned values:** `UNKNOWN`, `VALID`, `INVALID`
+
+
+            Whether the card is valid or not.
+
+            - `UNKNOWN` – No payment or card validation has been processed, so the validity of the card remains unknown.
+
+            - `VALID` – The first payment or card validation using the card was processed successfully within 24 hours of the initial card registration.
+
+            - `INVALID` – The first payment or card validation using the card was attempted and failed, or the status of the corresponding card registration was `CREATED` for more than 24 hours.
+
+            Once a card is set to `INVALID`, it cannot be set back to `VALID`. A new card registration will be necessary to make a payment.'
+        UserId:
+          type: string
+          description: The unique identifier of the user the card belongs to.
+        Id:
+          type: string
+          description: The unique identifier of the Card object.
+        Tag:
+          $ref: '#/components/schemas/Tag_Card'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Fingerprint:
+          type: string
+          description: The unique representation of the card number. This string can be used to track the card behavior while keeping the card information confidential.
+      description: The card object created by the platform.
+      title: ListCardsForAFingerprintResponseArrayCardsItemsCard
+    ViewACardResponse:
+      type: object
+      properties:
+        ExpirationDate:
+          type: string
+          description: 'Format: “MMYY”
+
+
+            The expiration date of the card.'
+        Alias:
+          type: string
+          description: The card number, partially obfuscated.
+        CardType:
+          type: string
+          description: '**Returned values:** `CB_VISA_MASTERCARD`, `AMEX`, `MAESTRO`, `BCMC`
+
+
+            **Default value:** `CB_VISA_MASTERCARD`
+
+
+            The type of the card. If not supplied, the default value will be taken into account.'
+        CardProvider:
+          type: string
+          description: '**Allowed values:** `CB`, `VISA`, `MASTERCARD`, `AMEX`, `MAESTRO`, `BCMC`, `JCB`, `DISCOVER`
+
+
+            The provider of the card.'
+        Country:
+          type: string
+          description: 'Format: ISO-3166-1 alpha-3 three-letter country code (e.g., “FRA”)
+
+
+            The country of the card (which is the same as the country of the issuer).'
+        Product:
+          type: string
+          description: The product type of the card.
+        BankCode:
+          type: string
+          description: The name of the card issuing bank.
+        Active:
+          type: boolean
+          description: Whether the card is active or not. Setting this parameter to `false` is irreversible and should be done once the pay-in is successful.
+        Currency:
+          type: string
+          description: '**Returned values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the card.'
+        Validity:
+          $ref: '#/components/schemas/Validity'
+        UserId:
+          type: string
+          description: The unique identifier of the User (natural or legal) who owns the bank account.
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Fingerprint:
+          type: string
+          description: The unique representation of the card number. This string can be used to track the card behavior while keeping the card information confidential.
+        CardHolderName:
+          type: string
+          description: 'Min. length: 2 characters; max. length: 45 characters passed to card network, 255 accepted by the API
+
+
+            The cardholder''s name shown on the payment card. This value is passed to the card network for use in transaction risk analysis.
+
+
+            The value should only contain unmarked alphabetic characters (A-Z, a-z), hyphens (-), apostrophes (''), and spaces. Letters with diacritics (e.g. É, Ü, ẞ), honorifics (e.g. MRS.) and other special characters are not recommended.
+
+
+            The `CardHolderName` is not returned in the Card Registration object; it is added to the Card object.'
+      title: ViewACardResponse
+    DeactivateOrEditACardResponse:
+      type: object
+      properties:
+        ExpirationDate:
+          type: string
+          description: 'Format: “MMYY”
+
+
+            The expiration date of the card.'
+        Alias:
+          type: string
+          description: The card number, partially obfuscated.
+        CardType:
+          type: string
+          description: '**Returned values:** `CB_VISA_MASTERCARD`, `AMEX`, `MAESTRO`, `BCMC`
+
+
+            **Default value:** `CB_VISA_MASTERCARD`
+
+
+            The type of the card. If not supplied, the default value will be taken into account.'
+        CardProvider:
+          type: string
+          description: '**Allowed values:** `CB`, `VISA`, `MASTERCARD`, `AMEX`, `MAESTRO`, `BCMC`, `JCB`, `DISCOVER`
+
+
+            The provider of the card.'
+        Country:
+          type: string
+          description: 'Format: ISO-3166-1 alpha-3 three-letter country code (e.g., “FRA”)
+
+
+            The country of the card (which is the same as the country of the issuer).'
+        Product:
+          type: string
+          description: The product type of the card.
+        BankCode:
+          type: string
+          description: The name of the card issuing bank.
+        Active:
+          type: boolean
+          description: Whether the card is active or not. Setting this parameter to `false` is irreversible and should be done once the pay-in is successful.
+        Currency:
+          type: string
+          description: '**Returned values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the card.'
+        Validity:
+          $ref: '#/components/schemas/Validity'
+        UserId:
+          type: string
+          description: The unique identifier of the user the card belongs to.
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag_Card'
+        Fingerprint:
+          type: string
+          description: The unique representation of the card number. This string can be used to track the card behavior while keeping the card information confidential.
+        CardHolderName:
+          type: string
+          description: 'Max. length: 45 characters
+
+
+            The cardholder''s name shown on the payment card. This value is passed to the card network for use in transaction risk analysis.'
+      title: DeactivateOrEditACardResponse
+    Validity:
+      type: string
+      description: '**Returned values:** `UNKNOWN`, `VALID`, `INVALID`
+
+
+        Whether the card is valid or not.
+
+        - `UNKNOWN` – No payment or card validation has been processed, so the validity of the card remains unknown.
+
+        - `VALID` – The first payment or card validation using the card was processed successfully within 24 hours of the initial card registration.
+
+        - `INVALID` – The first payment or card validation using the card was attempted and failed, or the status of the corresponding card registration was `CREATED` for more than 24 hours.
+
+        Once a card is set to `INVALID`, it cannot be set back to `VALID`. A new card registration will be necessary to make a payment.'
+      title: Validity
+    ListCardsForAFingerprintResponseArrayCardsItems:
+      type: object
+      properties:
+        Card:
+          $ref: '#/components/schemas/ListCardsForAFingerprintResponseArrayCardsItemsCard'
+          description: The card object created by the platform.
+      title: ListCardsForAFingerprintResponseArrayCardsItems
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    DeactivateOrEditACardRequest:
+      type: object
+      properties:
+        Active:
+          type: boolean
+          description: Whether the card is active or not. Setting this parameter to `false` is irreversible and should be done once the pay-in is successful.
+        CardHolderName:
+          type: string
+          description: 'Max. length: 45 characters passed to card network, 255 accepted by the API
+
+
+            The cardholder''s name shown on the payment card. This value is passed to the card network for use in transaction risk analysis. The value should only contain unmarked alphabetic characters (A-Z, a-z), hyphens (-), apostrophes (''), and spaces. Letters with diacritics (e.g. É, Ü, ẞ), honorifics (e.g. MRS.) and other special characters are not recommended (they are transformed before being sent to the card network). The `CardHolderName` is not returned in the Card Registration object; it is added to the Card object.'
+      title: DeactivateOrEditACardRequest
+    ListCardsForAFingerprintResponse:
+      type: object
+      properties:
+        Array (Cards):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListCardsForAFingerprintResponseArrayCardsItems'
+          description: The list of the cards created by the platform.
+      title: ListCardsForAFingerprintResponse
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

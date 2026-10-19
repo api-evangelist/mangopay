@@ -1,173 +1,1203 @@
 openapi: 3.2.0
 info:
-  title: Mangopay REST Reporting API
-  description: The Mangopay REST API enables platforms to manage users, e-wallets, pay-ins, payouts, transfers, foreign exchange, KYC/KYB identity verification, fraud prevention, and dispute handling for multi-party payment flows.
-  version: '2.01'
-  contact:
-    name: Mangopay Support
-    url: https://hub.mangopay.com
+  title: Reference Reporting API
+  version: 1.0.0
 servers:
-- url: https://api.mangopay.com/v2.01/{clientId}
-  description: Production
-  variables:
-    clientId:
-      default: your-client-id
-      description: Your Mangopay Client ID
-- url: https://api.sandbox.mangopay.com/v2.01/{clientId}
+- url: https://api.sandbox.mangopay.com
   description: Sandbox
-  variables:
-    clientId:
-      default: your-client-id
-      description: Your Mangopay Client ID
-security:
-- OAuth2: []
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
 tags:
 - name: Reporting
 paths:
-  /reporting/reports:
+  /v2.01/{ClientId}/reporting/reports:
     post:
+      operationId: reporting_create_report
+      summary: Create a Report
+      description: 'Generate a reporting service report
+
+
+        This endpoint generates a report from Mangopay''s Reporting Service, which is replacing the legacy report types (read the guide).
+
+
+        There are 2 reports (indicated by `ReportType`) that may be useful to all platforms: `USER_WALLET_TRANSACTIONS` and `COLLECTED_FEES`.
+
+
+        There are 4 `ReportType` that are designed to support platforms using Echo, Mangopay solution for integrations working with third-party PSPs: `ECHO_INTENT`, `ECHO_INTENT_ACTION`, `ECHO_SETTLEMENT`, `ECHO_SPLIT`.
+
+
+        Each `ReportType` has different available `Columns` and `Filters`.
+
+
+        **Note – Report expires after 31 days**
+
+
+        A Reporting Service report expires after 31 days, at which point it can no longer be downloaded. On expiry, the report''s `Status` becomes `EXPIRED` and the `DownloadURL` becomes `null`.
+
+
+        You can generate a new report with the same filters and dates.'
       tags:
       - Reporting
-      summary: Create a Report (User Wallet Transactions)
-      operationId: post_reporting_reports
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-    get:
-      tags:
-      - Reporting
-      summary: List all Reports
-      operationId: get_reporting_reports
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /reporting/reports/{reportingid}:
-    get:
-      tags:
-      - Reporting
-      summary: View a Report
-      operationId: get_reporting_reports_reportingid
       parameters:
-      - name: reportingid
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAReportResponse'
         '400':
           description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /reports/transactions:
-    post:
-      tags:
-      - Reporting
-      summary: Create a Transactions Report
-      operationId: post_reports_transactions
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/reporting#create-transactions-report
-  /reports/wallets:
-    post:
-      tags:
-      - Reporting
-      summary: Create a Wallets Report
-      operationId: post_reports_wallets
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/reporting#create-wallets-report
-  /reports/{reportId}:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAReportRequest'
+      security:
+      - oauth2: []
     get:
+      operationId: reporting_list_reports
+      summary: List all Reports
+      description: List key data of Reporting Service reports
       tags:
       - Reporting
-      summary: View a Report
-      operationId: get_reports_reportId
       parameters:
-      - name: reportId
+      - name: ClientId
         in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: Status
+        in: query
+        description: '**Possible values:** `PENDING`, `GENERATING`, `GENERATED`, `EXPIRED`, `FAILED`
+
+
+          The status of the report:
+
+          - `PENDING` – The report generation request was accepted but is not yet being processed.
+
+          - `GENERATING` – The report is being generated.
+
+          - `GENERATED` – The report is ready for download at the `DownloadURL`
+
+          - `EXPIRED` – The report has expired and is no longer available for download.
+
+          - `FAILED` – Report generation was not successful.'
+        required: false
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the report was created (based on the report's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the report was created (based on the report's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: Sort
+        in: query
+        description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+          **Default value:** `CreationDate:ASC`
+
+
+          Indicates the direction in which to sort the list.'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllReportsResponse'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/reporting/reports/{ReportingId}:
+    get:
+      operationId: reporting_view_report
+      summary: View a Report
+      description: Retrieve a report from the Reporting Service
+      tags:
+      - Reporting
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: ReportingId
+        in: path
+        description: The unique identifier of the Reporting Service report.
         required: true
         schema:
           type: string
       responses:
         '200':
           description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/reporting#view-report
-  /reports:
-    get:
-      tags:
-      - Reporting
-      summary: List all Reports
-      operationId: get_reports
-      parameters: []
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      description: https://mangopay.com/docs/endpoints/reporting#list-reports
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+      security:
+      - oauth2: []
 components:
+  schemas:
+    ListAllReportsResponseArrayReportsItems:
+      type: object
+      properties:
+        Object (reports):
+          $ref: '#/components/schemas/ListAllReportsResponseArrayReportsItemsObjectReports'
+          description: Key data about the Reporting Service report object created by the platform.
+      title: ListAllReportsResponseArrayReportsItems
+    CreateAReportResponseColumnsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the column.
+        IsDefault:
+          type: boolean
+          description: Whether the column is a default for the report or not.
+      title: CreateAReportResponseColumnsItems
+    CreateAReportResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ReportDate:
+          type:
+          - integer
+          - 'null'
+          description: Unix timestamp (UTC) of the date and time the report was generated.
+        Status:
+          type: string
+          description: '**Returned values:** `PENDING`, `READY_FOR_DOWNLOAD`, `FAILED`, `EXPIRED`
+
+
+            The status of the report:
+
+            - `PENDING` – The report is being generated.
+
+            - `READY_FOR_DOWNLOAD` – The report has been created, and can be downloaded.
+
+            - `FAILED` – The report cannot be generated.
+
+            - `EXPIRED` – The report was created, but is no longer available for download (it can be re-run to be downloaded again with fresh data).'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        DownloadFormat:
+          type: string
+          description: '**Returned values:** `CSV`
+
+
+            The format in which the report is going to be downloaded.'
+        DownloadURL:
+          type:
+          - string
+          - 'null'
+          description: The URL at which the report file can be downloaded when the `Status` is `GENERATED`.
+        ReportType:
+          $ref: '#/components/schemas/ReportType_Reporting_Response'
+        Sort:
+          type: string
+          description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+            **Default value**: `CreationDate:DESC`
+
+
+            The sort direction based on transaction creation date.'
+        DateRangeBy:
+          type:
+          - string
+          - 'null'
+          description: '**Possible values:** `CreationDate`, `ExecutionDate`
+
+
+            **Default value:** `CreationDate`
+
+
+            The date to which `BeforeDate` and `AfterDate` apply. The `DateRangeBy` property can only be sent on `USER_WALLET_TRANSACTIONS` and `COLLECTED_FEES` reports. It is returned `null` for other types.
+
+
+            The `ExecutionDate` value is likely to be more useful, because this is the date and time that the transaction `Status` became `SUCCEEDED`. Note also that these reports only contain successful transactions.'
+        AfterDate:
+          type: integer
+          description: '**Possible values:** Any date and time (before the `BeforeDate`) between the present and 24 months ago.
+
+
+            The date and time after which the report''s transaction was created, based on the transaction''s `CreationDate`.
+
+
+            **Note:** The period between the `AfterDate` and the `BeforeDate` cannot exceed 12 months.'
+        BeforeDate:
+          type: integer
+          description: '**Possible values:** Any date and time (after the `AfterDate`) between the present and 24 months ago.
+
+
+            The date and time before which the report''s transaction was created, based on the transaction''s `CreationDate`.
+
+
+            **Note:** The period between the `AfterDate` and the `BeforeDate` cannot exceed 12 months.'
+        Filters:
+          $ref: '#/components/schemas/CreateAReportResponseFilters'
+          description: The filters sent in the request. Different filters are available for each `ReportType`.
+        Columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateAReportResponseColumnsItems'
+          description: '**Possible values:** The columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            **Default values:** The default columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            The data columns to be included in the report.'
+      title: CreateAReportResponse
+    ReportType_ECHO_SETTLEMENT_Request:
+      type: string
+      description: '**Allowed values:** `ECHO_SETTLEMENT`
+
+
+        The type of the report. Each `ReportType` has different available `Columns` and `Filters`.
+
+
+        Useful for all platforms:
+
+        - `USER_WALLET_TRANSACTIONS` – All successful transactions crediting or debiting user wallets: pay-ins, transfers, conversions, and payouts, as well as refunds of all types and repudiations (from chargebacks).
+
+        - `COLLECTED_FEES`– Detail of transactions crediting or debiting the fees wallet: successful transactions of all types (pay-ins, transfers, refunds, payouts, etc.) that have a positive or negative fees amount.
+
+
+        Useful for platforms using [Echo](/guides/echo), Mangopay''s solution for integrations working with third-party PSPs:
+
+        - `ECHO_INTENT` – Summary of all intents declared during the selected period, detailing the total funds expected to enter the platform''s technical wallets.
+
+        - `ECHO_INTENT_ACTION` – Summary of all operations related to intents processed during the selected period, detailing the expected money movements to be escrowed — including payments, refunds, refund reversals, and chargebacks.
+
+        - `ECHO_SETTLEMENT` – Summary of all settlement files uploaded during the selected period to initiate the reconciliation process, confirming the funds expected on the techncial wallet.
+
+        - `ECHO_SPLIT` – Summary of all splits related to intents during the selected period, detailing the transfer of funds to the declared destination.'
+      title: ReportType_ECHO_SETTLEMENT_Request
+    ReportType_COLLECTED_FEES_Request:
+      type: string
+      description: '**Allowed values:** `COLLECTED_FEES`
+
+
+        The type of the report. Each `ReportType` has different available `Columns` and `Filters`.
+
+
+        Useful for all platforms:
+
+        - `USER_WALLET_TRANSACTIONS` – All successful transactions crediting or debiting user wallets: pay-ins, transfers, conversions, and payouts, as well as refunds of all types and repudiations (from chargebacks).
+
+        - `COLLECTED_FEES`– Detail of transactions crediting or debiting the fees wallet: successful transactions of all types (pay-ins, transfers, refunds, payouts, etc.) that have a positive or negative fees amount.
+
+
+        Useful for platforms using [Echo](/guides/echo), Mangopay''s solution for integrations working with third-party PSPs:
+
+        - `ECHO_INTENT` – Summary of all intents declared during the selected period, detailing the total funds expected to enter the platform''s technical wallets.
+
+        - `ECHO_INTENT_ACTION` – Summary of all operations related to intents processed during the selected period, detailing the expected money movements to be escrowed — including payments, refunds, refund reversals, and chargebacks.
+
+        - `ECHO_SETTLEMENT` – Summary of all settlement files uploaded during the selected period to initiate the reconciliation process, confirming the funds expected on the techncial wallet.
+
+        - `ECHO_SPLIT` – Summary of all splits related to intents during the selected period, detailing the transfer of funds to the declared destination.'
+      title: ReportType_COLLECTED_FEES_Request
+    ReportFilters_COLLECTED_FEES:
+      type: object
+      properties:
+        Currency:
+          type: string
+          description: The currency of the `DebitedFunds`, `CreditedFunds`, or `Fees` of the transactions.
+      description: 'Filters available on the `COLLECTED_FEES` report. The `Currency` filter
+
+        is available; if not specified, the report contains data on all
+
+        currencies.'
+      title: ReportFilters_COLLECTED_FEES
+    ReportFilters_USER_WALLET_TRANSACTIONS:
+      type: object
+      properties:
+        Currency:
+          type: string
+          description: The currency of the `DebitedFunds`, `CreditedFunds`, or `Fees` of the transactions.
+        UserId:
+          type: string
+          description: The unique identifier of the user referenced as the `AuthorId` of the transaction.
+        WalletId:
+          type: string
+          description: The unique identifier of the wallet referenced as the `DebitedWalletId` or `CreditedWalletId` of the transaction.
+      description: 'Filters available on the `USER_WALLET_TRANSACTIONS` report. `Currency`,
+
+        `UserId`, and `WalletId` can be used alone or in combination, in which
+
+        case the report data satisfies both filters. `Currency` and `WalletId`
+
+        cannot be used together. If no filters are specified, the report
+
+        contains all successful transactions crediting or debiting all user
+
+        wallets.'
+      title: ReportFilters_USER_WALLET_TRANSACTIONS
+    CreateAReportRequest_ECHO_INTENT:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        DownloadFormat:
+          type: string
+          description: '**Possible values:** `CSV`
+
+
+            The format of the report file.'
+        Sort:
+          type: string
+          description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+            **Default value**: `CreationDate:DESC`
+
+
+            The sort direction based on transaction creation date.'
+        AfterDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is earlier than the `BeforeDate` by less than 12 months.
+
+
+            The date and time after which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        BeforeDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is later than the `AfterDate` by less than 12 months.
+
+
+            The date and time before which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        Columns:
+          type: array
+          items:
+            type: string
+          description: '**Possible values:** The columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            **Default values:** The default columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            The data columns to be included in the report.'
+        ReportType:
+          $ref: '#/components/schemas/ReportType_ECHO_INTENT_Request'
+        Filters:
+          $ref: '#/components/schemas/ReportFilters_ECHO_INTENT'
+      required:
+      - DownloadFormat
+      - AfterDate
+      - BeforeDate
+      - ReportType
+      description: 'Request body for creating an `ECHO_INTENT` report, with its available `Filters`.
+
+
+        Summary of all intents declared during the selected period, detailing the total funds expected to enter the platform''s technical wallets.'
+      title: CreateAReportRequest_ECHO_INTENT
+    ReportType_ECHO_INTENT_ACTION_Request:
+      type: string
+      description: '**Allowed values:** `ECHO_INTENT_ACTION`
+
+
+        The type of the report. Each `ReportType` has different available `Columns` and `Filters`.
+
+
+        Useful for all platforms:
+
+        - `USER_WALLET_TRANSACTIONS` – All successful transactions crediting or debiting user wallets: pay-ins, transfers, conversions, and payouts, as well as refunds of all types and repudiations (from chargebacks).
+
+        - `COLLECTED_FEES`– Detail of transactions crediting or debiting the fees wallet: successful transactions of all types (pay-ins, transfers, refunds, payouts, etc.) that have a positive or negative fees amount.
+
+
+        Useful for platforms using [Echo](/guides/echo), Mangopay''s solution for integrations working with third-party PSPs:
+
+        - `ECHO_INTENT` – Summary of all intents declared during the selected period, detailing the total funds expected to enter the platform''s technical wallets.
+
+        - `ECHO_INTENT_ACTION` – Summary of all operations related to intents processed during the selected period, detailing the expected money movements to be escrowed — including payments, refunds, refund reversals, and chargebacks.
+
+        - `ECHO_SETTLEMENT` – Summary of all settlement files uploaded during the selected period to initiate the reconciliation process, confirming the funds expected on the techncial wallet.
+
+        - `ECHO_SPLIT` – Summary of all splits related to intents during the selected period, detailing the transfer of funds to the declared destination.'
+      title: ReportType_ECHO_INTENT_ACTION_Request
+    CreateAReportRequest_ECHO_INTENT_ACTION:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        DownloadFormat:
+          type: string
+          description: '**Possible values:** `CSV`
+
+
+            The format of the report file.'
+        Sort:
+          type: string
+          description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+            **Default value**: `CreationDate:DESC`
+
+
+            The sort direction based on transaction creation date.'
+        AfterDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is earlier than the `BeforeDate` by less than 12 months.
+
+
+            The date and time after which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        BeforeDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is later than the `AfterDate` by less than 12 months.
+
+
+            The date and time before which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        Columns:
+          type: array
+          items:
+            type: string
+          description: '**Possible values:** The columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            **Default values:** The default columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            The data columns to be included in the report.'
+        ReportType:
+          $ref: '#/components/schemas/ReportType_ECHO_INTENT_ACTION_Request'
+        Filters:
+          $ref: '#/components/schemas/ReportFilters_ECHO_INTENT_ACTION'
+      required:
+      - DownloadFormat
+      - AfterDate
+      - BeforeDate
+      - ReportType
+      description: "Request body for creating an `ECHO_INTENT_ACTION` report, with its available `Filters`. \n\nSummary of all operations related to intents processed during the selected period, detailing the expected money movements to be escrowed — including payments, refunds, refund reversals, and chargebacks."
+      title: CreateAReportRequest_ECHO_INTENT_ACTION
+    ReportFilters_ECHO_INTENT_ACTION:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Possible values:** `PAYIN`, `REFUND`, `DISPUTE`.
+
+
+            The type of Intent (as indicated in the settlement file).'
+        Status:
+          type: string
+          description: '**Possible values:** `AUTHORIZED`, `PARTIALLY_CAPTURED`, `CAPTURED`, `CANCELED`, `REFUNDED`, `REFUND_REVERSED`, `DISPUTED`, `DEFENDED`, `DISPUTED_WON`, `DISPUTED_LOST`.
+
+
+            The `Status` of the Intent.'
+        PaymentMethod:
+          type: string
+          description: The payment method of the Intent – one of the [supported values](/api-reference/echo/supported-payment-methods) of the `ExternalProviderPaymentMethod`.
+      description: 'Filters available on the `ECHO_INTENT_ACTION` report. Can be used in any
+
+        combination. (`ECHO_INTENT` and `ECHO_INTENT_ACTION` share the same
+
+        filter shape.)'
+      title: ReportFilters_ECHO_INTENT_ACTION
+    CreateAReportRequest_COLLECTED_FEES:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        DownloadFormat:
+          type: string
+          description: '**Possible values:** `CSV`
+
+
+            The format of the report file.'
+        Sort:
+          type: string
+          description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+            **Default value**: `CreationDate:DESC`
+
+
+            The sort direction based on transaction creation date.'
+        AfterDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is earlier than the `BeforeDate` by less than 12 months.
+
+
+            The date and time after which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        BeforeDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is later than the `AfterDate` by less than 12 months.
+
+
+            The date and time before which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        Columns:
+          type: array
+          items:
+            type: string
+          description: '**Possible values:** The columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            **Default values:** The default columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            The data columns to be included in the report.'
+        ReportType:
+          $ref: '#/components/schemas/ReportType_COLLECTED_FEES_Request'
+        Filters:
+          $ref: '#/components/schemas/ReportFilters_COLLECTED_FEES'
+        DateRangeBy:
+          type: string
+          description: '**Possible values:** `CreationDate`, `ExecutionDate`
+
+
+            **Default value:** `CreationDate`
+
+
+            The date to which `BeforeDate` and `AfterDate` apply. The `DateRangeBy` property can only be sent on `USER_WALLET_TRANSACTIONS` and `COLLECTED_FEES` reports. It is returned `null` for other types.
+
+
+            The `ExecutionDate` value is likely to be more useful, because this is the date and time that the transaction `Status` became `SUCCEEDED`. Note also that these reports only contain successful transactions.'
+      required:
+      - DownloadFormat
+      - AfterDate
+      - BeforeDate
+      - ReportType
+      description: 'Request body for creating a `COLLECTED_FEES` report with its available `Filters` and `DateRangeBy`.
+
+
+        Detail of transactions crediting or debiting the fees wallet: successful transactions of all types (pay-ins, transfers, refunds, payouts, etc.) that have a positive or negative fees amount.'
+      title: CreateAReportRequest_COLLECTED_FEES
+    CreateAReportResponseFilters:
+      type: object
+      properties: {}
+      description: The filters sent in the request. Different filters are available for each `ReportType`.
+      title: CreateAReportResponseFilters
+    ReportType_ECHO_SPLIT_Request:
+      type: string
+      description: '**Allowed values:** `ECHO_SPLIT`
+
+
+        The type of the report. Each `ReportType` has different available `Columns` and `Filters`.
+
+
+        Useful for all platforms:
+
+        - `USER_WALLET_TRANSACTIONS` – All successful transactions crediting or debiting user wallets: pay-ins, transfers, conversions, and payouts, as well as refunds of all types and repudiations (from chargebacks).
+
+        - `COLLECTED_FEES`– Detail of transactions crediting or debiting the fees wallet: successful transactions of all types (pay-ins, transfers, refunds, payouts, etc.) that have a positive or negative fees amount.
+
+
+        Useful for platforms using [Echo](/guides/echo), Mangopay''s solution for integrations working with third-party PSPs:
+
+        - `ECHO_INTENT` – Summary of all intents declared during the selected period, detailing the total funds expected to enter the platform''s technical wallets.
+
+        - `ECHO_INTENT_ACTION` – Summary of all operations related to intents processed during the selected period, detailing the expected money movements to be escrowed — including payments, refunds, refund reversals, and chargebacks.
+
+        - `ECHO_SETTLEMENT` – Summary of all settlement files uploaded during the selected period to initiate the reconciliation process, confirming the funds expected on the techncial wallet.
+
+        - `ECHO_SPLIT` – Summary of all splits related to intents during the selected period, detailing the transfer of funds to the declared destination.'
+      title: ReportType_ECHO_SPLIT_Request
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    ReportType_ECHO_INTENT_Request:
+      type: string
+      description: '**Allowed values:** `ECHO_INTENT`
+
+
+        The type of the report. Each `ReportType` has different available `Columns` and `Filters`.
+
+
+        Useful for all platforms:
+
+        - `USER_WALLET_TRANSACTIONS` – All successful transactions crediting or debiting user wallets: pay-ins, transfers, conversions, and payouts, as well as refunds of all types and repudiations (from chargebacks).
+
+        - `COLLECTED_FEES`– Detail of transactions crediting or debiting the fees wallet: successful transactions of all types (pay-ins, transfers, refunds, payouts, etc.) that have a positive or negative fees amount.
+
+
+        Useful for platforms using [Echo](/guides/echo), Mangopay''s solution for integrations working with third-party PSPs:
+
+        - `ECHO_INTENT` – Summary of all intents declared during the selected period, detailing the total funds expected to enter the platform''s technical wallets.
+
+        - `ECHO_INTENT_ACTION` – Summary of all operations related to intents processed during the selected period, detailing the expected money movements to be escrowed — including payments, refunds, refund reversals, and chargebacks.
+
+        - `ECHO_SETTLEMENT` – Summary of all settlement files uploaded during the selected period to initiate the reconciliation process, confirming the funds expected on the techncial wallet.
+
+        - `ECHO_SPLIT` – Summary of all splits related to intents during the selected period, detailing the transfer of funds to the declared destination.'
+      title: ReportType_ECHO_INTENT_Request
+    CreateAReportRequest:
+      oneOf:
+      - $ref: '#/components/schemas/CreateAReportRequest_COLLECTED_FEES'
+      - $ref: '#/components/schemas/CreateAReportRequest_USER_WALLET_TRANSACTIONS'
+      - $ref: '#/components/schemas/CreateAReportRequest_ECHO_INTENT'
+      - $ref: '#/components/schemas/CreateAReportRequest_ECHO_INTENT_ACTION'
+      - $ref: '#/components/schemas/CreateAReportRequest_ECHO_SETTLEMENT'
+      - $ref: '#/components/schemas/CreateAReportRequest_ECHO_SPLIT'
+      title: CreateAReportRequest
+    ReportResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ReportDate:
+          type:
+          - integer
+          - 'null'
+          description: Unix timestamp (UTC) of the date and time the report was generated.
+        Status:
+          type: string
+          description: '**Returned values:** `PENDING`, `READY_FOR_DOWNLOAD`, `FAILED`, `EXPIRED`
+
+
+            The status of the report:
+
+            - `PENDING` – The report is being generated.
+
+            - `READY_FOR_DOWNLOAD` – The report has been created, and can be downloaded.
+
+            - `FAILED` – The report cannot be generated.
+
+            - `EXPIRED` – The report was created, but is no longer available for download (it can be re-run to be downloaded again with fresh data).'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        DownloadFormat:
+          type: string
+          description: '**Returned values:** `CSV`
+
+
+            The format in which the report is going to be downloaded.'
+        DownloadURL:
+          type:
+          - string
+          - 'null'
+          description: The URL at which the report file can be downloaded when the `Status` is `GENERATED`.
+        ReportType:
+          $ref: '#/components/schemas/ReportType_Reporting_Response'
+        Sort:
+          type: string
+          description: The sorting direction of the CreationDate column. By default, the generated report is sorted by ascending creation date.
+        DateRangeBy:
+          type:
+          - string
+          - 'null'
+          description: '**Possible values:** `CreationDate`, `ExecutionDate`
+
+
+            **Default value:** `CreationDate`
+
+
+            The date to which `BeforeDate` and `AfterDate` apply. The `DateRangeBy` property can only be sent on `USER_WALLET_TRANSACTIONS` and `COLLECTED_FEES` reports. It is returned `null` for other types.
+
+
+            The `ExecutionDate` value is likely to be more useful, because this is the date and time that the transaction `Status` became `SUCCEEDED`. Note also that these reports only contain successful transactions.'
+        AfterDate:
+          type: integer
+          description: '**Possible values:** Any date and time (before the `BeforeDate`) between the present and 24 months ago.
+
+
+            The date and time after which the report''s transaction was created, based on the transaction''s `CreationDate`.
+
+
+            **Note:** The period between the `AfterDate` and the `BeforeDate` cannot exceed 12 months.'
+        BeforeDate:
+          type: integer
+          description: '**Possible values:** Any date and time (after the `AfterDate`) between the present and 24 months ago.
+
+
+            The date and time before which the report''s transaction was created, based on the transaction''s `CreationDate`.
+
+
+            **Note:** The period between the `AfterDate` and the `BeforeDate` cannot exceed 12 months.'
+        Filters:
+          $ref: '#/components/schemas/ReportResponseFilters'
+          description: The filters sent in the request. Different filters are available for each `ReportType`.
+        Columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportResponseColumnsItems'
+          description: '**Possible values:** The columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            **Default values:** The default columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            The data columns to be included in the report.'
+      title: ReportResponse
+    ReportType_Reporting_Response:
+      type: string
+      description: '**Returned values:** `COLLECTED_FEES`, `USER_WALLET_TRANSACTIONS`, `ECHO_INTENT`, `ECHO_INTENT_ACTION`, `ECHO_SETTLEMENT`, `ECHO_SPLIT`
+
+
+        The type of the report. Each `ReportType` has different available `Columns` and `Filters`.
+
+
+        Useful for all platforms:
+
+        - `USER_WALLET_TRANSACTIONS` – All successful transactions crediting or debiting user wallets: pay-ins, transfers, conversions, and payouts, as well as refunds of all types and repudiations (from chargebacks).
+
+        - `COLLECTED_FEES`– Detail of transactions crediting or debiting the fees wallet: successful transactions of all types (pay-ins, transfers, refunds, payouts, etc.) that have a positive or negative fees amount.
+
+
+        Useful for platforms using [Echo](/guides/echo), Mangopay''s solution for integrations working with third-party PSPs:
+
+        - `ECHO_INTENT` – Summary of all intents declared during the selected period, detailing the total funds expected to enter the platform''s technical wallets.
+
+        - `ECHO_INTENT_ACTION` – Summary of all operations related to intents processed during the selected period, detailing the expected money movements to be escrowed — including payments, refunds, refund reversals, and chargebacks.
+
+        - `ECHO_SETTLEMENT` – Summary of all settlement files uploaded during the selected period to initiate the reconciliation process, confirming the funds expected on the techncial wallet.
+
+        - `ECHO_SPLIT` – Summary of all splits related to intents during the selected period, detailing the transfer of funds to the declared destination.'
+      title: ReportType_Reporting_Response
+    ReportResponseColumnsItems:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the column.
+        IsDefault:
+          type: boolean
+          description: Whether the column is a default for the report or not.
+      title: ReportResponseColumnsItems
+    ReportResponseFilters:
+      type: object
+      properties: {}
+      description: The filters sent in the request. Different filters are available for each `ReportType`.
+      title: ReportResponseFilters
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    CreateAReportRequest_ECHO_SETTLEMENT:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        DownloadFormat:
+          type: string
+          description: '**Possible values:** `CSV`
+
+
+            The format of the report file.'
+        Sort:
+          type: string
+          description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+            **Default value**: `CreationDate:DESC`
+
+
+            The sort direction based on transaction creation date.'
+        AfterDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is earlier than the `BeforeDate` by less than 12 months.
+
+
+            The date and time after which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        BeforeDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is later than the `AfterDate` by less than 12 months.
+
+
+            The date and time before which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        Columns:
+          type: array
+          items:
+            type: string
+          description: '**Possible values:** The columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            **Default values:** The default columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            The data columns to be included in the report.'
+        ReportType:
+          $ref: '#/components/schemas/ReportType_ECHO_SETTLEMENT_Request'
+        Filters:
+          $ref: '#/components/schemas/ReportFilters_ECHO_SETTLEMENT'
+      required:
+      - DownloadFormat
+      - AfterDate
+      - BeforeDate
+      - ReportType
+      description: 'Request body for creating an `ECHO_SETTLEMENT` report, with its available `Filters`.
+
+
+        Summary of all settlement files uploaded during the selected period to initiate the reconciliation process, confirming the funds expected on the techncial wallet.'
+      title: CreateAReportRequest_ECHO_SETTLEMENT
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ReportFilters_ECHO_SPLIT:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Possible values:** `CREATED`, `PENDING_FUNDS_RECEPTION`, `AVAILABLE`, `PENDING`, `COMPLETED`, `REJECTED`, `FAILED`, `REVERSED`.
+
+
+            The `Status` of the Split.'
+        IntentId:
+          type: string
+          description: 'The unique identifier of the related Intent.
+
+
+            **Caution:** There is no validation that the `IntentId` is valid.'
+        Scheduled:
+          type: boolean
+          description: Whether or not the `TransferDate` was sent (in either the Intent or the Split), regardless of the `Status` of the Split.
+      description: Filters available on the `ECHO_SPLIT` report (alone or in combination).
+      title: ReportFilters_ECHO_SPLIT
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    ReportType_USER_WALLET_TRANSACTIONS_Request:
+      type: string
+      description: '**Allowed values:** `USER_WALLET_TRANSACTIONS`
+
+
+        The type of the report. Each `ReportType` has different available `Columns` and `Filters`.
+
+
+        Useful for all platforms:
+
+        - `USER_WALLET_TRANSACTIONS` – All successful transactions crediting or debiting user wallets: pay-ins, transfers, conversions, and payouts, as well as refunds of all types and repudiations (from chargebacks).
+
+        - `COLLECTED_FEES`– Detail of transactions crediting or debiting the fees wallet: successful transactions of all types (pay-ins, transfers, refunds, payouts, etc.) that have a positive or negative fees amount.
+
+
+        Useful for platforms using [Echo](/guides/echo), Mangopay''s solution for integrations working with third-party PSPs:
+
+        - `ECHO_INTENT` – Summary of all intents declared during the selected period, detailing the total funds expected to enter the platform''s technical wallets.
+
+        - `ECHO_INTENT_ACTION` – Summary of all operations related to intents processed during the selected period, detailing the expected money movements to be escrowed — including payments, refunds, refund reversals, and chargebacks.
+
+        - `ECHO_SETTLEMENT` – Summary of all settlement files uploaded during the selected period to initiate the reconciliation process, confirming the funds expected on the techncial wallet.
+
+        - `ECHO_SPLIT` – Summary of all splits related to intents during the selected period, detailing the transfer of funds to the declared destination.'
+      title: ReportType_USER_WALLET_TRANSACTIONS_Request
+    ListAllReportsResponseArrayReportsItemsObjectReports:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        ReportType:
+          $ref: '#/components/schemas/ReportType_Reporting_Response'
+        Status:
+          type: string
+          description: '**Returned values:** `PENDING`, `READY_FOR_DOWNLOAD`, `FAILED`, `EXPIRED`
+
+
+            The status of the report:
+
+            - `PENDING` – The report is being generated.
+
+            - `READY_FOR_DOWNLOAD` – The report has been created, and can be downloaded.
+
+            - `FAILED` – The report cannot be generated.
+
+            - `EXPIRED` – The report was created, but is no longer available for download (it can be re-run to be downloaded again with fresh data).'
+        LastUpdated:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the object was updated.
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+      description: Key data about the Reporting Service report object created by the platform.
+      title: ListAllReportsResponseArrayReportsItemsObjectReports
+    ReportFilters_ECHO_SETTLEMENT:
+      type: object
+      properties:
+        Status:
+          type: string
+          description: '**Possible values:** `UPLOADED`, `CREATED`, `UNMATCHED`, `PARTIALLY_MATCHED`, `PENDING_FUNDS_RECEPTION`, `INSUFFICIENT_FUNDS`, `RECONCILED`, `FAILED`.
+
+
+            The `Status` of the Settlement.'
+        ExternalProviderName:
+          type: string
+          description: The [supported third-party PSP](/api-reference/echo/supported-providers) processing the transaction.
+      description: Filters available on the `ECHO_SETTLEMENT` report (alone or together).
+      title: ReportFilters_ECHO_SETTLEMENT
+    ReportFilters_ECHO_INTENT:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Possible values:** `PAYIN`, `REFUND`, `DISPUTE`.
+
+
+            The type of Intent (as indicated in the settlement file).'
+        Status:
+          type: string
+          description: '**Possible values:** `AUTHORIZED`, `PARTIALLY_CAPTURED`, `CAPTURED`, `CANCELED`, `REFUNDED`, `REFUND_REVERSED`, `DISPUTED`, `DEFENDED`, `DISPUTED_WON`, `DISPUTED_LOST`.
+
+
+            The `Status` of the Intent.'
+        PaymentMethod:
+          type: string
+          description: The payment method of the Intent – one of the [supported values](/api-reference/echo/supported-payment-methods) of the `ExternalProviderPaymentMethod`.
+      description: 'Filters available on the `ECHO_INTENT` report. Can be used in any
+
+        combination. (`ECHO_INTENT` and `ECHO_INTENT_ACTION` share the same
+
+        filter shape.)'
+      title: ReportFilters_ECHO_INTENT
+    CreateAReportRequest_ECHO_SPLIT:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        DownloadFormat:
+          type: string
+          description: '**Possible values:** `CSV`
+
+
+            The format of the report file.'
+        Sort:
+          type: string
+          description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+            **Default value**: `CreationDate:DESC`
+
+
+            The sort direction based on transaction creation date.'
+        AfterDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is earlier than the `BeforeDate` by less than 12 months.
+
+
+            The date and time after which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        BeforeDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is later than the `AfterDate` by less than 12 months.
+
+
+            The date and time before which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        Columns:
+          type: array
+          items:
+            type: string
+          description: '**Possible values:** The columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            **Default values:** The default columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            The data columns to be included in the report.'
+        ReportType:
+          $ref: '#/components/schemas/ReportType_ECHO_SPLIT_Request'
+        Filters:
+          $ref: '#/components/schemas/ReportFilters_ECHO_SPLIT'
+      required:
+      - DownloadFormat
+      - AfterDate
+      - BeforeDate
+      - ReportType
+      description: 'Request body for creating an `ECHO_SPLIT` report, with its available `Filters`.
+
+
+        Summary of all splits related to intents during the selected period, detailing the transfer of funds to the declared destination.'
+      title: CreateAReportRequest_ECHO_SPLIT
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    CreateAReportRequest_USER_WALLET_TRANSACTIONS:
+      type: object
+      properties:
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        DownloadFormat:
+          type: string
+          description: '**Possible values:** `CSV`
+
+
+            The format of the report file.'
+        Sort:
+          type: string
+          description: '**Possible values:** `CreationDate:ASC`, `CreationDate:DESC`
+
+
+            **Default value**: `CreationDate:DESC`
+
+
+            The sort direction based on transaction creation date.'
+        AfterDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is earlier than the `BeforeDate` by less than 12 months.
+
+
+            The date and time after which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        BeforeDate:
+          type: integer
+          description: '**Possible values:** Any past date and time up 24 months ago that is later than the `AfterDate` by less than 12 months.
+
+
+            The date and time before which the report''s transaction was created, based on the transaction''s `CreationDate`.'
+        Columns:
+          type: array
+          items:
+            type: string
+          description: '**Possible values:** The columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            **Default values:** The default columns listed in the [Reports](/reports) guide, which differ according to the report type.
+
+
+            The data columns to be included in the report.'
+        ReportType:
+          $ref: '#/components/schemas/ReportType_USER_WALLET_TRANSACTIONS_Request'
+        Filters:
+          $ref: '#/components/schemas/ReportFilters_USER_WALLET_TRANSACTIONS'
+        DateRangeBy:
+          type: string
+          description: '**Possible values:** `CreationDate`, `ExecutionDate`
+
+
+            **Default value:** `CreationDate`
+
+
+            The date to which `BeforeDate` and `AfterDate` apply. The `DateRangeBy` property can only be sent on `USER_WALLET_TRANSACTIONS` and `COLLECTED_FEES` reports. It is returned `null` for other types.
+
+
+            The `ExecutionDate` value is likely to be more useful, because this is the date and time that the transaction `Status` became `SUCCEEDED`. Note also that these reports only contain successful transactions.'
+      required:
+      - DownloadFormat
+      - AfterDate
+      - BeforeDate
+      - ReportType
+      description: 'Request body for creating a `USER_WALLET_TRANSACTIONS` report with its available `Filters` and `DateRangeBy`.
+
+
+        All successful transactions crediting or debiting user wallets: pay-ins, transfers, conversions, and payouts, as well as refunds of all types and repudiations (from chargebacks).'
+      title: CreateAReportRequest_USER_WALLET_TRANSACTIONS
+    ListAllReportsResponse:
+      type: object
+      properties:
+        Array (Reports):
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAllReportsResponseArrayReportsItems'
+          description: The list of reports created by the platform.
+      title: ListAllReportsResponse
   securitySchemes:
-    OAuth2:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://api.mangopay.com/v2.01/{clientId}/oauth/token
-          scopes: {}
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

@@ -1,0 +1,648 @@
+openapi: 3.2.0
+info:
+  title: Reference Quotes API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Quotes
+paths:
+  /v2.01/{ClientId}/conversions/quote:
+    post:
+      operationId: quotes_create_quote
+      summary: Create a Quote
+      description: 'This call guarantees a conversion rate for a quoted conversion.
+
+
+        If the quote is for a client wallet conversion then the quote:
+
+        - Can''t include `Fees` – the conversion attempt will return a 400 error if its `QuoteId` includes fees
+
+        - Shouldn''t include `UserMargin` – the conversion attempt will not be blocked but `UserMargin` is disregarded – in the `ConversionRateResponse` (the user''s `FinalRate` is the same as the platform''s `ClientRate`)'
+      tags:
+      - Quotes
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAQuoteResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAQuoteRequest'
+      security:
+      - oauth2: []
+  /v2.01/{ClientId}/conversions/quote/{QuoteId}:
+    get:
+      operationId: quotes_view_quote
+      summary: View a Quote
+      tags:
+      - Quotes
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: QuoteId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewAQuoteResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    CreateAQuoteResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount_CreditedFunds_QuoteResponse'
+      description: Information about the credited funds.
+      title: CreateAQuoteResponseCreditedFunds
+    Amount_DebitedFunds_QuoteResponse:
+      type: integer
+      description: 'An amount of money in the smallest sub-division of the currency (e.g., EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`).
+
+
+        During a conversion, (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.'
+      title: Amount_DebitedFunds_QuoteResponse
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    RequestedFees_Conversion:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Allowed values:** `PERCENTAGE`, `FIXED`
+
+
+            **Default value:** `FIXED`
+
+
+            The type of the `Value`.'
+        Value:
+          type: integer
+          description: 'The value to be used for the `Type`:
+
+            - `PERCENTAGE` – In quantities of 0.1% (e.g. `150` equals 1.5%), the percentage of `DebitedFunds.Amount` deducted as fees.
+
+            - `FIXED` – The amount deducted from `DebitedFunds.Amount` as fees, as an amount of money in the smallest sub-division of the currency (e.g., EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`).'
+        Currency:
+          type: string
+          description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the fees, which must match the debited currency.'
+      description: Information about the `Fees` sent in the request.
+      title: RequestedFees_Conversion
+    CreateAQuoteResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExpirationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the quote expires and can no longer be used.
+        Status:
+          type: string
+          description: '**Returned values:** `ACTIVE`, `EXPIRED`
+
+
+            The status of the quote:
+
+            - `ACTIVE` – The quote can be used to execute a quoted conversion.
+
+            - `EXPIRED` – The quote can''t be used because the `ExpirationDate` is passed.'
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateAQuoteResponseDebitedFunds'
+          description: Information about the debited funds.
+        CreditedFunds:
+          $ref: '#/components/schemas/CreateAQuoteResponseCreditedFunds'
+          description: Information about the credited funds.
+        Fees:
+          $ref: '#/components/schemas/Fees_ConversionResponse'
+        RequestedFees:
+          $ref: '#/components/schemas/RequestedFees_Conversion'
+        ConversionRateResponse:
+          $ref: '#/components/schemas/ConversionRateResponse'
+        MarginsResponse:
+          $ref: '#/components/schemas/MarginsResponse'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Duration:
+          type: integer
+          description: '**Allowed values:** `300`, `3600`
+
+
+            The time in seconds during which the quote is active and can be used for conversions.
+
+
+            By default, quotes are available for a duration of 5 or 60 minutes, as agreed between Mangopay and the platform.'
+      title: CreateAQuoteResponse
+    Amount_CreditedFunds_QuoteResponse:
+      type: integer
+      description: 'An amount of money in the smallest sub-division of the currency (e.g., EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`).
+
+
+        During a conversion, `CreditedFunds.Amount` = (`DebitedFunds.Amount` - `Fees`) * `MarketRate`.'
+      title: Amount_CreditedFunds_QuoteResponse
+    MarginsResponseMangopay:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Response value:** `PERCENTAGE`
+
+
+            The type of the `Value`, which for Mangopay is always `PERCENTAGE`.'
+        Value:
+          type: number
+          format: double
+          description: 'The value to be used for the `Type`.
+
+
+            Mangopay''s markup is expressed as a percentage (to convert to decimal, divide by 100).'
+        Amount:
+          type: integer
+          description: The amount of debited currency that Mangopay will charge your platform for the transaction during the billing cycle.
+      description: The margin used by Mangopay to bill your platform (which is defined during contracting).
+      title: MarginsResponseMangopay
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+    CreateAQuoteForClientWalletsRequestCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          type: integer
+          description: 'Required if `CreditedFunds.Amount` is `null`
+
+
+            An amount of money in the smallest sub-division of the currency (e.g., EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`).'
+      required:
+      - Currency
+      description: Information about the debited funds – the sell currency. During a conversion, (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.
+      title: CreateAQuoteForClientWalletsRequestCreditedFunds
+    CreateAQuoteForClientWalletsRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          type: integer
+          description: 'Required if `CreditedFunds.Amount` is `null`
+
+
+            An amount of money in the smallest sub-division of the currency (e.g., EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`).'
+      required:
+      - Currency
+      description: Information about the debited funds – the sell currency. During a conversion, (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.
+      title: CreateAQuoteForClientWalletsRequestDebitedFunds
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreateAQuoteForUserWalletsRequest:
+      type: object
+      properties:
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateAQuoteForUserWalletsRequestDebitedFunds'
+          description: Information about the debited funds.
+        CreditedFunds:
+          $ref: '#/components/schemas/CreateAQuoteForUserWalletsRequestCreditedFunds'
+          description: Information about the credited funds.
+        Fees:
+          $ref: '#/components/schemas/QuoteFeesRequest'
+        UserMargin:
+          $ref: '#/components/schemas/QuoteUserMarginRequest'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Duration:
+          type: integer
+          description: '**Allowed values:** `300`, `3600`
+
+
+            The time in seconds during which the quote is active and can be used for conversions.
+
+
+            By default, quotes are available for a duration of 5 or 60 minutes, as agreed between Mangopay and the platform.'
+      required:
+      - DebitedFunds
+      - CreditedFunds
+      - Duration
+      description: 'Request body for creating a Quote intended to guarantee a rate for a
+
+        conversion between user wallets. Includes optional `Fees` and `UserMargin`
+
+        parameters. Use this variant when the corresponding conversion will be a
+
+        user-wallet-to-user-wallet conversion.'
+      title: CreateAQuoteForUserWalletsRequest
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    ConversionRateResponse:
+      type: object
+      properties:
+        ClientRate:
+          type: number
+          format: double
+          description: 'Max. 7 decimal places
+
+
+            The indicative rate including Mangopay''s markup, used during the billing cycle: `ClientRate` = `MarketRate` * (1 - `MarginsResponse.Mangopay`). The `MarginsResponse.Mangopay.Amount` gives the amount of debited currency that will be billed by Mangopay to your platform for the transaction.
+
+
+            The `ClientRate` fluctuates in line with the `MarketRate`.'
+        MarketRate:
+          type: number
+          format: double
+          description: 'Max. 7 decimal places
+
+
+            The rate used to convert funds during the conversion: (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.
+
+
+            The market rate fluctuates in line with FX market dynamics and is common to all platforms for the currency pair.'
+        FinalRate:
+          type: number
+          format: double
+          description: 'Max. 7 decimal places
+
+
+            The indicative rate including the `UserMargin`, if your platform defined it in the request or the quote: `FinalRate` = `ClientRate` * (1 - `MarginsResponse.User`). The `MarginsResponse.User.Amount` gives the amount of debited currency that your platform could bill to the user for the transaction.
+
+
+            If no `UserMargin` was included, the `FinalRate` is the same as the `ClientRate`.'
+      description: Information about the `MarketRate` used to convert funds and other indicative rates.
+      title: ConversionRateResponse
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    ViewAQuoteResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount_DebitedFunds_QuoteResponse'
+      description: Information about the debited funds.
+      title: ViewAQuoteResponseDebitedFunds
+    CreateAQuoteForUserWalletsRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          type: integer
+          description: 'Required if `CreditedFunds.Amount` is `null`
+
+
+            An amount of money in the smallest sub-division of the currency (e.g., EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`).
+
+
+            During a conversion, (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.'
+      required:
+      - Currency
+      description: Information about the debited funds.
+      title: CreateAQuoteForUserWalletsRequestDebitedFunds
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    CreateAQuoteResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount_DebitedFunds_QuoteResponse'
+      description: Information about the debited funds.
+      title: CreateAQuoteResponseDebitedFunds
+    QuoteFeesRequest:
+      type: object
+      properties:
+        Type:
+          type:
+          - string
+          - 'null'
+          description: '**Allowed values:** `PERCENTAGE`, `FIXED`
+
+
+            **Default value:** `FIXED`
+
+
+            The type of the `Value`.'
+        Value:
+          type: integer
+          description: 'The value to be used for the `Type`:
+
+            - `PERCENTAGE` – In quantities of 0.1% (e.g. `150` equals 1.5%), the percentage of `DebitedFunds.Amount` deducted as fees.
+
+            - `FIXED` – The amount deducted from `DebitedFunds.Amount` as fees, as an amount of money in the smallest sub-division of the currency (e.g., EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`).'
+        Currency:
+          type: string
+          description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the fees, which must match the debited currency.'
+        Amount:
+          type: integer
+          description: For backwards compatibility, the `Amount` is accepted if sent instead of the `Value`.
+          deprecated: true
+      required:
+      - Value
+      - Currency
+      description: Information about the fees taken by the platform for this transaction (and hence transferred to the Fees Wallet).
+      title: QuoteFeesRequest
+    MarginsResponseUser:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Response values:** `PERCENTAGE`, `PIP`
+
+
+            The type of the `Value`.'
+        Value:
+          type: number
+          format: double
+          description: 'The value to be used for the `Type`:
+
+            - `PERCENTAGE` – The quantities of 1% used to calculate the user margin.
+
+            - `PIP` – The quantities of `0.0001` (one pip) used to calculate the user margin.'
+        Amount:
+          type: integer
+          description: The amount of debited currency that your platform could bill to the user for the transaction.
+      description: The margin your platform could use to bill the user, as calculated by `UserMargin` in the request or quote (otherwise `null` if not set).
+      title: MarginsResponseUser
+    ViewAQuoteResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount_CreditedFunds_QuoteResponse'
+      description: Information about the credited funds.
+      title: ViewAQuoteResponseCreditedFunds
+    CreateAQuoteForClientWalletsRequest:
+      type: object
+      properties:
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateAQuoteForClientWalletsRequestDebitedFunds'
+          description: Information about the debited funds – the sell currency. During a conversion, (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.
+        CreditedFunds:
+          $ref: '#/components/schemas/CreateAQuoteForClientWalletsRequestCreditedFunds'
+          description: Information about the debited funds – the sell currency. During a conversion, (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.
+        UserMargin:
+          $ref: '#/components/schemas/QuoteUserMarginRequest'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Duration:
+          type: integer
+          description: '**Allowed values:** `300`, `3600`
+
+
+            The time in seconds during which the quote is active and can be used for conversions.
+
+
+            By default, quotes are available for a duration of 5 or 60 minutes, as agreed between Mangopay and the platform.'
+      required:
+      - DebitedFunds
+      - CreditedFunds
+      - Duration
+      description: 'Request body for creating a Quote intended to guarantee a rate for a
+
+        client-wallet conversion. `Fees` must not be sent (the conversion attempt
+
+        will return a 400 if its `QuoteId` includes fees) and `UserMargin` is
+
+        disregarded by the conversion if sent.'
+      title: CreateAQuoteForClientWalletsRequest
+    CreateAQuoteForUserWalletsRequestCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          type: integer
+          description: 'Required if `DebitedFunds.Amount` is `null`
+
+
+            An amount of money in the smallest sub-division of the currency (e.g., EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`).
+
+
+            During a conversion, (`DebitedFunds.Amount` - `Fees`) * `MarketRate` = `CreditedFunds.Amount`.'
+      required:
+      - Currency
+      description: Information about the credited funds.
+      title: CreateAQuoteForUserWalletsRequestCreditedFunds
+    Fees_ConversionResponse:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: 'Information about the fees taken by the platform for this transaction (and hence transferred to the Fees Wallet).
+
+
+        **Note:** The fees currency must match the debited funds currency.'
+      title: Fees_ConversionResponse
+    CreateAQuoteRequest:
+      oneOf:
+      - $ref: '#/components/schemas/CreateAQuoteForUserWalletsRequest'
+      - $ref: '#/components/schemas/CreateAQuoteForClientWalletsRequest'
+      title: CreateAQuoteRequest
+    QuoteUserMarginRequest:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: '**Allowed values:** `PERCENTAGE`, `PIP`
+
+
+            The type of the `Value`.'
+        Value:
+          type: number
+          format: double
+          description: 'The value of the `Type`:
+
+            - `PERCENTAGE` – Max. value: `10.0` (10%); max. 16 decimal places. The quantities of 1% used to calculate the user margin.
+
+            - `PIP` – Max. value: `1000.0`. The quantities of `0.0001` (one pip) used to calculate the user margin.'
+        Currency:
+          type: string
+          description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+            The currency of the fees, which must match the debited currency.'
+      required:
+      - Type
+      - Value
+      - Currency
+      description: 'Information about an indicative margin your platform can calculate and
+
+        charge to the user after conversion. These values are used to calculate
+
+        the `ConversionRateResponse.FinalRate` and the `MarginsResponse.User` in
+
+        the API response.'
+      title: QuoteUserMarginRequest
+    ViewAQuoteResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        ExpirationDate:
+          type: integer
+          description: Unix timestamp (UTC) of the date and time the quote expires and can no longer be used.
+        Status:
+          type: string
+          description: '**Returned values:** `ACTIVE`, `EXPIRED`
+
+
+            The status of the quote:
+
+            - `ACTIVE` – The quote can be used to execute a quoted conversion.
+
+            - `EXPIRED` – The quote can''t be used because the `ExpirationDate` is passed.'
+        DebitedFunds:
+          $ref: '#/components/schemas/ViewAQuoteResponseDebitedFunds'
+          description: Information about the debited funds.
+        CreditedFunds:
+          $ref: '#/components/schemas/ViewAQuoteResponseCreditedFunds'
+          description: Information about the credited funds.
+        Fees:
+          $ref: '#/components/schemas/Fees_ConversionResponse'
+        ConversionRateResponse:
+          $ref: '#/components/schemas/ConversionRateResponse'
+        RequestedFees:
+          $ref: '#/components/schemas/RequestedFees_Conversion'
+        MarginsResponse:
+          $ref: '#/components/schemas/MarginsResponse'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        Duration:
+          type: integer
+          description: '**Allowed values:** `300`, `3600`
+
+
+            The time in seconds during which the quote is active and can be used for conversions.
+
+
+            By default, quotes are available for a duration of 5 or 60 minutes, as agreed between Mangopay and the platform.'
+      title: ViewAQuoteResponse
+    MarginsResponse:
+      type: object
+      properties:
+        Mangopay:
+          $ref: '#/components/schemas/MarginsResponseMangopay'
+          description: The margin used by Mangopay to bill your platform (which is defined during contracting).
+        User:
+          $ref: '#/components/schemas/MarginsResponseUser'
+          description: The margin your platform could use to bill the user, as calculated by `UserMargin` in the request or quote (otherwise `null` if not set).
+      description: Information about the margins calculated for the transaction.
+      title: MarginsResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

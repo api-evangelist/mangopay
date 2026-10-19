@@ -1,0 +1,216 @@
+openapi: 3.2.0
+info:
+  title: Reference Authentication API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Authentication
+paths:
+  /v2.01/oauth/token:
+    post:
+      operationId: authentication_create_oauth_token
+      summary: Create OAuth bearer token
+      description: Generates an OAuth bearer token to authenticate your subsequent API calls. For more details, see OAuth 2.0 authentication. The server-side SDKs handle this for you by generating and refreshing the token before expiry.
+      tags:
+      - Authentication
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOAuthBearerTokenResponse'
+      security:
+      - oauth2: []
+  /v2.01/oauth/token/embedded/recipient:
+    post:
+      operationId: authentication_create_access_token_recipient
+      summary: Create an access token for the Recipients embedded experience
+      description: 'Generates an access token to run the Recipients frontend embedded experience using Mangopay Elements.
+
+
+        The OAuth bearer token you use to call this endpoint must be generated using an API key with specific permissions.
+
+
+        A single access token can be used to service the experience to one user and has a lifespan of 15 minutes. You need to provide the `UserId` of the Natural User or Legal User who will use the frontend session to register a Recipient.'
+      tags:
+      - Authentication
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipientAccessTokenResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnAccessTokenForTheRecipientsEmbeddedExperienceRequest'
+      security:
+      - oauth2: []
+  /v2.01/oauth/token/embedded/checkout:
+    post:
+      operationId: authentication_create_access_token_checkout
+      summary: Create an access token for Checkout SDK features
+      description: 'Generates an access token to initialize the Checkout SDK to offer PayPal One-Click.
+
+
+        The OAuth bearer token you use to call this endpoint must be generated using an API key with specific permissions.
+
+
+        The access token returned by this endpoint is only required for the following features using Checkout SDK:
+
+        - PayPal One-Click
+
+
+        You do not need an access token if using Checkout SDK to service other payment methods or PayPal without PayPal One-Click.
+
+
+        A single access token can be used to service the experience to one user and has a lifespan of 15 minutes. You need to provide the `UserId` of the Natural User or Legal User who will use the Checkout session to make the payment.'
+      tags:
+      - Authentication
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutAccessTokenResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnAccessTokenForCheckoutSdkFeaturesRequest'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    CreateAnAccessTokenForCheckoutSdkFeaturesRequestClaims:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Unique identifier of the Natural User or Legal User using the Checkout SDK session to make a payment.
+      required:
+      - userId
+      description: Claims for the access token request.
+      title: CreateAnAccessTokenForCheckoutSdkFeaturesRequestClaims
+    CreateOAuthBearerTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: The access token to use in the Authorization header of your subsequent API call.
+        token_type:
+          type: string
+          description: '**Returned values:** `Bearer`
+
+
+            The type of the token.'
+        expires_in:
+          type: integer
+          description: The number of seconds until the token expires.
+      title: CreateOAuthBearerTokenResponse
+    CreateAnAccessTokenForTheRecipientsEmbeddedExperienceRequest:
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: Your Mangopay Client ID.
+        claims:
+          $ref: '#/components/schemas/CreateAnAccessTokenForTheRecipientsEmbeddedExperienceRequestClaims'
+          description: Claims for the access token request.
+      required:
+      - clientId
+      - claims
+      title: CreateAnAccessTokenForTheRecipientsEmbeddedExperienceRequest
+    CreateAnAccessTokenForCheckoutSdkFeaturesRequest:
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: Your Mangopay Client ID.
+        claims:
+          $ref: '#/components/schemas/CreateAnAccessTokenForCheckoutSdkFeaturesRequestClaims'
+          description: Claims for the access token request.
+      required:
+      - clientId
+      - claims
+      title: CreateAnAccessTokenForCheckoutSdkFeaturesRequest
+    CreateAnAccessTokenForTheRecipientsEmbeddedExperienceRequestClaims:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Unique identifier of the Natural User or Legal User using the Recipient frontend experience to register a bank account.
+      required:
+      - userId
+      description: Claims for the access token request.
+      title: CreateAnAccessTokenForTheRecipientsEmbeddedExperienceRequestClaims
+    CheckoutAccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: The access token value to use as the `clientToken` value when initializing Checkout SDK.
+        token_type:
+          type: string
+          description: '**Returned values:** `Bearer`
+
+
+            The type of the token.'
+        expires_in:
+          type: integer
+          description: The number of seconds until the token expires.
+        scope:
+          type: string
+          description: '**Returned values:** `checkout.session:r checkout.session:w`
+
+
+            The API permission scopes of the token, in this case to read and write a Checkout session.'
+      title: CheckoutAccessTokenResponse
+    RecipientAccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: The value to use as the `clientToken` when initializing Mangopay Elements for the [Recipients embedded experience](/sdks/elements).
+        token_type:
+          type: string
+          description: '**Returned values:** `Bearer`
+
+
+            The type of the token.'
+        expires_in:
+          type: integer
+          description: The number of seconds until the token expires.
+        scope:
+          type: string
+          description: '**Returned values:** `bankaccounts:r bankaccounts:w`
+
+
+            The API permission scopes of the token, in this case to read and write bank account data.'
+      title: RecipientAccessTokenResponse
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

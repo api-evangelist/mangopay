@@ -1,0 +1,568 @@
+openapi: 3.2.0
+info:
+  title: Reference Settlements API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: Settlements
+paths:
+  /v3.0/{ClientId}/payins/intents/settlements:
+    post:
+      operationId: settlements_create_settlement
+      summary: Create a Settlement and generate a secure URL for file upload
+      description: 'Generate a pre-signed URL to which you can upload your Mangopay-format settlement file
+
+
+        This endpoint returns a unique temporary pre-signed URL, `SettlementFileUploadUrl`, that you can use to upload your Mangopay-format settlement file (see PUT Upload a settlement file to the secure URL).'
+      tags:
+      - Settlements
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementFileUploadResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateASettlementAndGenerateASecureURLForFileUploadRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: settlements_list_settlements
+      summary: List all Settlements
+      description: Retrieve a paginated list of settlements, with optional filters for provider, currency, date range, and status.
+      tags:
+      - Settlements
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: BeforeDate
+        in: query
+        description: The date before which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: AfterDate
+        in: query
+        description: The date after which the object was created (based on the object's `CreationDate` parameter). You can filter on a specific time range by using both the `AfterDate` and `BeforeDate` query parameters.
+        required: false
+        schema:
+          type: integer
+      - name: Status
+        in: query
+        description: '**Allowed values:** `PENDING_UPLOAD`, `UPLOADED`, `CREATED`, `UNMATCHED`, `PARTIALLY_MATCHED`, `PENDING_FUNDS_RECEPTION`, `INSUFFICIENT_FUNDS`, `RECONCILED`, `FAILED`, `CANCELLED`
+
+
+          The status of the Settlement. You can filter on multiple values by separating them with a comma.'
+        required: false
+        schema:
+          type: string
+      - name: ExternalProviderName
+        in: query
+        description: The third-party PSP name to filter by.
+        required: false
+        schema:
+          type: string
+      - name: Currency
+        in: query
+        description: The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> of the currency to filter by.
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllSettlementsResponse'
+      security:
+      - oauth2: []
+  /{SettlementFileUploadUrl}:
+    put:
+      operationId: settlements_upload_settlement_file
+      summary: Upload a settlement file to the secure URL
+      description: 'To send your CSV settlement file to Mangopay, use the `SettlementFileUploadUrl` value dynamically returned by POST Create a Settlement and generate upload URL endpoint.
+
+
+        **Caution – Use settlement file example as template**
+
+
+        You must follow the specifications provided here.
+
+
+        Use this Example_Mangopay_Settlement_File.csv, which contains the correct column and row labels and example data for 3 transactions. Remove the example data lines before generating your own file.
+
+
+        You need to send one file per currency, as soon as it becomes available. Read more about providing settlement files to Mangopay.
+
+
+        When calling the pre-signed `SettlementFileUploadUrl`:
+
+
+        * Ensure you integrate the full URL (host, path, queries) dynamically as it is unique to each file upload attempt
+
+        * Don''t include the Authorization header, as the URL is already authenticated in the query strings
+
+        * Set the `Content-Type` header to `text/csv` and send the file as a raw binary stream using `data-binary`
+
+
+        Note that the `FileName` used by Mangopay is the one you sent on the POST Create a Settlement and generate upload URL endpoint (with a timestamp automatically appended); the name of the file on your system is only relevant for the `data-binary` stream in this call.'
+      tags:
+      - Settlements
+      parameters:
+      - name: SettlementFileUploadUrl
+        in: path
+        description: The variable URL is only documented as a path parameter on this path for documentation reasons. I allows it to be rendered visiablly on the page, and because there are two dynamic server URLs in the spec (so both would be on the / path). The variable URL is the server for this request, and it has a variable host and path and query parameters. You do not need to add anything to it.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: No response body. A 200 response indicates that the file was uploaded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/settlements_upload_settlement_file_Response_200'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              format: binary
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/settlements/{SettlementId}:
+    put:
+      operationId: settlements_update_settlement
+      summary: Update a Settlement and generate a new upload URL
+      description: 'Generate a new pre-signed URL to replace the file of an existing Settlement
+
+
+        You can use this endpoint to generate a new `SettlementFileUploadUrl` for an existing Settlement object (with `SettlementId`).
+
+
+        This is necessary if a file you uploaded previously is not parsed or reconciled successfully.'
+      tags:
+      - Settlements
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: SettlementId
+        in: path
+        description: The unique identifier of the Settlement object.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementFileUploadResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateASettlementAndGenerateASecureURLForFileUploadRequest'
+      security:
+      - oauth2: []
+    get:
+      operationId: settlements_view_settlement
+      summary: View a Settlement
+      description: Retrieve the settlement data generated from file upload
+      tags:
+      - Settlements
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: SettlementId
+        in: path
+        description: The unique identifier of the Settlement object.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementResponse'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/settlements/{SettlementId}/cancel:
+    post:
+      operationId: settlements_cancel_settlement
+      summary: Cancel a Settlement
+      description: Disregard a settlement file and stop it being processed
+      tags:
+      - Settlements
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: SettlementId
+        in: path
+        description: The unique identifier of the Settlement object.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementResponse'
+      security:
+      - oauth2: []
+  /v3.0/{ClientId}/payins/intents/settlements/{SettlementId}/validations:
+    get:
+      operationId: settlements_view_settlement_validations
+      summary: View validation errors for a Settlement
+      description: 'Retrieve information about failed or partially matched settlements.
+
+
+        If your Settlement''s `Status` is `PARTIALLY_MATCHED` or `FAILED`, this endpoint returns information about the errors in your CSV file''s footer or transaction lines.'
+      tags:
+      - Settlements
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      - name: SettlementId
+        in: path
+        description: The unique identifier of the Settlement object.
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 'Start value: `1`
+
+
+          **Default value:** `1`
+
+
+          Indicates the index of the page for the pagination.'
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: 'Min. value: `1`; max. value: `100`
+
+
+          **Default value:** `10`
+
+
+          Indicates the number of items returned for each page of the pagination.'
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewValidationErrorsForASettlementResponse'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    settlements_upload_settlement_file_Response_200:
+      type: object
+      properties: {}
+      description: Empty response body
+      title: settlements_upload_settlement_file_Response_200
+    ViewValidationErrorsForASettlementResponseLinesErrorsItemsDetailsItems:
+      type: object
+      properties:
+        Code:
+          type: string
+          description: '**Returned values:** `MATCH_REF_NOT_FOUND`, `INTENT_WRONG_STATUS`, `AMOUNT_MISMATCH`, `MANDATORY_MISSING`, `FORMAT_DATE_INVALID`
+
+
+            The type of error encountered.
+
+            - `MATCH_REF_NOT_FOUND` – `ExternalProviderReference` not found for any existing Intent in the system, possibly triggered by an intent not created in Echo, a reference mismatch, or a wrong environment.
+
+            - `INTENT_WRONG_STATUS` – Intent associated with this transaction is not in a reconcilable state (e.g., `AUTHORIZED` or `CANCELED`), possibly triggered by an intent already settled, cancelled, or not captured.
+
+            - `AMOUNT_MISMATCH` – File amount does not match the Intent''s captured amount, possibly triggered by a currency conversion issue, a partial settlement, or a fee calculation error.
+
+            - `MANDATORY_MISSING` – A required field is empty or missing, possibly triggered by incomplete PSP data or a file format issue.
+
+            - `FORMAT_DATE_INVALID` – A date field has an invalid format (expected DD-MM-YYYY), possibly triggered by an incorrect date format or a timezone issue.'
+        Description:
+          type: string
+          description: A description of the error.
+      title: ViewValidationErrorsForASettlementResponseLinesErrorsItemsDetailsItems
+    ViewValidationErrorsForASettlementResponseFooterErrorsItems:
+      type: object
+      properties:
+        FooterName:
+          type: string
+          description: The footer line which produced the error.
+        Code:
+          type: string
+          description: '**Returned values:** `TOTAL_NET_MISCALCULATED`, `FEES_TOTAL_MISMATCH`, `FORMAT_DATE_INVALID`, `PROVIDER_NAME_MISSING`, `CURRENCY_MISMATCH`
+
+
+            The type of error encountered.
+
+            - `TOTAL_NET_MISCALCULATED` – Arithmetic check failed. The calculated net amount does not match the file''s stated amount. `FooterName`: `TotalNetSettlementAmount`.
+
+            - `FEES_TOTAL_MISMATCH` – The footer value does not equal the sum of all `ExternalProviderFees` found in the transaction lines. `FooterName`: `TotalSettlementFeesAmount`.
+
+            - `FORMAT_DATE_INVALID` – Date format is invalid or empty. Expected: DD-MM-YYYY. `FooterName`: `SettlementDate`.
+
+            - `PROVIDER_NAME_MISSING` – The mandatory `ExternalProviderName` field is empty. `FooterName`: `ExternalProviderName`.
+
+            - `CURRENCY_MISMATCH` – Currency code provided is not a valid ISO 4217 code or does not match line item currencies. `FooterName`: `SettlementCurrency`.'
+        Description:
+          type: string
+          description: A description of the error.
+      title: ViewValidationErrorsForASettlementResponseFooterErrorsItems
+    SettlementResponse:
+      type: object
+      properties:
+        SettlementId:
+          type: string
+          description: The unique identifier of the Settlement.
+        Status:
+          type: string
+          description: 'The status of the Settlement:
+
+            - `PENDING_UPLOAD` – Settlement object and `SettlementFileUploadUrl` generated.
+
+            - `UPLOADED` – A file was uploaded.
+
+            - `CREATED` – The uploaded file was considered valid and reconciliation is in progress. A file is considered valid when it includes all required columns and a properly formatted footer.
+
+            - `UNMATCHED` – None of the entries in the settlement file match the declared intents.
+
+            - `PARTIALLY_MATCHED` – Settlement file parsed and some lines matched successfully. If at least one line is incorrectly formatted, the file remains in this status and does not progress further. Cancel the Settlement and re-submit.
+
+            - `PENDING_FUNDS_RECEPTION` – Settlement file parsed and fully matched with Intents; waiting for funds to arrive on the technical wallet.
+
+            - `INSUFFICIENT_FUNDS` – Partial amount received: `FundsMissingAmount` shows the shortfall.
+
+            - `RECONCILED` – Full settlement amount (`ActualSettlementAmount`) received on the technical wallet.
+
+            - `FAILED` – Settlement file rejected due to a technical error (e.g. format, timeout).
+
+            - `CANCELLED` – Settlement file invalidated due to a reconciliation error. Once canceled, no further actions can be taken on this Settlement.
+
+
+            If status becomes `FAILED` or `CANCELLED`, then call [POST Create a Settlement and secure URL for file upload](/api-reference/settlements/create-settlement) to create a new object. If the status becomes `UNMATCHED` or remains in `PARTIALLY_MATCHED` unexpectedly, then call [PUT Update a Settlement and generate a new upload URL](/api-reference/settlements/update-settlement) only a new URL is required for the existing `SettlementId`.'
+        CreationDate:
+          type: integer
+          description: The date and time the Settlement was created.
+        SettlementDate:
+          type: integer
+          description: The creation date of the settlement from the provider.
+        ExternalProviderName:
+          type: string
+          description: 'The [supported third-party PSP](/api-reference/echo/supported-providers) processing the transaction.
+
+
+            **Note:** The uppercase value is expected. The API returns the sentence-case value.'
+        DeclaredIntentAmount:
+          type: integer
+          description: 'The total amount declared through Intent API calls, using the following calculation:
+
+
+            (Sum of captured intents) - (Sum of refunded amounts) + (Sum of refund reversed amounts) - (Sum of `DISPUTED` disputes) + (Sum of `DISPUTED_WON` disputes)'
+        ExternalProcessorFeesAmount:
+          type: integer
+          description: The total fees charged by the external provider
+        ActualSettlementAmount:
+          type: integer
+          description: 'The total amount due to the platform, to be held in the technical wallet. This amount corresponds to the `TotalNetSettlementAmount` of the settlement file.
+
+
+            A negative amount results in this parameter being set to zero, indicating no incoming funds to the technical wallet.'
+        FundsMissingAmount:
+          type: integer
+          description: The difference between `ActualSettlementAmount` and the amount received on the technical wallet
+        FileName:
+          type: string
+          description: The `FileName` submitted to the [POST Create a Settlement and generate upload URL](/api-reference/settlements/create-settlement) endpoint, with a timestamp of the Settlement creation date automatically appended by Mangopay.
+      title: SettlementResponse
+    ViewValidationErrorsForASettlementResponseLinesErrorsItems:
+      type: object
+      properties:
+        ExternalProviderReference:
+          type: string
+          description: The unique identifier of the transaction at the provider level.
+        ExternalTransactionType:
+          type: string
+          description: 'Response values: `PAYMENT`, `REFUND`, `DISPUTE`
+
+
+            The type of the transaction.'
+        Details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewValidationErrorsForASettlementResponseLinesErrorsItemsDetailsItems'
+          description: The validation errors for this transaction line.
+      title: ViewValidationErrorsForASettlementResponseLinesErrorsItems
+    ListAllSettlementsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/SettlementResponse'
+      title: ListAllSettlementsResponse
+    SettlementFileUploadResponse:
+      type: object
+      properties:
+        UploadUrl:
+          type: string
+          description: The unique temporary pre-signed URL to which to upload your CSV file. Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so the call does not require an Authorization header. See [PUT Upload a settlement file to the secure URL](/api-reference/settlements/upload-settlement-file) for details
+        SettlementId:
+          type: string
+          description: The unique identifier of the Settlement.
+      title: SettlementFileUploadResponse
+    ViewValidationErrorsForASettlementResponse:
+      type: object
+      properties:
+        FooterErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewValidationErrorsForASettlementResponseFooterErrorsItems'
+          description: The errors encountered in the CSV footer.
+        LinesErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViewValidationErrorsForASettlementResponseLinesErrorsItems'
+          description: The errors encountered in the CSV's transaction lines.
+      title: ViewValidationErrorsForASettlementResponse
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+          description: Description of the error.
+        Type:
+          type: string
+          description: 'The category of the error.
+
+            '
+        Id:
+          type: string
+          description: Unique identifier of the error instance, useful when contacting Mangopay for support.
+        Date:
+          type: number
+          format: double
+          description: Unix timestamp (UTC) of the date and time the error was triggered.
+        errors:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: 'Object containing one or more field-level errors.
+
+            '
+      description: 'The error body typically returned by the Mangopay API for any non-2xx HTTP status code.
+
+        '
+      title: Error
+    CreateASettlementAndGenerateASecureURLForFileUploadRequest:
+      type: object
+      properties:
+        FileName:
+          type: string
+          description: The name of your file, which can be anything you wish. The file extension must be `.csv`.
+      required:
+      - FileName
+      title: CreateASettlementAndGenerateASecureURLForFileUploadRequest
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."

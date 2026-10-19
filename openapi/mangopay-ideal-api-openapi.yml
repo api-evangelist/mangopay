@@ -1,0 +1,383 @@
+openapi: 3.2.0
+info:
+  title: Reference I DEAL API
+  version: 1.0.0
+servers:
+- url: https://api.sandbox.mangopay.com
+  description: Sandbox
+- url: https://api.mangopay.com
+  description: Production
+- url: https://api-mtls.sandbox.mangopay.com
+  description: mTLS Sandbox
+- url: https://api-mtls.mangopay.com
+  description: mTLS Production
+- url: '%7BCardRegistrationUrl%7D'
+  description: "The full dynamic URL returned by the Create a Card Registration call, including host, path, and query parameters. \n"
+- url: '%7BSettlementFileUploadUrl%7D'
+  description: 'The unique URL returned by the [POST Create a Settlement and secure URL](/api-reference/settlements/create-settlement) endpoint.
+
+
+    **Note:** Use the full dynamic URL including the host, path, and all query parameters. The URL is already authenticated, so this call does not require an Authorization header.
+
+    '
+tags:
+- name: iDEAL
+paths:
+  /v2.01/{ClientId}/payins/payment-methods/ideal:
+    post:
+      operationId: ideal_create_ideal_payin
+      summary: Create an iDEAL PayIn
+      description: '**Note – Timeout after 30 minutes**
+
+
+        The iDEAL payment session lasts for 30 minutes, at which point the pay-in fails automatically if no action has been taken by the user.
+
+
+        Create an iDEAL PayIn'
+      tags:
+      - iDEAL
+      parameters:
+      - name: ClientId
+        in: path
+        description: Platform's API account identifier, associated with the API key.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDEALPayInResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAnIDEALPayInRequest'
+      security:
+      - oauth2: []
+components:
+  schemas:
+    IDEALPayInResponse:
+      type: object
+      properties:
+        Id:
+          $ref: '#/components/schemas/Id'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        CreationDate:
+          $ref: '#/components/schemas/CreationDate'
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        DebitedFunds:
+          $ref: '#/components/schemas/IdealPayInResponseDebitedFunds'
+          description: Information about the debited funds.
+        CreditedFunds:
+          $ref: '#/components/schemas/IdealPayInResponseCreditedFunds'
+          description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+        Fees:
+          $ref: '#/components/schemas/IdealPayInResponseFees'
+          description: Information about the fees.
+        Status:
+          $ref: '#/components/schemas/TransactionStatus'
+        ResultCode:
+          $ref: '#/components/schemas/ResultCode'
+        ResultMessage:
+          $ref: '#/components/schemas/ResultMessage'
+        ExecutionDate:
+          $ref: '#/components/schemas/TransactionExecutionDate'
+        Type:
+          $ref: '#/components/schemas/TransactionType'
+        Nature:
+          $ref: '#/components/schemas/TransactionNature'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        CreditedUserId:
+          $ref: '#/components/schemas/CreditedUserId'
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorResponse'
+        PaymentType:
+          type: string
+          description: '**Returned values:** `IDEAL`
+
+
+            The payment type of the pay-in.'
+        ExecutionType:
+          type: string
+          description: '**Returned values:** `WEB`
+
+
+            The execution type of the pay-in.'
+        ReturnURL:
+          $ref: '#/components/schemas/ReturnURL_255'
+        RedirectURL:
+          type: string
+          description: 'The URL to which to redirect the user to complete the payment.
+
+
+            **Caution:** This variable URL is specific to each payment. You must rely on the returned URL in full (host, path, and queries) and not hardcode any part of it.'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        BankName:
+          type: string
+          description: '**Returned values:** The <a href="/guides/payment-methods/ideal">bank name</a> corresponding to the `Bic` sent, or `null` if no `Bic` sent.
+
+
+            The user''s bank, as defined by the `Bic` parameter sent in the call.'
+      description: 'An iDEAL pay-in:
+
+        - `PaymentType` – `IDEAL`
+
+        - `ExecutionType` – `WEB`'
+      title: IDEALPayInResponse
+    StatementDescriptor:
+      type: string
+      description: 'Max. length: 10 characters; only alphanumeric and spaces
+
+
+        Custom description to appear on the user’s bank statement along with the platform name. Different banks may show more or less information. See the <a href="/bank-statements">Customizing bank statement references</a> article for details.'
+      title: StatementDescriptor
+    Amount:
+      type: integer
+      description: The amount of the currency in its minor unit. For example, EUR 12.60 would be represented as `1260` whereas JPY 12 would be represented as just `12`.
+      title: Amount
+    FlowDescriptorRequestBeneficiariesItems:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the Natural User or Legal User declared as a beneficiary of the pay-in.
+      title: FlowDescriptorRequestBeneficiariesItems
+    FlowDescriptorResponseBeneficiariesItems:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: The unique identifier of the Natural User or Legal User declared as a beneficiary of the pay-in.
+      title: FlowDescriptorResponseBeneficiariesItems
+    TransactionExecutionDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the status changed to `SUCCEEDED`, indicating that the transaction occurred. The statuses `CREATED` and `FAILED` return an `ExecutionDate` of `null`.
+      title: TransactionExecutionDate
+    AuthorId:
+      type: string
+      description: The unique identifier of the user at the source of the transaction.
+      title: AuthorId
+    ProfilingAttemptReference:
+      type: string
+      description: 'The unique reference generated for the profiling session, used by the <a href="/guides/fraud-prevention">fraud prevention</a> solution to produce recommendations for the transaction using the profiling data.
+
+
+        **Note:** Parameter not returned by the API. Profiling feature available on request – contact Mangopay <a href="https://hub.mangopay.com/" target="_blank">via the Dashboard</a> for more information.'
+      title: ProfilingAttemptReference
+    FlowDescriptorRequest:
+      type: object
+      properties:
+        Beneficiaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FlowDescriptorRequestBeneficiariesItems'
+          description: 'Max. length: 5 items
+
+
+            The list of up to 5 Natural or Legal Users declared as beneficiaries of the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made. The pay-in also fails if the `Beneficiaries` array contains nulled objects or invalid `UserId` values.'
+      description: "Information about the Owner beneficiaries targeted by the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made ([read more](/guides/payin-beneficiaries)).\n\nIf the `FlowDescriptor.Beneficiaries` is sent in the API request, then:\n- The transaction's `CreditedWalletId` holder is disregarded in KYC/KYB checks.\n- **ALL** `UserId` values in the array must be one of:\n  - `OWNER` whose `KYCLevel` is `REGULAR`\n  - `PLATFORM`\n  \nThe pay-in `Status` becomes `FAILED` with `ResultCode` [002951](/errors/codes/002951) if at least one `FlowDescriptor.Beneficiaries.UserId` is:\n- `PAYER`\n- `OWNER` whose `KYCLevel` is `LIGHT`\n\nIf the `FlowDescriptor.Beneficiaries` is not sent in the API request, then the `CreditedWalletId` holder is subject to KYC/KYB checks. This property is optional for backwards compatibility but is recommended for all pay-in flows, even when the `CreditedWalletId` holder is a `PAYER` or the same value as one of the `FlowDescriptor.Beneficiaries`. \n"
+      title: FlowDescriptorRequest
+    TransactionStatus:
+      type: string
+      description: '**Returned values:** `CREATED`, `SUCCEEDED`, `FAILED`
+
+
+        The status of the transaction.'
+      title: TransactionStatus
+    CreditedUserId:
+      type: string
+      description: '**Default value:** The unique identifier of the owner of the credited wallet.
+
+
+        The unique identifier of the user whose wallet is credited.'
+      title: CreditedUserId
+    ResultMessage:
+      type: string
+      description: The explanation of the result code.
+      title: ResultMessage
+    Currency:
+      type: string
+      description: '**Allowed values:** The three-letter <a href="/api-reference/overview/data-formats" target="_blank">ISO 4217 code</a> (EUR, GBP, etc.) of a <a href="/guides/currencies" target="_blank">supported currency</a> (depends on feature, contract, and activation settings).
+
+
+        The currency of the amount.'
+      title: Currency
+    IdealPayInResponseFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the fees.
+      title: IdealPayInResponseFees
+    FlowDescriptorResponse:
+      type: object
+      properties:
+        FlowId:
+          type: string
+          description: Unique identifier of the payment flow, used by Mangopay for internal purposes.
+        Beneficiaries:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FlowDescriptorResponseBeneficiariesItems'
+          description: 'Max. length: 5 items
+
+
+            The list of up to 5 Natural or Legal Users declared as beneficiaries of the pay-in, who must all be KYC/KYB verified when the pay-in request is made. The pay-in also fails if the `Beneficiaries` array contains nulled objects or invalid `UserId` values.'
+      description: "Information about the Owner beneficiaries targeted by the pay-in and its subsequent transfers, who must all be KYC/KYB verified when the pay-in request is made ([read more](/guides/payin-beneficiaries)).\n\nIf the `FlowDescriptor.Beneficiaries` is sent in the API request, then:\n- The transaction's `CreditedWalletId` holder is disregarded in KYC/KYB checks.\n- **ALL** `UserId` values in the array must be one of:\n  - `OWNER` whose `KYCLevel` is `REGULAR`\n  - `PLATFORM`\n  \nThe pay-in `Status` becomes `FAILED` with `ResultCode` [002951](/errors/codes/002951) if at least one `FlowDescriptor.Beneficiaries.UserId` is:\n- `PAYER`\n- `OWNER` whose `KYCLevel` is `LIGHT`\n\nIf the `FlowDescriptor.Beneficiaries` is not sent in the API request, then the `CreditedWalletId` holder is subject to KYC/KYB checks. This property is optional for backwards compatibility but is recommended for all pay-in flows, even when the `CreditedWalletId` holder is a `PAYER` or the same value as one of the `FlowDescriptor.Beneficiaries`.\n"
+      title: FlowDescriptorResponse
+    TransactionNature:
+      type: string
+      description: '**Returned values:** `REGULAR`, `REPUDIATION`, `REFUND`, `SETTLEMENT`
+
+
+        The nature of the transaction, providing more information about the context in which the transaction occurred:
+
+        - `REGULAR` – Relative to most of the transactions (pay-ins, payouts, and transfers) in a usual workflow.
+
+        - `REPUDIATION` – Automatic withdrawal of funds from the platform''s repudiation wallet as part of the dispute process (when the user has requested a chargeback).
+
+        - `REFUND` – Reimbursement of a transaction to the user (pay-in refund), to a wallet (transfer refund), or of a payout (payout refund, only initiated by Mangopay).
+
+        - `SETTLEMENT` – Transfer made to the repudiation wallet by the platform to settle a lost dispute.'
+      title: TransactionNature
+    CreateAnIdealPayInRequestDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the debited funds.
+      title: CreateAnIdealPayInRequestDebitedFunds
+    CreateAnIDEALPayInRequest:
+      type: object
+      properties:
+        AuthorId:
+          $ref: '#/components/schemas/AuthorId'
+        CreditedWalletId:
+          type: string
+          description: The unique identifier of the credited wallet.
+        FlowDescriptor:
+          $ref: '#/components/schemas/FlowDescriptorRequest'
+        DebitedFunds:
+          $ref: '#/components/schemas/CreateAnIdealPayInRequestDebitedFunds'
+          description: Information about the debited funds.
+        Fees:
+          $ref: '#/components/schemas/CreateAnIdealPayInRequestFees'
+          description: Information about the fees.
+        ReturnURL:
+          type: string
+          description: 'Max. length: 255 characters
+
+
+            The URL to which the user is automatically returned after completing the payment.'
+        Tag:
+          $ref: '#/components/schemas/Tag'
+        StatementDescriptor:
+          $ref: '#/components/schemas/StatementDescriptor'
+        Bic:
+          type: string
+          description: '**Allowed values:** The BIC of a <a href="/guides/payment-methods/ideal">bank supported by iDEAL</a>
+
+
+            The bank identifier code (BIC) of the user''s bank. If provided, the user is redirected to the bank''s interface to log in and authenticate the payment. If not provided, the user is redirected to an intermediary page where they must choose their bank.
+
+
+            **Note:** Parameter not returned – the `BankName` is returned instead.'
+        ProfilingAttemptReference:
+          $ref: '#/components/schemas/ProfilingAttemptReference'
+      required:
+      - AuthorId
+      - CreditedWalletId
+      - DebitedFunds
+      - Fees
+      - ReturnURL
+      title: CreateAnIDEALPayInRequest
+    Tag:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        Custom data that you can add to this object, such as unique identifiers in your system. To store multiple values, you can serialize them into a single string, for example a JSON object: `"{\"id_1\":AB123,\"id_2\":DE456}"`.'
+      title: Tag
+    CreationDate:
+      type: integer
+      description: Unix timestamp (UTC) of the date and time the object was created.
+      title: CreationDate
+    CreateAnIdealPayInRequestFees:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      required:
+      - Currency
+      - Amount
+      description: Information about the fees.
+      title: CreateAnIdealPayInRequestFees
+    IdealPayInResponseDebitedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the debited funds.
+      title: IdealPayInResponseDebitedFunds
+    ReturnURL_255:
+      type: string
+      description: 'Max. length: 255 characters
+
+
+        The URL to which the user is returned after the payment, whether the transaction is successful or not.'
+      title: ReturnURL_255
+    Id:
+      type: string
+      description: 'Max length: 128 characters (see [data formats](/api-reference/overview/data-formats) for details)
+
+
+        The unique identifier of the object.'
+      title: Id
+    IdealPayInResponseCreditedFunds:
+      type: object
+      properties:
+        Currency:
+          $ref: '#/components/schemas/Currency'
+        Amount:
+          $ref: '#/components/schemas/Amount'
+      description: Information about the credited funds (`CreditedFunds` = `DebitedFunds` - `Fees`).
+      title: IdealPayInResponseCreditedFunds
+    ResultCode:
+      type: string
+      description: The code indicating the result of the operation. This information is mostly used to <a href="/errors/codes">handle errors</a> or for filtering purposes.
+      title: ResultCode
+    TransactionType:
+      type: string
+      description: '**Returned values:** `PAYIN`, `TRANSFER`, `CONVERSION`, `PAYOUT`
+
+
+        The type of the transaction.'
+      title: TransactionType
+  securitySchemes:
+    oauth2:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."
