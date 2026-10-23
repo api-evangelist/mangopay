@@ -129,3 +129,9 @@ components:
       type: http
       scheme: bearer
       description: "Bearer authentication of the form `Bearer <token>`, where token is your auth token. \n\nIf your platform is using a [proxy](/guides/sca/proxy-management) to take SCA-triggering action on behalf of users, you also need to integrate [mTLS authentication](/guides/sca/platform) and use the `api-mtls` base URL."
+x-provenance:
+  method: harvested
+  publisher: Mangopay
+  source: https://docs.mangopay.com/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
